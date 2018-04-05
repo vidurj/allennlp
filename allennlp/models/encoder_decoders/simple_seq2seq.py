@@ -2,13 +2,13 @@ from typing import Dict
 
 import numpy
 from overrides import overrides
-
+import random
 import torch
 from torch.autograd import Variable
 from torch.nn.modules.rnn import LSTMCell
 from torch.nn.modules.linear import Linear
 import torch.nn.functional as F
-
+import numpy as np
 from allennlp.common import Params
 from allennlp.data.vocabulary import Vocabulary
 from allennlp.data.dataset_readers.seq2seq import START_SYMBOL, END_SYMBOL
@@ -17,6 +17,20 @@ from allennlp.modules.similarity_functions import SimilarityFunction
 from allennlp.modules.token_embedders import Embedding
 from allennlp.models.model import Model
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
+import copy
+from allennlp.models.encoder_decoders.test import valid_next_characters, update_state
+
+"""
+And (bool, ...) : bool
+Equals (num, num) : bool
+Join   (set, set) : set
+Value  (set, type) : num
+Rate   (set, type, type) : num
+Minus  (num, num) : num
+Plus   (num, num) : num
+
+
+"""
 
 
 @Model.register("simple_seq2seq")
@@ -66,6 +80,7 @@ class SimpleSeq2Seq(Model):
         Scheduled Sampling for Sequence Prediction with Recurrent Neural Networks. Bengio et al.,
         2015.
     """
+
     def __init__(self,
                  vocab: Vocabulary,
                  source_embedder: TextFieldEmbedder,
@@ -87,6 +102,7 @@ class SimpleSeq2Seq(Model):
         self._start_index = self.vocab.get_token_index(START_SYMBOL, self._target_namespace)
         self._end_index = self.vocab.get_token_index(END_SYMBOL, self._target_namespace)
         num_classes = self.vocab.get_vocab_size(self._target_namespace)
+        self.num_classes = num_classes
         # Decoder output dim needs to be the same as the encoder output dim since we initialize the
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
         # we're using attention with ``DotProductSimilarity``, this is needed.
@@ -103,6 +119,125 @@ class SimpleSeq2Seq(Model):
         # TODO (pradeep): Do not hardcode decoder cell type.
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
         self._output_projection_layer = Linear(self._decoder_output_dim, num_classes)
+
+    def beam_search(self,  # type: ignore
+                    source_tokens: Dict[str, torch.LongTensor],
+                    bestk: int) -> Dict[str, torch.Tensor]:
+        # pylint: disable=arguments-differ
+        """
+        Decoder logic for producing the entire target sequence.
+
+        Parameters
+        ----------
+        source_tokens : Dict[str, torch.LongTensor]
+           The output of ``TextField.as_array()`` applied on the source ``TextField``. This will be
+           passed through a ``TextFieldEmbedder`` and then through an encoder.
+        target_tokens : Dict[str, torch.LongTensor], optional (default = None)
+           Output of ``Textfield.as_array()`` applied on target ``TextField``. We assume that the
+           target tokens are also represented as a ``TextField``.
+        """
+        # (batch_size, input_sequence_length, encoder_output_dim)
+        bestk = 100
+        source_indices = source_tokens['tokens'].data.cpu().numpy()
+        embedded_input = self._source_embedder(source_tokens)
+        batch_size, _, _ = embedded_input.size()
+        assert batch_size == 1, batch_size
+        source_mask = get_text_field_mask(source_tokens)
+        encoder_outputs = self._encoder(embedded_input, source_mask)
+        final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
+        decoder_hidden = final_encoder_output
+        decoder_context = Variable(encoder_outputs.data.new()
+                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
+        # For each action I should keep around a score, a context and a hidden state, and input choices
+        state = source_mask.data.new().resize_(batch_size)
+        model = {
+            'last_prediction': self._start_index,
+            'decoder_hidden': decoder_hidden,
+            'decoder_context': decoder_context,
+            'cur_log_probability': 0,
+            'action_list': [START_SYMBOL],
+            'arg_numbers': [0],
+            'function_calls': []
+        }
+        valid_variables = {'var' + str(i) for i in range(20)}
+        valid_variables.add('(')
+        valid_variables.add('?')
+        valid_units = {'unit' + str(i) for i in range(20)}
+        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
+        valid_numbers = {x for x in valid_numbers if x.startswith('num')}
+        print(valid_numbers)
+        valid_numbers.add('(')
+        valid_numbers.add('?')
+        models = [model]
+        complete_models = []
+        for cur_length in range(self._max_decoding_steps + 2):
+            new_models = []
+            for model in models:
+                last_prediction = model['last_prediction']
+                action_list = model['action_list']
+                if action_list[-1] == END_SYMBOL:
+                    new_models.append(model)
+                    continue
+                assert len(action_list) == cur_length + 1, (len(action_list), cur_length + 1)
+                decoder_hidden = model['decoder_hidden']
+                decoder_context = model['decoder_context']
+                cur_log_probability = model['cur_log_probability']
+                decoder_input = self._prepare_decode_step_input(
+                    Variable(state.fill_(last_prediction)),
+                    decoder_hidden,
+                    encoder_outputs,
+                    source_mask
+                )
+                decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
+                                                                     (decoder_hidden,
+                                                                      decoder_context))
+                output_projections = self._output_projection_layer(decoder_hidden)
+                class_log_probabilities = \
+                F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
+                assert self.vocab.get_vocab_size(self._target_namespace) == len(
+                    class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
+                                               class_log_probabilities.shape[0])
+                decoded_new_variable = False
+                decoded_new_unit = False
+                valid_actions = valid_next_characters(model['function_calls'],
+                                      model['arg_numbers'],
+                                      action_list[-1],
+                                      valid_numbers,
+                                      valid_variables,
+                                      valid_units)
+                for action_index, action_log_probability in enumerate(class_log_probabilities):
+                    action = self.vocab.get_token_from_index(action_index, self._target_namespace)
+                    if action not in valid_actions:
+                        continue
+                    # if action.startswith('var'):
+                    #     seen = action in action_list
+                    #     # If a variable is new, we do not distinguish between which variable it is
+                    #     if not seen and decoded_new_variable:
+                    #         continue
+                    #     elif not seen:
+                    #         decoded_new_variable = True
+
+                    function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
+                    new_model = {
+                        'action_list': action_list + [action],
+                        'last_prediction': action_index,
+                        'decoder_hidden': decoder_hidden,
+                        'decoder_context': decoder_context,
+                        'cur_log_probability': action_log_probability + cur_log_probability,
+                        'function_calls': function_calls,
+                        'arg_numbers': arg_numbers
+                    }
+                    new_models.append(new_model)
+            new_models.sort(key=lambda x: - x['cur_log_probability'])
+            models = new_models[:bestk]
+
+        complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
+        complete_models.sort(key=lambda x: - x['cur_log_probability'])
+        print('total models', len(models), 'len complete models', len(complete_models))
+        output = '\n'.join([' '.join(model['action_list'][1:-1]) for model in complete_models]) + \
+                 '\n***\n'
+        print(' '.join(complete_models[0]['action_list'][1:-1]))
+        return output
 
     @overrides
     def forward(self,  # type: ignore
@@ -153,6 +288,7 @@ class SimpleSeq2Seq(Model):
                                              .resize_(batch_size).fill_(self._start_index))
                 else:
                     input_choices = last_predictions
+
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                             encoder_outputs, source_mask)
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
@@ -180,6 +316,9 @@ class SimpleSeq2Seq(Model):
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
             # TODO: Define metrics
+            if random.random() < 0.01:
+                print('\naccuracy',
+                      self._get_accuracy(all_predictions.cpu(), targets.cpu(), target_mask.cpu()))
         return output_dict
 
     def _prepare_decode_step_input(self,
@@ -218,7 +357,8 @@ class SimpleSeq2Seq(Model):
             # complain.
             encoder_outputs_mask = encoder_outputs_mask.float()
             # (batch_size, input_sequence_length)
-            input_weights = self._decoder_attention(decoder_hidden_state, encoder_outputs, encoder_outputs_mask)
+            input_weights = self._decoder_attention(decoder_hidden_state, encoder_outputs,
+                                                    encoder_outputs_mask)
             # (batch_size, encoder_output_dim)
             attended_input = weighted_sum(encoder_outputs, input_weights)
             # (batch_size, encoder_output_dim + target_embedding_dim)
@@ -258,6 +398,18 @@ class SimpleSeq2Seq(Model):
         loss = sequence_cross_entropy_with_logits(logits, relevant_targets, relevant_mask)
         return loss
 
+    @staticmethod
+    def _get_accuracy(predictions: torch.LongTensor,
+                      targets: torch.LongTensor,
+                      target_mask: torch.LongTensor) -> torch.LongTensor:
+        targets = targets[:, 1:]
+        targets = targets.data.numpy()
+        target_mask = target_mask[:, 1:]
+        target_mask = target_mask.data.numpy()
+        predictions = predictions.data.numpy()
+        total = np.sum((targets == predictions) * target_mask)
+        return total / np.sum(target_mask)
+
     @overrides
     def decode(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
@@ -275,10 +427,14 @@ class SimpleSeq2Seq(Model):
         for indices in predicted_indices:
             indices = list(indices)
             # Collect indices till the first end_symbol
+
             if self._end_index in indices:
                 indices = indices[:indices.index(self._end_index)]
-            predicted_tokens = [self.vocab.get_token_from_index(x, namespace=self._target_namespace)
-                                for x in indices]
+            else:
+                print(indices, self._end_index)
+            predicted_tokens = [
+                self.vocab.get_token_from_index(x, namespace=self._target_namespace)
+                for x in indices]
             all_predicted_tokens.append(predicted_tokens)
         output_dict["predicted_tokens"] = all_predicted_tokens
         return output_dict
@@ -293,6 +449,7 @@ class SimpleSeq2Seq(Model):
         # If no attention function is specified, we should not use attention, not attention with
         # default similarity function.
         attention_function_type = params.pop("attention_function", None)
+        target_embedding_dim = params.pop("target_embedding_dim", None)
         if attention_function_type is not None:
             attention_function = SimilarityFunction.from_params(attention_function_type)
         else:
@@ -304,5 +461,6 @@ class SimpleSeq2Seq(Model):
                    encoder=encoder,
                    max_decoding_steps=max_decoding_steps,
                    target_namespace=target_namespace,
+                   target_embedding_dim=target_embedding_dim,
                    attention_function=attention_function,
                    scheduled_sampling_ratio=scheduled_sampling_ratio)
