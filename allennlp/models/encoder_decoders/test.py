@@ -74,33 +74,35 @@ def update_state(function_calls, arg_numbers, last_token):
         arg_numbers[-1] += 1
     return function_calls, arg_numbers
 
-with open('../../../train.txt', 'r') as f:
-    lines = f.read().splitlines()
-    sentences = []
-    for line in lines:
-        sentences.append(line.split('\t')[1].split())
 
-for sentence in sentences:
-    tokens = [START_SYMBOL] + sentence + [END_SYMBOL]
-    function_calls = []
-    num_args = [0]
-    valid_variables = {'var' + str(i) for i in range(20)}
-    valid_variables.add('(')
-    valid_variables.add('?')
-    valid_units = {'unit' + str(i) for i in range(20)}
-    valid_numbers = {'num' + str(i) for i in range(20)}
-    valid_numbers = {x for x in valid_numbers if x.startswith('num')}
-    valid_numbers.add('(')
-    valid_numbers.add('?')
-    valid_actions = {START_SYMBOL}
-    for i, token in enumerate(tokens):
-        # if i < len(tokens) - 1 and tokens[i + 1] == END_SYMBOL:
-            # print(valid_actions, token, function_calls, num_args, tokens)
-        assert token in valid_actions, (valid_actions, token, function_calls, num_args, ' '.join(tokens))
-        function_calls, num_args = update_state(function_calls, num_args, token)
-        # print(function_calls, token)
-        valid_actions = valid_next_characters(function_calls, num_args, token,
-                                              valid_numbers=valid_numbers,
-                                              valid_types=valid_units,
-                                              valid_variables=valid_variables)
-    print('-' * 80)
+if __name__ == '__main__':
+    with open('../../../train.txt', 'r') as f:
+        lines = f.read().splitlines()
+        sentences = []
+        for line in lines:
+            sentences.append(line.split('\t')[1].split())
+
+    for sentence in sentences:
+        tokens = [START_SYMBOL] + sentence + [END_SYMBOL]
+        function_calls = []
+        num_args = [0]
+        valid_variables = {'var' + str(i) for i in range(20)}
+        valid_variables.add('(')
+        valid_variables.add('?')
+        valid_units = {'unit' + str(i) for i in range(20)}
+        valid_numbers = {'num' + str(i) for i in range(20)}
+        valid_numbers = {x for x in valid_numbers if x.startswith('num')}
+        valid_numbers.add('(')
+        valid_numbers.add('?')
+        valid_actions = {START_SYMBOL}
+        for i, token in enumerate(tokens):
+            # if i < len(tokens) - 1 and tokens[i + 1] == END_SYMBOL:
+                # print(valid_actions, token, function_calls, num_args, tokens)
+            assert token in valid_actions, (valid_actions, token, function_calls, num_args, ' '.join(tokens))
+            function_calls, num_args = update_state(function_calls, num_args, token)
+            # print(function_calls, token)
+            valid_actions = valid_next_characters(function_calls, num_args, token,
+                                                  valid_numbers=valid_numbers,
+                                                  valid_types=valid_units,
+                                                  valid_variables=valid_variables)
+        print('-' * 80)
