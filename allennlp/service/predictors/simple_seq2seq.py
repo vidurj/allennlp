@@ -55,7 +55,7 @@ class SimpleTrainer:
         self._iterator = iterator
         self.cuda_device = cuda_device
         self.cur_position = len(self._train_data)
-        self.batch_size = 20
+        self.batch_size = 100
 
     def _create_batch(self, new_instance, new_instances):
         if self.cur_position + self.batch_size >= len(self._train_data):
@@ -76,7 +76,8 @@ class SimpleTrainer:
         gold_prediction = gold_prediction._indexed_tokens['tokens'][1:]
         gold_length = len(gold_prediction)
         count = 0
-        while flag:
+        for iter_n in range(100):
+            print('iteration number {}'.format(iter_n))
             self._optimizer.zero_grad()
             batch = self._create_batch(new_instance, new_instances)
             output_dict = self._model(**batch)
@@ -160,9 +161,15 @@ def instance_to_target_string(instance):
     return ' '.join(tokens[1:-1])
 
 
+def print_instance(instance):
+    source = instance_to_source_string(instance)
+    target = instance_to_target_string(instance)
+    print('source: {0}\ntarget: {1}'.format(source, target))
+
+
 class Interpreter(cmd.Cmd):
     intro = 'Welcome. Type help or ? to list commands.\n'
-    prompt = '(teacher)'
+    prompt = '\n(teacher)'
     file = None
 
     def __init__(self, model, dataset_reader, trainer):
@@ -174,10 +181,11 @@ class Interpreter(cmd.Cmd):
         self.serialization_dir = 'retrained'
         self.last_labeled_instance = None
 
-    def do_last_instance(self, _):
-        source = instance_to_source_string(self.last_labeled_instance)
-        target = instance_to_target_string(self.last_labeled_instance)
-        print('source: {0}\ntarget: {1}'.format(source, target))
+    def do_last_unsaved_instance(self, _):
+        if self.last_labeled_instance is None:
+            print('No last instance exists.')
+        else:
+            print_instance(self.last_labeled_instance)
 
     def do_add(self, _):
         if self.last_labeled_instance is None:
@@ -192,14 +200,26 @@ class Interpreter(cmd.Cmd):
         batch = instances_to_batch([instance], self._model, for_training=False)
         predictions = self._model.beam_search(batch['source_tokens'], bestk=1)
         target = predictions.split('\n')[0]
-        print(target)
         self.last_labeled_instance = self._dataset_reader.text_to_instance(source, target)
+        self.do_last_unsaved_instance('')
 
     def do_add_instance(self, line):
         source, target = line.split('\t')
         labeled_instance = self._dataset_reader.text_to_instance(source, target)
         self._trainer.train(labeled_instance, self.new_instances)
         self.new_instances.append(labeled_instance)
+
+    def do_last_instance(self, _):
+        if len(self.new_instances) > 0:
+            print_instance(self.new_instances[-1])
+        else:
+            print('No instances.')
+
+    def do_forget_last_instance(self, _):
+        if len(self.new_instances) > 0:
+            self.new_instances = self.new_instances[:-1]
+        else:
+            print('No instances.')
 
     def do_learn(self, text):
         if self.last_labeled_instance is None:
@@ -208,7 +228,7 @@ class Interpreter(cmd.Cmd):
             source = instance_to_source_string(self.last_labeled_instance)
             target = ' '.join(
                 text.strip().replace('(', ' ( ').replace(')', ' ) ').replace('?', ' ? ')
-                .split())
+                    .split())
             labeled_instance = self._dataset_reader.text_to_instance(source, target)
             self._trainer.train(labeled_instance, self.new_instances)
             self.new_instances.append(labeled_instance)
@@ -217,11 +237,12 @@ class Interpreter(cmd.Cmd):
         if os.path.exists(file_path):
             with open(file_path, 'r') as f:
                 for line in f.read().splitlines():
+                    print('adding:', line)
                     self.do_add_instance(line)
         else:
             print('{} path does not exists'.format(file_path))
 
-    def do_save(self):
+    def do_save(self, _):
         source_tokens = [instance_to_source_string(instance) for instance in self.new_instances]
         target_tokens = [instance_to_target_string(instance) for instance in self.new_instances]
         annotations = [source + '\t' + target for source, target in
@@ -232,8 +253,10 @@ class Interpreter(cmd.Cmd):
         model_state = self._model.state_dict()
         torch.save(model_state, model_path)
 
-    def complete_solve(self, text, line, begidx, endidx):
-        pass
+        # @overrides
+        # def precmd(self, line):
+        #     print()
+        #     return line
 
 
 @Predictor.register('simple_seq2seq_interactive')
@@ -267,7 +290,12 @@ class SimpleSeq2SeqPredictorInteractive(Predictor):
         # all_datasets = datasets_from_params(params)
         # train_data = all_datasets['train']
         trainer = SimpleTrainer(self._model, optimizer, [], iterator)
-        Interpreter(self._model, self._dataset_reader, trainer).cmdloop()
+        interpreter = Interpreter(self._model, self._dataset_reader, trainer)
+        while True:
+            try:
+                interpreter.cmdloop()
+            except Exception as e:
+                print(e)
 
     @overrides
     def predict_batch_json(self, inputs: List[JsonDict], cuda_device: int = -1) -> List[JsonDict]:
