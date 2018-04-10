@@ -6,8 +6,7 @@ import random
 
 nlp = spacy.load('en')
 
-with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json', 'r') as f:
-    data = json.load(f)
+
 
 NUMBER_WORDS = {
     'twice': 2,
@@ -124,6 +123,8 @@ def write_data(data, file_name, num_iters):
                 question_numbers.append(str(question_number))
 
     print('max length', max_len)
+    print('num data points', len(lines))
+    print('-' * 70)
     with open(file_name, 'w') as f:
         f.write('\n'.join(lines))
 
@@ -146,7 +147,17 @@ def write_data(data, file_name, num_iters):
     with open(file_name[:-4] + '.question_numbers', 'w') as f:
         f.write('\n'.join(question_numbers))
 
-print('data size', len(data))
-write_data(data[:-100], 'train.txt', num_iters=100)
-write_data(data[-100:], 'dev.txt', num_iters=1)
-write_data(data[-100:], 'test.txt', num_iters=1)
+
+if __name__ == '__main__':
+
+    # with open('/Users/vidurj/euclid/data/private/single_sentences_dev.txt', 'r') as f:
+    #     data = json.load(f)
+    #
+    # write_data(data, 'single_sentences_dev.txt', num_iters=2)
+
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json', 'r') as f:
+        data = json.load(f)
+    print('data size', len(data))
+    write_data(data[:-100], 'train.txt', num_iters=3)
+    write_data(data[-100:], 'dev.txt', num_iters=1)
+    write_data(data[-100:], 'test.txt', num_iters=1)

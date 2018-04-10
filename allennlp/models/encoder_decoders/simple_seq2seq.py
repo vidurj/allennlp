@@ -137,7 +137,6 @@ class SimpleSeq2Seq(Model):
            target tokens are also represented as a ``TextField``.
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
-        bestk = 100
         source_indices = source_tokens['tokens'].data.cpu().numpy()
         embedded_input = self._source_embedder(source_tokens)
         batch_size, _, _ = embedded_input.size()
@@ -165,7 +164,7 @@ class SimpleSeq2Seq(Model):
         valid_units = {'unit' + str(i) for i in range(20)}
         valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
         valid_numbers = {x for x in valid_numbers if x.startswith('num')}
-        print(valid_numbers)
+        # print(valid_numbers)
         valid_numbers.add('(')
         valid_numbers.add('?')
         models = [model]
@@ -233,10 +232,10 @@ class SimpleSeq2Seq(Model):
 
         complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         complete_models.sort(key=lambda x: - x['cur_log_probability'])
-        print('total models', len(models), 'len complete models', len(complete_models))
+        # print('total models', len(models), 'len complete models', len(complete_models))
         output = '\n'.join([' '.join(model['action_list'][1:-1]) for model in complete_models]) + \
                  '\n***\n'
-        print(' '.join(complete_models[0]['action_list'][1:-1]))
+        # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
 
     @overrides
@@ -316,9 +315,9 @@ class SimpleSeq2Seq(Model):
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
             # TODO: Define metrics
-            if random.random() < 0.01:
-                print('\naccuracy',
-                      self._get_accuracy(all_predictions.cpu(), targets.cpu(), target_mask.cpu()))
+            # if random.random() < 0.01:
+            #     print('\naccuracy',
+            #           self._get_accuracy(all_predictions.cpu(), targets.cpu(), target_mask.cpu()))
         return output_dict
 
     def _prepare_decode_step_input(self,
