@@ -1,16 +1,19 @@
 import json
 import pickle
-
+from allennlp.models.encoder_decoders.test import valid_next_characters, update_state, \
+    START_SYMBOL, END_SYMBOL
 import spacy
 import random
+import traceback
 
 nlp = spacy.load('en')
-
-
+PRECISION = 7
 
 NUMBER_WORDS = {
     'twice': 2,
     'thrice': 3,
+    'double': 2,
+    'triple': 3,
     'quadruple': 4,
     'quituple': 5,
     'zero': 0,
@@ -54,10 +57,91 @@ def is_num(string):
         return NUMBER_WORDS[string]
     try:
         temp = float(string.replace(',', ''))
-        temp = int(temp * 10000) / 10000.0
+        temp = round(temp, PRECISION)
         return temp
     except:
         return None
+
+
+def standardize_question(text, randomize):
+    source = text.replace('-', ' ')
+    source_tokenized = [token.text for token in nlp(source)]
+    number_to_token = {}
+    tokens = ['num' + str(i) for i in range(10)]
+    if randomize:
+        random.shuffle(tokens)
+    for index in range(len(source_tokenized)):
+        number = is_num(source_tokenized[index])
+        if number is not None:
+            if index + 1 < len(source_tokenized) and source_tokenized[index + 1] == '%' or \
+                            source_tokenized[index + 1] == 'percent':
+                number /= 100.0
+            number = round(number, PRECISION)
+            if number not in number_to_token:
+                number_to_token[number] = tokens.pop(0)
+            source_tokenized[index] = number_to_token[number]
+    return ' '.join(source_tokenized), number_to_token
+
+
+def standardize_logical_form_with_validation(text, number_to_token, randomize):
+    remaining_variable_names = ['var' + str(i) for i in range(10)]
+    remaining_units = ['unit' + str(i) for i in range(2)]
+    if randomize:
+        random.shuffle(remaining_variable_names)
+        random.shuffle(remaining_units)
+    target_tokens = text.replace('?', ' ? ').replace('(', ' ( ').replace(')', ' ) ').split()
+    assignments = {}
+    standardized_tokens = []
+    num_open_parens = 0
+    num_close_parens = 0
+    function_calls = []
+    arg_numbers = [0]
+    last_token = START_SYMBOL
+    for token in target_tokens:
+        valid_tokens = valid_next_characters(function_calls,
+                                             arg_numbers,
+                                             last_token=last_token,
+                                             valid_numbers={'NUMBER'},
+                                             valid_variables={'VARIABLE'},
+                                             valid_types={'TYPE'})
+        assert num_close_parens <= num_open_parens, (num_open_parens, num_close_parens)
+        if token == '(':
+            num_open_parens += 1
+        elif token == ')':
+            num_close_parens += 1
+        elif is_strict_num(token):
+            assert 'NUMBER' in valid_tokens
+            number = is_num(token)
+            if number in number_to_token:
+                token = number_to_token[number]
+            else:
+                raise RuntimeError(
+                    'Number {} not in number_to_token {}.'.format(number, number_to_token))
+        elif token == '?':
+            pass
+        elif 'TYPE' in valid_tokens:
+            assert 'VARIABLE' not in valid_tokens and 'NUMBER' not in valid_tokens
+            if token not in assignments:
+                assignments[token] = remaining_units.pop(0)
+            token = assignments[token]
+        elif 'VARIABLE' in valid_tokens:
+            if token not in assignments:
+                assignments[token] = remaining_variable_names.pop(0)
+            token = assignments[token]
+
+        assert token.startswith('var') or token.startswith('unit') or token.startswith(
+            'num') or token in valid_tokens, (token, valid_tokens, text)
+        standardized_tokens.append(token)
+        function_calls, arg_numbers = update_state(function_calls, arg_numbers, token)
+        last_token = token
+    valid_tokens = valid_next_characters(function_calls,
+                                         arg_numbers,
+                                         last_token=last_token,
+                                         valid_numbers={'NUMBER'},
+                                         valid_variables={'VARIABLE'},
+                                         valid_types={'TYPE'})
+    assert valid_tokens == {END_SYMBOL}, (valid_tokens, standardized_tokens, text)
+    return ' '.join(standardized_tokens), assignments
 
 
 def write_data(data, file_name, num_iters):
@@ -67,60 +151,20 @@ def write_data(data, file_name, num_iters):
     question_numbers = []
     for _ in range(num_iters):
         for question_number, question in enumerate(data):
-            source = question['sQuestion'].replace('-', ' ')
-            source_tokenized = [token.text for token in nlp(source)]
-            number_to_token = {}
-            tokens = ['num' + str(i) for i in range(10)]
-            for index in range(len(source_tokenized)):
-                number = is_num(source_tokenized[index])
-                if number is not None:
-                    if source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent':
-                        number /= 100.0
-                    if number not in number_to_token:
-                        new_var = random.choice(tokens)
-                        number_to_token[number] = new_var
-                        tokens.remove(new_var)
-                    source_tokenized[index] = number_to_token[number]
-
-            target = question['lSemantics']
-            target_tokens = target.replace('(', ' ( ').replace(')', ' ) ').split()
-            if len(target_tokens) == 0:
+            if question['lSemantics'] == '':
                 continue
-            assignments = {}
-            remaining_variable_names = ['var' + str(i) for i in range(10)]
-            remaining_units = ['unit' + str(i) for i in range(2)]
-            take = True
-            for index in range(1, len(target_tokens)):
-                token = target_tokens[index]
-                number = is_num(token)
-                if is_strict_num(token) and number in number_to_token:
-                    target_tokens[index] = number_to_token[number]
-                elif target_tokens[index - 1] == '(' or token == '(' or token == ')':
-                    continue
-                else:
-                    if is_strict_num(token):
-                        print(token, question['iIndex'], source_tokenized)
-                        take = False
-                        break
-                    if token.islower():
-                        if token not in assignments:
-                            new_var = random.choice(remaining_variable_names)
-                            remaining_variable_names.remove(new_var)
-                            if token[0] == '?':
-                                new_var = '? ' + new_var
-                            assignments[target_tokens[index]] = new_var
-                        target_tokens[index] = assignments[target_tokens[index]]
-                    else:
-                        if token not in assignments:
-                            new_var = random.choice(remaining_units)
-                            remaining_units.remove(new_var)
-                            assignments[target_tokens[index]] = new_var
-                        target_tokens[index] = assignments[target_tokens[index]]
-            if take:
-                max_len = max(max_len, len(target_tokens))
-                lines.append(' '.join(source_tokenized) + '\t' + ' '.join(target_tokens))
-                number_to_tokens.append(number_to_token)
-                question_numbers.append(str(question_number))
+            # if question['iIndex'] != '6226':
+            #     continue
+            source, number_to_token = standardize_question(question['sQuestion'], randomize=True)
+            try:
+                target, _ = standardize_logical_form_with_validation(question['lSemantics'],
+                                                                     number_to_token,
+                                                                     randomize=True)
+            except:
+                print(question)
+                traceback.print_exc()
+                continue
+            lines.append(source + '\t' + target)
 
     print('max length', max_len)
     print('num data points', len(lines))
@@ -149,15 +193,15 @@ def write_data(data, file_name, num_iters):
 
 
 if __name__ == '__main__':
-
     # with open('/Users/vidurj/euclid/data/private/single_sentences_dev.txt', 'r') as f:
     #     data = json.load(f)
     #
     # write_data(data, 'single_sentences_dev.txt', num_iters=2)
 
-    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json', 'r') as f:
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+              'r') as f:
         data = json.load(f)
     print('data size', len(data))
-    write_data(data[:-100], 'train.txt', num_iters=3)
+    write_data(data[:-100], 'train.txt', num_iters=1)
     write_data(data[-100:], 'dev.txt', num_iters=1)
     write_data(data[-100:], 'test.txt', num_iters=1)

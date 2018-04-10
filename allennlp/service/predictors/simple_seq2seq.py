@@ -29,6 +29,9 @@ import numpy as np
 import os
 import subprocess
 import cmd
+import traceback
+from allennlp.prepare_seq2seq_data import standardize_logical_form_with_validation, \
+    standardize_question
 from allennlp.data.dataset_readers.seq2seq import START_SYMBOL, END_SYMBOL
 
 
@@ -70,14 +73,12 @@ class SimpleTrainer:
                                   cuda_device=self.cuda_device)
 
     def train(self, new_instance, new_instances):
-        flag = True
         gold_prediction = new_instance.fields['target_tokens']
         gold_prediction.index(self._model.vocab)
         gold_prediction = gold_prediction._indexed_tokens['tokens'][1:]
         gold_length = len(gold_prediction)
         count = 0
         for iter_n in range(100):
-            print('iteration number {}'.format(iter_n))
             self._optimizer.zero_grad()
             batch = self._create_batch(new_instance, new_instances)
             output_dict = self._model(**batch)
@@ -85,13 +86,16 @@ class SimpleTrainer:
             loss += self._model.get_regularization_penalty()
             loss.backward()
             self._optimizer.step()
+            print('iteration number {0} loss {1}'.format(iter_n, loss.data.cpu().numpy()))
             prediction = output_dict['predictions'][-1].data.cpu().numpy()
             if np.all(prediction[:gold_length] == gold_prediction):
                 count += 1
             else:
                 count = 0
             if count > 5:
-                break
+                return
+        print('Failed to learn. '
+              'Check that the logical form only contains numbers from the question.')
 
 
 @Predictor.register('simple_seq2seq_beam')
@@ -129,41 +133,24 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         return output_string
 
 
-def clean_text(text):
-    nlp = spacy.load('en')
-    source = text.replace('-', ' ')
-    source_tokenized = [token.text for token in nlp(source)]
-    number_to_token = {}
-    tokens = ['num' + str(i) for i in range(10)]
-    for index in range(len(source_tokenized)):
-        number = is_num(source_tokenized[index])
-        if number is not None:
-            if index + 1 < len(source_tokenized) and source_tokenized[index + 1] == '%' or \
-                            source_tokenized[index + 1] == 'percent':
-                number /= 100.0
-            if number not in number_to_token:
-                new_var = tokens[0]
-                tokens = tokens[1:]
-                number_to_token[number] = new_var
-            source_tokenized[index] = number_to_token[number]
-    return ' '.join(source_tokenized)
-
-
-def instance_to_source_string(instance):
+def instance_to_source_string(instance, token_to_number_str):
     tokens = [token.text for token in instance.fields['source_tokens'].tokens]
     assert tokens[0] == START_SYMBOL and tokens[-1] == END_SYMBOL, (tokens[0], tokens[-1])
-    return ' '.join(tokens[1:-1])
+    resubstituted = [token_to_number_str.get(x, x) for x in tokens]
+    return ' '.join(resubstituted[1:-1])
 
 
-def instance_to_target_string(instance):
+def instance_to_target_string(instance, token_to_number_str):
     tokens = [token.text for token in instance.fields['target_tokens'].tokens]
     assert tokens[0] == START_SYMBOL and tokens[-1] == END_SYMBOL, (tokens[0], tokens[-1])
-    return ' '.join(tokens[1:-1])
+    resubstituted = [token_to_number_str.get(x, x) for x in tokens]
+    return ' '.join(resubstituted[1:-1])
 
 
-def print_instance(instance):
-    source = instance_to_source_string(instance)
-    target = instance_to_target_string(instance)
+def print_instance(instance, number_to_token):
+    token_to_number_str = dict([(token, str(number)) for number, token in number_to_token.items()])
+    source = instance_to_source_string(instance, token_to_number_str)
+    target = instance_to_target_string(instance, token_to_number_str)
     print('source: {0}\ntarget: {1}'.format(source, target))
 
 
@@ -180,12 +167,14 @@ class Interpreter(cmd.Cmd):
         self.new_instances = []
         self.serialization_dir = 'retrained'
         self.last_labeled_instance = None
+        self.last_number_to_token = None
 
     def do_last_unsaved_instance(self, _):
         if self.last_labeled_instance is None:
             print('No last instance exists.')
         else:
-            print_instance(self.last_labeled_instance)
+            assert self.last_number_to_token is not None
+            print_instance(self.last_labeled_instance, self.last_number_to_token)
 
     def do_add(self, _):
         if self.last_labeled_instance is None:
@@ -195,12 +184,13 @@ class Interpreter(cmd.Cmd):
             self.last_labeled_instance = None
 
     def do_solve(self, text):
-        source = clean_text(text.strip())
+        source, number_to_token = standardize_question(text, randomize=False)
         instance = self._dataset_reader.text_to_instance(source)
         batch = instances_to_batch([instance], self._model, for_training=False)
         predictions = self._model.beam_search(batch['source_tokens'], bestk=1)
         target = predictions.split('\n')[0]
         self.last_labeled_instance = self._dataset_reader.text_to_instance(source, target)
+        self.last_number_to_token = number_to_token
         self.do_last_unsaved_instance('')
 
     def do_add_instance(self, line):
@@ -211,7 +201,7 @@ class Interpreter(cmd.Cmd):
 
     def do_last_instance(self, _):
         if len(self.new_instances) > 0:
-            print_instance(self.new_instances[-1])
+            print_instance(self.new_instances[-1], {})
         else:
             print('No instances.')
 
@@ -225,10 +215,18 @@ class Interpreter(cmd.Cmd):
         if self.last_labeled_instance is None:
             print('No unadded labeled instance exists.')
         else:
-            source = instance_to_source_string(self.last_labeled_instance)
-            target = ' '.join(
-                text.strip().replace('(', ' ( ').replace(')', ' ) ').replace('?', ' ? ')
-                    .split())
+            source = \
+                instance_to_source_string(self.last_labeled_instance, self.last_number_to_token)
+            try:
+                target, _ = standardize_logical_form_with_validation(text,
+                                                                     self.last_number_to_token,
+                                                                     randomize=False)
+            except Exception as e:
+                print(e)
+                traceback.print_exc()
+                print('Failed to parse target logical form.')
+                return
+
             labeled_instance = self._dataset_reader.text_to_instance(source, target)
             self._trainer.train(labeled_instance, self.new_instances)
             self.new_instances.append(labeled_instance)
@@ -243,8 +241,10 @@ class Interpreter(cmd.Cmd):
             print('{} path does not exists'.format(file_path))
 
     def do_save(self, _):
-        source_tokens = [instance_to_source_string(instance) for instance in self.new_instances]
-        target_tokens = [instance_to_target_string(instance) for instance in self.new_instances]
+        source_tokens = [instance_to_source_string(instance, {}) for instance in
+                         self.new_instances]
+        target_tokens = [instance_to_target_string(instance, {}) for instance in
+                         self.new_instances]
         annotations = [source + '\t' + target for source, target in
                        zip(source_tokens, target_tokens)]
         with open('annotations.txt', 'w') as f:
@@ -252,11 +252,6 @@ class Interpreter(cmd.Cmd):
         model_path = os.path.join(self.serialization_dir, "model_state.th")
         model_state = self._model.state_dict()
         torch.save(model_state, model_path)
-
-        # @overrides
-        # def precmd(self, line):
-        #     print()
-        #     return line
 
 
 @Predictor.register('simple_seq2seq_interactive')
@@ -287,15 +282,17 @@ class SimpleSeq2SeqPredictorInteractive(Predictor):
         trainer_params = params.pop('trainer')
         optimizer = Optimizer.from_params(parameters, trainer_params.pop("optimizer"))
 
-        # all_datasets = datasets_from_params(params)
-        # train_data = all_datasets['train']
-        trainer = SimpleTrainer(self._model, optimizer, [], iterator)
+        all_datasets = datasets_from_params(params)
+        train_data = all_datasets['train']
+        trainer = SimpleTrainer(self._model, optimizer, train_data, iterator)
         interpreter = Interpreter(self._model, self._dataset_reader, trainer)
         while True:
             try:
                 interpreter.cmdloop()
             except Exception as e:
                 print(e)
+                traceback.print_exc()
+                print('Restarting interpreter cmdloop.')
 
     @overrides
     def predict_batch_json(self, inputs: List[JsonDict], cuda_device: int = -1) -> List[JsonDict]:
