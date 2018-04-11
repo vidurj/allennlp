@@ -1,10 +1,11 @@
 import json
-import pickle
-from allennlp.models.encoder_decoders.test import valid_next_characters, update_state, \
-    START_SYMBOL, END_SYMBOL
-import spacy
 import random
 import traceback
+
+import spacy
+
+from allennlp.type_checking import valid_next_characters, update_state, \
+    START_SYMBOL, END_SYMBOL
 
 nlp = spacy.load('en')
 PRECISION = 7

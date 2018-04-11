@@ -1,24 +1,23 @@
 from typing import Dict
 
 import numpy
-from overrides import overrides
-import random
-import torch
-from torch.autograd import Variable
-from torch.nn.modules.rnn import LSTMCell
-from torch.nn.modules.linear import Linear
-import torch.nn.functional as F
 import numpy as np
+import torch
+import torch.nn.functional as F
+from overrides import overrides
+from torch.autograd import Variable
+from torch.nn.modules.linear import Linear
+from torch.nn.modules.rnn import LSTMCell
+
 from allennlp.common import Params
-from allennlp.data.vocabulary import Vocabulary
 from allennlp.data.dataset_readers.seq2seq import START_SYMBOL, END_SYMBOL
+from allennlp.data.vocabulary import Vocabulary
+from allennlp.models.model import Model
 from allennlp.modules import Attention, TextFieldEmbedder, Seq2SeqEncoder
 from allennlp.modules.similarity_functions import SimilarityFunction
 from allennlp.modules.token_embedders import Embedding
-from allennlp.models.model import Model
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
-import copy
-from allennlp.models.encoder_decoders.test import valid_next_characters, update_state
+from allennlp.type_checking import valid_next_characters, update_state
 
 """
 And (bool, ...) : bool
