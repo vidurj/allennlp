@@ -73,6 +73,7 @@ class SimpleTrainer:
                                   cuda_device=self.cuda_device)
 
     def train(self, new_instance, new_instances):
+        self._model.train()
         print('Examples of Training Data')
         print('source:', [x.text for x in new_instance.fields['source_tokens'].tokens])
         print('target:', [x.text for x in new_instance.fields['target_tokens'].tokens])
@@ -193,6 +194,7 @@ class Interpreter(cmd.Cmd):
             self.last_labeled_instance = None
 
     def do_solve(self, text):
+        self._model.eval()
         source, number_to_token = standardize_question(text, randomize=False)
         instance = self._dataset_reader.text_to_instance(source)
         batch = instances_to_batch([instance], self._model, for_training=False)
