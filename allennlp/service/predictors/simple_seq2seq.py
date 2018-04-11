@@ -58,7 +58,7 @@ class SimpleTrainer:
         self._iterator = iterator
         self.cuda_device = cuda_device
         self.cur_position = len(self._train_data)
-        self.batch_size = 100
+        self.batch_size = 10
 
     def _create_batch(self, new_instance, new_instances):
         if self.cur_position + self.batch_size >= len(self._train_data):
@@ -166,6 +166,9 @@ def print_instance(instance, number_to_token):
     source = instance_to_source_string(instance, token_to_number_str)
     target = instance_to_target_string(instance, token_to_number_str)
     print('source: {0}\ntarget: {1}'.format(source, target))
+
+# def shuffle_instance(instance):
+
 
 
 class Interpreter(cmd.Cmd):
