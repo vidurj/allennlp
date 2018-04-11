@@ -94,6 +94,9 @@ class SimpleTrainer:
             self._optimizer.step()
             print('iteration number {0} loss {1}'.format(iter_n, loss.data.cpu().numpy()))
             prediction = output_dict['predictions'][-1].data.cpu().numpy()
+
+            print(' '.join([self._model.vocab.get_token_from_index(action_index, self._model._target_namespace)
+                            for action_index in prediction[:gold_length]]))
             if np.all(prediction[:gold_length] == gold_prediction):
                 count += 1
             else:
