@@ -73,6 +73,12 @@ class SimpleTrainer:
                                   cuda_device=self.cuda_device)
 
     def train(self, new_instance, new_instances):
+        print('Examples of Training Data')
+        print('source:', [x.text for x in new_instance.fields['source_tokens'].tokens])
+        print('target:', [x.text for x in new_instance.fields['target_tokens'].tokens])
+        print('source:', [x.text for x in self._train_data[0].fields['source_tokens'].tokens])
+        print('target:', [x.text for x in self._train_data[0].fields['target_tokens'].tokens])
+        print('---')
         gold_prediction = new_instance.fields['target_tokens']
         gold_prediction.index(self._model.vocab)
         gold_prediction = gold_prediction._indexed_tokens['tokens'][1:]
@@ -187,7 +193,7 @@ class Interpreter(cmd.Cmd):
         source, number_to_token = standardize_question(text, randomize=False)
         instance = self._dataset_reader.text_to_instance(source)
         batch = instances_to_batch([instance], self._model, for_training=False)
-        predictions = self._model.beam_search(batch['source_tokens'], bestk=10)
+        predictions = self._model.beam_search(batch['source_tokens'], bestk=1)
         target = predictions.split('\n')[0]
         self.last_labeled_instance = self._dataset_reader.text_to_instance(source, target)
         self.last_number_to_token = number_to_token

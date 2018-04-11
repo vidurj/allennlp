@@ -207,6 +207,6 @@ if __name__ == '__main__':
               'r') as f:
         data = json.load(f)
     print('data size', len(data))
-    write_data(data[:-100], 'train.txt', num_iters=1)
+    write_data(data[:-100], 'train.txt', num_iters=3)
     write_data(data[-100:], 'dev.txt', num_iters=1)
     write_data(data[-100:], 'test.txt', num_iters=1)
