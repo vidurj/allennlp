@@ -277,9 +277,10 @@ class SimpleSeq2Seq(Model):
         step_predictions = []
         for timestep in range(num_decoding_steps):
             if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
-                print('here!')
+                print('here! ' * 60)
                 input_choices = targets[:, timestep]
             else:
+                print('xxx ' * 60)
                 if timestep == 0:
                     # For the first timestep, when we do not have targets, we input start symbols.
                     # (batch_size,)
