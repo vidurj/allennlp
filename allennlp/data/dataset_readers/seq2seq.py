@@ -11,8 +11,17 @@ from allennlp.data.fields import TextField
 from allennlp.data.instance import Instance
 from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
-from allennlp.prepare_seq2seq_data import is_strict_num
+# from allennlp.prepare_seq2seq_data import is_strict_num
 
+
+def is_strict_num(string):
+    try:
+        float(string.replace(',', ''))
+        return True
+    except:
+        return False
+
+    
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 START_SYMBOL = "@@START@@"
