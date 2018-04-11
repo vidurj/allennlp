@@ -75,10 +75,14 @@ class SimpleTrainer:
     def train(self, new_instance, new_instances):
         self._model.train()
         print('Examples of Training Data')
-        print('source:', [x.text for x in new_instance.fields['source_tokens'].tokens])
-        print('target:', [x.text for x in new_instance.fields['target_tokens'].tokens])
-        print('source:', [x.text for x in self._train_data[0].fields['source_tokens'].tokens])
-        print('target:', [x.text for x in self._train_data[0].fields['target_tokens'].tokens])
+        print('source:',
+              ' '.join([x.text for x in new_instance.fields['source_tokens'].tokens]))
+        print('target:',
+              ' '.join([x.text for x in new_instance.fields['target_tokens'].tokens]))
+        print('source:',
+              ' '.join([x.text for x in self._train_data[0].fields['source_tokens'].tokens]))
+        print('target:',
+              ' '.join([x.text for x in self._train_data[0].fields['target_tokens'].tokens]))
         print('---')
         gold_prediction = new_instance.fields['target_tokens']
         gold_prediction.index(self._model.vocab)
