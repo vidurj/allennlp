@@ -187,7 +187,7 @@ class Interpreter(cmd.Cmd):
         source, number_to_token = standardize_question(text, randomize=False)
         instance = self._dataset_reader.text_to_instance(source)
         batch = instances_to_batch([instance], self._model, for_training=False)
-        predictions = self._model.beam_search(batch['source_tokens'], bestk=1)
+        predictions = self._model.beam_search(batch['source_tokens'], bestk=10)
         target = predictions.split('\n')[0]
         self.last_labeled_instance = self._dataset_reader.text_to_instance(source, target)
         self.last_number_to_token = number_to_token
@@ -195,9 +195,12 @@ class Interpreter(cmd.Cmd):
 
     def do_add_instance(self, line):
         source, target = line.split('\t')
-        labeled_instance = self._dataset_reader.text_to_instance(source, target)
-        self._trainer.train(labeled_instance, self.new_instances)
-        self.new_instances.append(labeled_instance)
+        source, number_to_token = standardize_question(source, randomize=True)
+        target = self.parse_target(target, number_to_token)
+        if target is not None:
+            labeled_instance = self._dataset_reader.text_to_instance(source, target)
+            self._trainer.train(labeled_instance, self.new_instances)
+            self.new_instances.append(labeled_instance)
 
     def do_last_instance(self, _):
         if len(self.new_instances) > 0:
@@ -211,25 +214,29 @@ class Interpreter(cmd.Cmd):
         else:
             print('No instances.')
 
+    @staticmethod
+    def parse_target(text, number_to_token):
+        try:
+            target, _ = standardize_logical_form_with_validation(text,
+                                                                 number_to_token,
+                                                                 randomize=True)
+            return target
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+            print('Failed to parse target logical form.')
+            return None
+
     def do_learn(self, text):
         if self.last_labeled_instance is None:
             print('No unadded labeled instance exists.')
         else:
-            source = \
-                instance_to_source_string(self.last_labeled_instance, self.last_number_to_token)
-            try:
-                target, _ = standardize_logical_form_with_validation(text,
-                                                                     self.last_number_to_token,
-                                                                     randomize=False)
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
-                print('Failed to parse target logical form.')
-                return
-
-            labeled_instance = self._dataset_reader.text_to_instance(source, target)
-            self._trainer.train(labeled_instance, self.new_instances)
-            self.new_instances.append(labeled_instance)
+            source = instance_to_source_string(self.last_labeled_instance, {})
+            target = self.parse_target(text, self.last_number_to_token)
+            if target is not None:
+                labeled_instance = self._dataset_reader.text_to_instance(source, target)
+                self._trainer.train(labeled_instance, self.new_instances)
+                self.new_instances.append(labeled_instance)
 
     def do_add_from_file(self, file_path):
         if os.path.exists(file_path):

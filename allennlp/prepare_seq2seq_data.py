@@ -45,7 +45,7 @@ NUMBER_WORDS = {
 
 def is_strict_num(string):
     try:
-        float(string)
+        float(string.replace(',', ''))
         return True
     except:
         return False
@@ -90,7 +90,8 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
         random.shuffle(remaining_variable_names)
         random.shuffle(remaining_units)
     target_tokens = text.replace('?', ' ? ').replace('(', ' ( ').replace(')', ' ) ').split()
-    assignments = {}
+    var_assignments = {}
+    type_assignments = {}
     standardized_tokens = []
     num_open_parens = 0
     num_close_parens = 0
@@ -121,13 +122,16 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
             pass
         elif 'TYPE' in valid_tokens:
             assert 'VARIABLE' not in valid_tokens and 'NUMBER' not in valid_tokens
-            if token not in assignments:
-                assignments[token] = remaining_units.pop(0)
-            token = assignments[token]
+            if token not in type_assignments:
+                assert token not in var_assignments, '{} token in var assignments too!'.format(
+                    token)
+                type_assignments[token] = remaining_units.pop(0)
+            token = type_assignments[token]
         elif 'VARIABLE' in valid_tokens:
-            if token not in assignments:
-                assignments[token] = remaining_variable_names.pop(0)
-            token = assignments[token]
+            if token not in var_assignments:
+                assert token not in type_assignments, '{} token in type assignments too!'.format(token)
+                var_assignments[token] = remaining_variable_names.pop(0)
+            token = var_assignments[token]
 
         assert token.startswith('var') or token.startswith('unit') or token.startswith(
             'num') or token in valid_tokens, (token, valid_tokens, text)
