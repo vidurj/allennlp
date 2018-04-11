@@ -13,11 +13,11 @@ from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 from allennlp.prepare_seq2seq_data import is_strict_num
 
-
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 START_SYMBOL = "@@START@@"
 END_SYMBOL = "@@END@@"
+
 
 @DatasetReader.register("seq2seq")
 class Seq2SeqDatasetReader(DatasetReader):
@@ -50,6 +50,7 @@ class Seq2SeqDatasetReader(DatasetReader):
     source_add_start_token : bool, (optional, default=True)
         Whether or not to add `START_SYMBOL` to the beginning of the source sequence.
     """
+
     def __init__(self,
                  source_tokenizer: Tokenizer = None,
                  target_tokenizer: Tokenizer = None,
@@ -76,19 +77,22 @@ class Seq2SeqDatasetReader(DatasetReader):
 
                 line_parts = line.split('\t')
                 if len(line_parts) != 2:
-                    raise ConfigurationError("Invalid line format: %s (line number %d)" % (line, line_num + 1))
+                    raise ConfigurationError(
+                        "Invalid line format: %s (line number %d)" % (line, line_num + 1))
                 source_sequence, target_sequence = line_parts
                 yield self.text_to_instance(source_sequence, target_sequence)
 
     @overrides
-    def text_to_instance(self, source_string: str, target_string: str = None) -> Instance:  # type: ignore
+    def text_to_instance(self, source_string: str,
+                         target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
         tokenized_source = self._source_tokenizer.tokenize(source_string)
         if self._source_add_start_token:
             tokenized_source.insert(0, Token(START_SYMBOL))
         tokenized_source.append(Token(END_SYMBOL))
         for token in tokenized_source:
-            assert not is_strict_num(token.text), 'found number in instance source tokens {}'.format(token)
+            assert not is_strict_num(
+                token.text), 'found number in instance source tokens {}'.format(token)
         source_field = TextField(tokenized_source, self._source_token_indexers)
         if target_string is not None:
             tokenized_target = self._target_tokenizer.tokenize(target_string)
@@ -96,7 +100,8 @@ class Seq2SeqDatasetReader(DatasetReader):
             tokenized_target.append(Token(END_SYMBOL))
             target_field = TextField(tokenized_target, self._target_token_indexers)
             for token in tokenized_target:
-                assert not is_strict_num(token.text), 'found number in instance target tokens {}'.format(
+                assert not is_strict_num(
+                    token.text), 'found number in instance target tokens {}'.format(
                     token)
             return Instance({"source_tokens": source_field, "target_tokens": target_field})
         else:
@@ -105,9 +110,11 @@ class Seq2SeqDatasetReader(DatasetReader):
     @classmethod
     def from_params(cls, params: Params) -> 'Seq2SeqDatasetReader':
         source_tokenizer_type = params.pop('source_tokenizer', None)
-        source_tokenizer = None if source_tokenizer_type is None else Tokenizer.from_params(source_tokenizer_type)
+        source_tokenizer = None if source_tokenizer_type is None else Tokenizer.from_params(
+            source_tokenizer_type)
         target_tokenizer_type = params.pop('target_tokenizer', None)
-        target_tokenizer = None if target_tokenizer_type is None else Tokenizer.from_params(target_tokenizer_type)
+        target_tokenizer = None if target_tokenizer_type is None else Tokenizer.from_params(
+            target_tokenizer_type)
         source_indexers_type = params.pop('source_token_indexers', None)
         source_add_start_token = params.pop_bool('source_add_start_token', True)
         if source_indexers_type is None:

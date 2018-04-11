@@ -146,7 +146,7 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
                                          valid_variables={'VARIABLE'},
                                          valid_types={'TYPE'})
     assert valid_tokens == {END_SYMBOL}, (valid_tokens, standardized_tokens, text)
-    return ' '.join(standardized_tokens), assignments
+    return ' '.join(standardized_tokens), (var_assignments, type_assignments)
 
 
 def write_data(data, file_name, num_iters):
