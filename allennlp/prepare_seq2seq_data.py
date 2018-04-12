@@ -1,7 +1,7 @@
 import json
 import random
 import traceback
-
+from collections import Counter
 import spacy
 
 from allennlp.type_checking import valid_next_characters, update_state, \
@@ -9,6 +9,28 @@ from allennlp.type_checking import valid_next_characters, update_state, \
 
 nlp = spacy.load('en')
 PRECISION = 7
+
+
+meaningful_units = {
+    # 'Dollar',
+    # 'Pound',
+    # 'Pound',
+    # 'Hour',
+    # 'Mile',
+    # 'Point',
+    # 'Coin',
+    # 'Gallon',
+    # 'Liter',
+    # 'Milliliter',
+    # 'Minute',
+    # 'Ounce',
+    # 'Foot',
+    # 'Kilogram',
+    # 'Ton',
+    # 'Inch',
+    # 'Cent',
+    # 'Animal'
+}
 
 NUMBER_WORDS = {
     'twice': 2,
@@ -126,7 +148,11 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
             if token not in type_assignments:
                 assert token not in var_assignments, '{} token in var assignments too!'.format(
                     token)
-                type_assignments[token] = remaining_units.pop(0)
+                # TODO preserving types
+                if token in meaningful_units:
+                    type_assignments[token] = 'unit' + token
+                else:
+                    type_assignments[token] = remaining_units.pop(0)
             token = type_assignments[token]
         elif 'VARIABLE' in valid_tokens:
             if token not in var_assignments:
@@ -149,11 +175,11 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
     return ' '.join(standardized_tokens), (var_assignments, type_assignments)
 
 
-def write_data(data, file_name, num_iters):
+def write_data(data, file_name, num_iters, silent=True):
     lines = []
-    max_len = 0
     number_to_tokens = []
     question_numbers = []
+    original_units = []
     for _ in range(num_iters):
         for question_number, question in enumerate(data):
             if question['lSemantics'] == '':
@@ -162,16 +188,22 @@ def write_data(data, file_name, num_iters):
             #     continue
             source, number_to_token = standardize_question(question['sQuestion'], randomize=True)
             try:
-                target, _ = standardize_logical_form_with_validation(question['lSemantics'],
+                target, (_, type_assignments) = standardize_logical_form_with_validation(question['lSemantics'],
                                                                      number_to_token,
                                                                      randomize=True)
+                original_units.extend(type_assignments.keys())
+                lines.append(source + '\t' + target)
             except:
-                print(question)
-                traceback.print_exc()
+                if not silent:
+                    print(question)
+                    traceback.print_exc()
                 continue
-            lines.append(source + '\t' + target)
 
-    print('max length', max_len)
+
+    # counts = list(Counter(original_units).items())
+    # counts.sort(key=lambda x: - x[1])
+    # for k, v in counts:
+    #     print(k, v)
     print('num data points', len(lines))
     print('-' * 70)
     with open(file_name, 'w') as f:
@@ -197,16 +229,30 @@ def write_data(data, file_name, num_iters):
         f.write('\n'.join(question_numbers))
 
 
-if __name__ == '__main__':
-    # with open('/Users/vidurj/euclid/data/private/single_sentences_dev.txt', 'r') as f:
-    #     data = json.load(f)
-    #
-    # write_data(data, 'single_sentences_dev.txt', num_iters=2)
+def json_from_text_file(input_path='../euclid/data/private/rate_facts.txt', output_path='allennlp/additional_annotations.json'):
+    points = []
+    with open(input_path, 'r') as f:
+        data = f.read().strip().splitlines()
+    for line in data:
+        print(line)
+        question, logical_form = line.split('\t')
+        points.append({'sQuestion': question.strip(), 'lSemantics': logical_form.strip()})
 
+    with open(output_path, 'w') as f:
+        json.dump(points, f)
+
+
+if __name__ == '__main__':
     with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
               'r') as f:
         data = json.load(f)
+
+    with open('allennlp/additional_annotations.json', 'r') as f:
+        additional_data = json.load(f)
+
+    with open('/Users/vidurj/euclid/data/private/train_single_sentences.txt', 'r') as f:
+        train_single_sentences = json.load(f)
     print('data size', len(data))
-    write_data(data[:-100], 'train.txt', num_iters=3)
+    # write_data(data[:-100] + additional_data + train_single_sentences, 'train_abstract_types.txt', num_iters=10)
     write_data(data[-100:], 'dev.txt', num_iters=1)
     write_data(data[-100:], 'test.txt', num_iters=1)
