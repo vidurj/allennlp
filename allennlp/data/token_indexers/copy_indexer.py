@@ -82,7 +82,7 @@ class CopyTokenIndexer(TokenIndexer[int]):
         return pad_sequence_to_length(tokens, desired_num_tokens)
 
     @classmethod
-    def from_params(cls, params: Params) -> 'SingleIdTokenIndexer':
+    def from_params(cls, params: Params) -> 'CopyTokenIndexer':
         namespace = params.pop('namespace', 'tokens')
         lowercase_tokens = params.pop_bool('lowercase_tokens', False)
         params.assert_empty(cls.__name__)
