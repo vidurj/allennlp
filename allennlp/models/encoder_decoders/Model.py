@@ -293,9 +293,10 @@ class SimpleCopy(Model):
                                                             encoder_outputs, source_mask)
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
-            print(decoder_hidden.dim(), encoder_outputs.dim())
+            print('decoder dim', decoder_hidden.size(), 'encoder dim', encoder_outputs.size())
             # (batch_size, num_classes)
-            copy_scores = (decoder_hidden * encoder_outputs).sum(dim=-1)
+
+            copy_scores = (decoder_hidden.unsqueeze(1) * encoder_outputs).sum(dim=-1)
             other_scores = self._output_projection_layer(decoder_hidden)
             print(copy_scores.dim(), other_scores.dim())
             output_projections = torch.cat([other_scores, copy_scores])
