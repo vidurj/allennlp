@@ -89,7 +89,7 @@ class SimpleCopy(Model):
                  target_embedding_dim: int = None,
                  attention_function: SimilarityFunction = None,
                  scheduled_sampling_ratio: float = 0.0) -> None:
-        super(SimpleSeq2Seq, self).__init__(vocab)
+        super(SimpleCopy, self).__init__(vocab)
         self._source_embedder = source_embedder
         self._encoder = encoder
         self._max_decoding_steps = max_decoding_steps
