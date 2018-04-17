@@ -299,7 +299,7 @@ class SimpleCopy(Model):
             copy_scores = (decoder_hidden.unsqueeze(1) * encoder_outputs).sum(dim=-1)
             other_scores = self._output_projection_layer(decoder_hidden)
             print(copy_scores.dim(), other_scores.dim())
-            output_projections = torch.cat([other_scores, copy_scores])
+            output_projections = torch.cat([other_scores, copy_scores], dim=-1)
             print(output_projections.dim())
             # list of (batch_size, 1, num_classes)
             step_logits.append(output_projections.unsqueeze(1))
