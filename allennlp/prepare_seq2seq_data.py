@@ -1,15 +1,15 @@
 import json
 import random
 import traceback
-from collections import Counter
+from collections import Counter, defaultdict
 import spacy
+import itertools
 
 from allennlp.type_checking import valid_next_characters, update_state, \
     START_SYMBOL, END_SYMBOL
 
 nlp = spacy.load('en')
 PRECISION = 7
-
 
 meaningful_units = {
     # 'Dollar',
@@ -86,9 +86,18 @@ def is_num(string):
         return None
 
 
-def standardize_question(text, randomize):
+def standardize_question(text, randomize, inject_numbers=False):
     source = text.replace('-', ' ')
     source_tokenized = [token.text for token in nlp(source)]
+    if inject_numbers:
+        noised = []
+        count = 0
+        for token in source_tokenized:
+            if count < 1 and random.random() < 0.01 and is_num(token) is None:
+                noised.append(str(1000 * random.random()))
+                count += 1
+            noised.append(token)
+        source_tokenized = noised
     number_to_token = {}
     tokens = ['num' + str(i) for i in range(10)]
     if randomize:
@@ -156,7 +165,8 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
             token = type_assignments[token]
         elif 'VARIABLE' in valid_tokens:
             if token not in var_assignments:
-                assert token not in type_assignments, '{} token in type assignments too!'.format(token)
+                assert token not in type_assignments, '{} token in type assignments too!'.format(
+                    token)
                 var_assignments[token] = remaining_variable_names.pop(0)
             token = var_assignments[token]
 
@@ -175,7 +185,62 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
     return ' '.join(standardized_tokens), (var_assignments, type_assignments)
 
 
-def write_data(data, file_name, num_iters, silent=True):
+def prepare_synthetic_data():
+    number_tokens = [str(i * 100) for i in range(1, 10)]
+
+    def sample_question(size, objects):
+        fruit_section = []
+        random.shuffle(number_tokens)
+        for index in range(size):
+            fruit_string = ' '.join(objects[index])
+            fruit_section.append(number_tokens[index] + ' ' + fruit_string)
+        question_index = random.randint(0, size - 1)
+        fruit_string = ' '.join(objects[question_index])
+        question = 'Tom has ' + ' , '.join(fruit_section) \
+                   + ' . How many ' + fruit_string + ' does he have ?'
+        return question, number_tokens[question_index]
+
+    with open('objects.txt', 'r') as f:
+        tokens = f.read().lower().split()
+    objects = []
+    for token in tokens:
+        if len(token) > 2:
+            objects.append(token)
+    print(len(objects))
+    train_objects = objects[:-10]
+    train = []
+    for _ in range(10000):
+        size = random.randint(2, 5)
+        random.shuffle(train_objects)
+        question, answer = sample_question(size, train_objects)
+        train.append(question + '\t' + answer)
+
+    with open('synthetic_train.txt', 'w') as f:
+        f.write('\n'.join(train))
+
+    dev = []
+    dev_objects = objects[:-10]
+    answers = []
+    questions = []
+    for _ in range(100):
+        size = random.randint(2, 5)
+        random.shuffle(dev_objects)
+        question, answer = sample_question(size, dev_objects)
+        dev.append(question + '\t' + answer)
+        questions.append(json.dumps({'source': question}))
+        answers.append(answer)
+
+    with open('synthetic_dev.txt', 'w') as f:
+        f.write('\n'.join(dev))
+
+    with open('synthetic_dev.json', 'w') as f:
+        f.write('\n'.join(questions))
+
+    with open('synthetic_dev_solutions.txt', 'w') as f:
+        f.write('\n'.join(answers))
+
+
+def write_data(data, file_name, num_iters, randomize, silent=True):
     lines = []
     number_to_tokens = []
     question_numbers = []
@@ -186,20 +251,24 @@ def write_data(data, file_name, num_iters, silent=True):
                 continue
             # if question['iIndex'] != '6226':
             #     continue
-            source, number_to_token = standardize_question(question['sQuestion'], randomize=True)
+            source, number_to_token = standardize_question(question['sQuestion'],
+                                                           randomize=randomize,
+                                                           inject_numbers=randomize)
             try:
-                target, (_, type_assignments) = standardize_logical_form_with_validation(question['lSemantics'],
-                                                                     number_to_token,
-                                                                     randomize=True)
+                target, (_, type_assignments) = standardize_logical_form_with_validation(
+                    question['lSemantics'],
+                    number_to_token,
+                    randomize=randomize)
                 original_units.extend(type_assignments.keys())
                 lines.append(source + '\t' + target)
+                number_to_tokens.append(number_to_token)
             except:
                 if not silent:
                     print(question)
                     traceback.print_exc()
                 continue
 
-
+    assert len(number_to_tokens) == len(lines), (len(number_to_tokens), len(lines))
     # counts = list(Counter(original_units).items())
     # counts.sort(key=lambda x: - x[1])
     # for k, v in counts:
@@ -229,7 +298,8 @@ def write_data(data, file_name, num_iters, silent=True):
         f.write('\n'.join(question_numbers))
 
 
-def json_from_text_file(input_path='../euclid/data/private/rate_facts.txt', output_path='allennlp/additional_annotations.json'):
+def json_from_text_file(input_path='../euclid/data/private/rate_facts.txt',
+                        output_path='allennlp/additional_annotations.json'):
     points = []
     with open(input_path, 'r') as f:
         data = f.read().strip().splitlines()
@@ -242,17 +312,67 @@ def json_from_text_file(input_path='../euclid/data/private/rate_facts.txt', outp
         json.dump(points, f)
 
 
-if __name__ == '__main__':
-    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+def create_sentence_aligned_data(alignments):
+    import itertools
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/kushman_annotated.json',
               'r') as f:
         data = json.load(f)
 
-    with open('allennlp/additional_annotations.json', 'r') as f:
-        additional_data = json.load(f)
+    key_to_sentence = {}
+    for q in data:
+        for sentence_number, sentence in enumerate(q['nlp']['sentences']):
+            key = (q['iIndex'], sentence_number)
+            assert key not in key_to_sentence
+            key_to_sentence[key] = sentence['text']['content']
 
-    with open('/Users/vidurj/euclid/data/private/train_single_sentences.txt', 'r') as f:
-        train_single_sentences = json.load(f)
-    print('data size', len(data))
-    # write_data(data[:-100] + additional_data + train_single_sentences, 'train_abstract_types.txt', num_iters=10)
-    write_data(data[-100:], 'dev.txt', num_iters=1)
-    write_data(data[-100:], 'test.txt', num_iters=1)
+    question_to_sentence_semantics = defaultdict(lambda: [[] for _ in range(10)])
+    for q in alignments:
+        if 'lAlignments' in q:
+            lines = q['lAlignments']
+            for substring in lines:
+                sentence_number, semantics = substring.split(' -> ')
+                sentence_number = int(sentence_number)
+                if sentence_number >= 0:
+                    question_to_sentence_semantics[q['iIndex']][sentence_number].append(semantics)
+
+    problems = []
+    print(key_to_sentence.keys())
+    for q_index, semantics in question_to_sentence_semantics.items():
+        valid = [(i, l) for i, l in enumerate(semantics) if len(l) > 0]
+        for size in range(1, len(valid)):
+            for sequence in itertools.combinations(valid, size):
+                sequence = list(sequence)
+                sequence.sort(key=lambda x: x[0])
+                final_sentence = []
+                final_logical_form = []
+                for (i, l) in sequence:
+                    final_sentence.append(key_to_sentence[(int(q_index), i)])
+                    final_logical_form.extend(l)
+
+                num_forms = len(final_logical_form)
+                final_logical_form = ' '.join(final_logical_form)
+                final_sentence = ' '.join(final_sentence)
+                if num_forms > 1:
+                    final_logical_form = '( And ' + final_logical_form + ' )'
+                problem = {
+                    'iIndex': q_index,
+                    'sQuestion': final_sentence,
+                    'lSemantics': final_logical_form
+                }
+                problems.append(problem)
+    return problems
+
+
+if __name__ == '__main__':
+    prepare_synthetic_data()
+    # with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+    #           'r') as f:
+    #     data = json.load(f)
+    #
+    # with open('allennlp/additional_annotations.json', 'r') as f:
+    #     additional_data = json.load(f)
+    #
+    # all_train_subsets = create_sentence_aligned_data(data[:-100])
+    # write_data(all_train_subsets + data[:-100], 'train.txt', randomize=True, num_iters=3)
+    # write_data(data[-100:], 'dev.txt', randomize=False, num_iters=1)
+    # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)

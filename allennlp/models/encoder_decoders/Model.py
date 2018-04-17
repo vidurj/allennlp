@@ -32,7 +32,7 @@ Plus   (num, num) : num
 """
 
 
-@Model.register("simple_seq2seq")
+@Model.register("simple_copy")
 class SimpleSeq2Seq(Model):
     """
     This ``SimpleSeq2Seq`` class is a :class:`Model` which takes a sequence, encodes it, and then
@@ -277,8 +277,6 @@ class SimpleSeq2Seq(Model):
         step_logits = []
         step_probabilities = []
         step_predictions = []
-        selections = []
-        number_encodings = None
         for timestep in range(num_decoding_steps):
             if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
                 input_choices = targets[:, timestep]
@@ -296,16 +294,11 @@ class SimpleSeq2Seq(Model):
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
             # (batch_size, num_classes)
-            if input_choices[-1] == 'var' or input_choices[-1] == 'unit' or input_choices[-1] == 'num':
-                selection_vector = self._selection_layer(decoder_hidden)
-                if input_choices[-1] == 'num':
-                    num_distribution = self._decoder_attention(selection_vector, encoder_outputs)
-
-                    # (batch_size, encoder_output_dim)
-                    attended_input = weighted_sum(encoder_outputs, input_weights)
-
-                selections.append((input_choices[-1], selection_vector))
-            output_projections = self._output_projection_layer(decoder_hidden)
+            copy_scores = (decoder_hidden * encoder_outputs).sum(dim=-1)
+            other_scores = self._output_projection_layer(decoder_hidden)
+            print(copy_scores.dim(), other_scores.dim())
+            output_projections = torch.cat([other_scores, copy_scores])
+            print(output_projections.dim())
             # list of (batch_size, 1, num_classes)
             step_logits.append(output_projections.unsqueeze(1))
             class_probabilities = F.softmax(output_projections, dim=-1)
