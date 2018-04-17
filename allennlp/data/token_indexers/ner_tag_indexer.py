@@ -12,7 +12,7 @@ from allennlp.data.token_indexers.token_indexer import TokenIndexer
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
-@TokenIndexer.register("ner_tag")
+@TokenIndexer.register("foo")
 class NerTagIndexer(TokenIndexer[int]):
     """
     This :class:`TokenIndexer` represents tokens by their entity type (i.e., their NER tag), as

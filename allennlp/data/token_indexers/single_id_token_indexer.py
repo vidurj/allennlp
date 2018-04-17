@@ -9,7 +9,7 @@ from allennlp.data.tokenizers.token import Token
 from allennlp.data.token_indexers.token_indexer import TokenIndexer
 
 
-@TokenIndexer.register("foo")
+@TokenIndexer.register("single_id")
 class SingleIdTokenIndexer(TokenIndexer[int]):
     """
     This :class:`TokenIndexer` represents tokens as single integers.
