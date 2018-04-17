@@ -33,7 +33,7 @@ Plus   (num, num) : num
 
 
 @Model.register("simple_copy")
-class SimpleSeq2Seq(Model):
+class SimpleCopy(Model):
     """
     This ``SimpleSeq2Seq`` class is a :class:`Model` which takes a sequence, encodes it, and then
     uses the encoded representations to decode another sequence.  You can use this as the basis for
