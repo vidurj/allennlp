@@ -18,6 +18,8 @@ from allennlp.nn.util import last_dim_softmax, get_lengths_from_binary_sequence_
 from allennlp.training.metrics import CategoricalAccuracy
 from allennlp.training.metrics import EvalbBracketingScorer
 from allennlp.common.checks import ConfigurationError
+import numpy as np
+from sortedcontainers import SortedList
 
 class SpanInformation(NamedTuple):
     """
@@ -257,6 +259,165 @@ class SpanConstituencyParser(Model):
 
         output_dict["trees"] = trees
         return output_dict
+
+    @staticmethod
+    def kbest(sentence, num_trees, label_log_probabilities_np, span_to_index):
+        """
+        :param sentence: The sentence for which top-k parses are being computed.
+        :param num_trees: The number of parses required.
+        :param label_log_probabilities_np: A numpy array of shape (num_labels, num_spans)
+        :param span_to_index: A dictionary mapping span indices to column indices in
+        label_log_probabilities.
+        :return: A list of parses.
+        """
+        empty_label_index = 0
+        labels = [(), ('XX',)]
+        correction_term = np.sum(label_log_probabilities_np[0, :])
+        label_log_probabilities_np -= label_log_probabilities_np[0, :]
+
+        cache = {}
+
+        def helper(left, right, must_be_constituent):
+            assert left < right
+            key = (left, right)
+            if key in cache:
+                return cache[key]
+
+            span_index = span_to_index[(left, right)]
+            actions = list(enumerate(label_log_probabilities_np[:, span_index]))
+            actions.sort(key=lambda x: - x[1])
+            actions = actions[:num_trees]
+
+            if right - left == 1:
+                tag, word = sentence[left]
+                options = []
+                for label_index, score in actions:
+                    tree = Tree(tag, [word])
+                    if label_index != empty_label_index:
+                        label = list(labels[label_index])
+                        while label:
+                            tree = Tree(label.pop(), [tree])
+                    options.append(([tree], score))
+                cache[key] = options
+            else:
+                if must_be_constituent:
+                    actions = actions[1:]
+                children_options = SortedList(key=lambda x: - x[1])
+                for split in range(left + 1, right):
+                    left_trees_options = helper(left, split, must_be_constituent=True)
+                    right_trees_options = helper(split, right, must_be_constituent=False)
+                    for (left_trees, left_score) in left_trees_options:
+                        assert len(left_trees) == 1, 'Toa avoid duplicates we require that left' \
+                                                     'trees are constituents.'
+                        for (right_trees, right_score) in right_trees_options:
+                            children = left_trees + right_trees
+                            score = left_score + right_score
+                            if len(children_options) < num_trees:
+                                children_options.add((children, score))
+                            elif children_options[-1][1] < score:
+                                del children_options[-1]
+                                children_options.add((children, score))
+
+                options = SortedList(key=lambda x: - x[1])
+                for (label_index, action_score) in actions:
+                    for (children, children_score) in children_options:
+                        option_score = action_score + children_score
+                        if label_index != 0:
+                            label = labels[label_index]
+                            while label:
+                                children = [Tree(label.pop(), children)]
+                            option = children
+                        else:
+                            option = children
+                        if len(options) < num_trees:
+                            options.add((option, option_score))
+                        elif options[-1][1] < option_score:
+                            del options[-1]
+                            options.add((option, option_score))
+                        else:
+                            break
+                cache[key] = options
+            return cache[key]
+
+        trees_and_scores = helper(0, len(sentence), must_be_constituent=True)[:num_trees]
+        trees = []
+        scores = []
+        for tree, score in trees_and_scores:
+            assert len(tree) == 1
+            trees.append(tree[0])
+            scores.append(score + correction_term)
+        return trees, scores
+
+    def construct_topk_trees(self,
+                        predictions: torch.FloatTensor,
+                        all_spans: torch.LongTensor,
+                        num_spans: torch.LongTensor,
+                        sentences: List[List[str]],
+                        pos_tags: List[List[str]] = None) -> List[Tree]:
+        """
+        Construct ``nltk.Tree``'s for each batch element by greedily nesting spans.
+        The trees use exclusive end indices, which contrasts with how spans are
+        represented in the rest of the model.
+
+        Parameters
+        ----------
+        predictions : ``torch.FloatTensor``, required.
+            A tensor of shape ``(batch_size, num_spans, span_label_vocab_size)``
+            representing a distribution over the label classes per span.
+        all_spans : ``torch.LongTensor``, required.
+            A tensor of shape (batch_size, num_spans, 2), representing the span
+            indices we scored.
+        num_spans : ``torch.LongTensor``, required.
+            A tensor of shape (batch_size), representing the lengths of non-padded spans
+            in ``enumerated_spans``.
+        sentences : ``List[List[str]]``, required.
+            A list of tokens in the sentence for each element in the batch.
+        pos_tags : ``List[List[str]]``, optional (default = None).
+            A list of POS tags for each word in the sentence for each element
+            in the batch.
+
+        Returns
+        -------
+        A ``List[Tree]`` containing the decoded trees for each element in the batch.
+        """
+        # Switch to using exclusive end spans.
+        exclusive_end_spans = all_spans.clone()
+        exclusive_end_spans[:, :, -1] += 1
+        no_label_id = self.vocab.get_token_index("NO-LABEL", "labels")
+
+        trees: List[List[Tree]] = []
+        for batch_index, (scored_spans, spans, sentence) in enumerate(zip(predictions,
+                                                                          exclusive_end_spans,
+                                                                          sentences)):
+            selected_spans = []
+            for prediction, span in zip(scored_spans[:num_spans[batch_index]],
+                                        spans[:num_spans[batch_index]]):
+                start, end = span
+                no_label_prob = prediction[no_label_id]
+                label_prob, label_index = torch.max(prediction, -1)
+
+                # Does the span have a label != NO-LABEL or is it the root node?
+                # If so, include it in the spans that we consider.
+                if int(label_index) != no_label_id or (start == 0 and end == len(sentence)):
+                    # TODO(Mark): Remove this once pylint sorts out named tuples.
+                    # https://github.com/PyCQA/pylint/issues/1418
+                    selected_spans.append(SpanInformation(start=int(start), # pylint: disable=no-value-for-parameter
+                                                          end=int(end),
+                                                          label_prob=float(label_prob),
+                                                          no_label_prob=float(no_label_prob),
+                                                          label_index=int(label_index)))
+
+            # The spans we've selected might overlap, which causes problems when we try
+            # to construct the tree as they won't nest properly.
+            consistent_spans = self.resolve_overlap_conflicts_greedily(selected_spans)
+
+            spans_to_labels = {(span.start, span.end):
+                               self.vocab.get_token_from_index(span.label_index, "labels")
+                               for span in consistent_spans}
+            sentence_pos = pos_tags[batch_index] if pos_tags is not None else None
+            trees.append(self.construct_tree_from_spans(spans_to_labels, sentence, sentence_pos))
+
+        return trees
 
     def construct_trees(self,
                         predictions: torch.FloatTensor,
