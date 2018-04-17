@@ -9,12 +9,6 @@ from allennlp.data.tokenizers.token import Token
 from allennlp.data.token_indexers.token_indexer import TokenIndexer
 
 
-def is_int(token):
-    try:
-        return int(token)
-    except:
-        return None
-
 @TokenIndexer.register("copy")
 class CopyTokenIndexer(TokenIndexer[int]):
     """
@@ -35,6 +29,11 @@ class CopyTokenIndexer(TokenIndexer[int]):
 
     @overrides
     def count_vocab_items(self, token: Token, counter: Dict[str, Dict[str, int]]):
+        def is_int(token):
+            try:
+                return int(token)
+            except:
+                return None
         # If `text_id` is set on the token (e.g., if we're using some kind of hash-based word
         # encoding), we will not be using the vocab for this token.
         if getattr(token, 'text_id', None) is None:

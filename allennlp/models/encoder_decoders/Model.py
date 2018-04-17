@@ -444,7 +444,7 @@ class SimpleCopy(Model):
         return output_dict
 
     @classmethod
-    def from_params(cls, vocab, params: Params) -> 'SimpleSeq2Seq':
+    def from_params(cls, vocab, params: Params) -> 'SimpleCopy':
         source_embedder_params = params.pop("source_embedder")
         source_embedder = TextFieldEmbedder.from_params(vocab, source_embedder_params)
         encoder = Seq2SeqEncoder.from_params(params.pop("encoder"))
