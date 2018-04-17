@@ -293,6 +293,7 @@ class SimpleCopy(Model):
                                                             encoder_outputs, source_mask)
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
+            print(decoder_hidden.dim(), encoder_outputs.dim())
             # (batch_size, num_classes)
             copy_scores = (decoder_hidden * encoder_outputs).sum(dim=-1)
             other_scores = self._output_projection_layer(decoder_hidden)
