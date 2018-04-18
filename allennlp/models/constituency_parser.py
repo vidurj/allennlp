@@ -286,7 +286,7 @@ class SpanConstituencyParser(Model):
             index = label_log_probabilities_np[1:, index].argmax() + 1
             span_to_label[span] = self.vocab.get_token_from_index(index, "labels")
 
-        temp = np.zeros(2, len(span_to_index))
+        temp = np.zeros((2, len(span_to_index)))
         temp[1, :] = 1 - label_log_probabilities_np[empty_label_index, :]
         correction_term = np.sum(label_log_probabilities_np[empty_label_index, :])
         label_log_probabilities_np = temp
@@ -397,12 +397,11 @@ class SpanConstituencyParser(Model):
         A ``List[Tree]`` containing the decoded trees for each element in the batch.
         """
         # Switch to using exclusive end spans.
-        exclusive_end_spans = all_spans.clone()
+        exclusive_end_spans = all_spans.clone().cpu().numpy()
         exclusive_end_spans[:, :, -1] += 1
 
         trees: List[List[Tree]] = []
         predictions_np = predictions.cpu().numpy()
-        exclusive_end_spans = exclusive_end_spans.cpu().numpy()
         for batch_index in range(len(sentences)):
             span_to_index = {}
             for span_index in range(num_spans[batch_index]):
