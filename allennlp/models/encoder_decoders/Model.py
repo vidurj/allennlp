@@ -32,6 +32,13 @@ Plus   (num, num) : num
 """
 
 
+def batched_index_select(input_tensor, index_tensor, dim):
+    dummy = index_tensor.unsqueeze(2).expand(index_tensor.size(0), index_tensor.size(1),
+                                             input_tensor.size(2))
+    out = input_tensor.gather(dim, dummy)  # b x e x f
+    return out
+
+
 @Model.register("simple_copy")
 class SimpleCopy(Model):
     """
@@ -107,7 +114,6 @@ class SimpleCopy(Model):
         # we're using attention with ``DotProductSimilarity``, this is needed.
         self._decoder_output_dim = self._encoder.get_output_dim()
         target_embedding_dim = target_embedding_dim or self._source_embedder.get_output_dim()
-        self._target_embedder = Embedding(num_classes, target_embedding_dim)
         if self._attention_function:
             self._decoder_attention = Attention(self._attention_function)
             # The output of attention, a weighted average over encoder outputs, will be
@@ -117,8 +123,9 @@ class SimpleCopy(Model):
             self._decoder_input_dim = target_embedding_dim
         # TODO (pradeep): Do not hardcode decoder cell type.
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
-        self._output_projection_layer = Linear(self._decoder_output_dim, num_classes)
-        self._selection_layer = Linear(self._decoder_output_dim, self._decoder_output_dim)
+        self._output_embeddings = torch.Parameter(
+            torch.Tensor(num_classes, self._decoder_output_dim))
+        self._copy_probability = Linear(self._decoder_output_dim, 1)
 
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
@@ -162,7 +169,8 @@ class SimpleCopy(Model):
         valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
-        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
+        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in
+                         source_indices[0]}
         valid_numbers = {x for x in valid_numbers if x.startswith('num')}
         # print(valid_numbers)
         valid_numbers.add('(')
@@ -192,18 +200,18 @@ class SimpleCopy(Model):
                                                                       decoder_context))
                 output_projections = self._output_projection_layer(decoder_hidden)
                 class_log_probabilities = \
-                F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
+                    F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
                     class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
                                                class_log_probabilities.shape[0])
                 decoded_new_variable = False
                 decoded_new_unit = False
                 valid_actions = valid_next_characters(model['function_calls'],
-                                      model['arg_numbers'],
-                                      action_list[-1],
-                                      valid_numbers,
-                                      valid_variables,
-                                      valid_units)
+                                                      model['arg_numbers'],
+                                                      action_list[-1],
+                                                      valid_numbers,
+                                                      valid_variables,
+                                                      valid_units)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
@@ -216,7 +224,8 @@ class SimpleCopy(Model):
                     #     elif not seen:
                     #         decoded_new_variable = True
 
-                    function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
+                    function_calls, arg_numbers = update_state(model['function_calls'],
+                                                               model['arg_numbers'], action)
                     new_model = {
                         'action_list': action_list + [action],
                         'last_prediction': action_index,
@@ -277,6 +286,7 @@ class SimpleCopy(Model):
         step_logits = []
         step_probabilities = []
         step_predictions = []
+        output_embeddings = torch.cat([self._output_embeddings, encoder_outputs], dim = -1)
         for timestep in range(num_decoding_steps):
             if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
                 input_choices = targets[:, timestep]
@@ -289,25 +299,22 @@ class SimpleCopy(Model):
                 else:
                     input_choices = last_predictions
 
-            decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
-                                                            encoder_outputs, source_mask)
+            decoder_input = self._prepare_decode_step_input(input_choices,
+                                                            output_embeddings,
+                                                            decoder_hidden,
+                                                            encoder_outputs,
+                                                            source_mask)
+
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
             print('decoder dim', decoder_hidden.size(), 'encoder dim', encoder_outputs.size())
             # (batch_size, num_classes)
-
-            copy_scores = (decoder_hidden.unsqueeze(1) * encoder_outputs).sum(dim=-1)
-            other_scores = self._output_projection_layer(decoder_hidden)
-            print(copy_scores.dim(), other_scores.dim())
-            output_projections = torch.cat([other_scores, copy_scores], dim=-1)
-            print(output_projections.dim())
-            # list of (batch_size, 1, num_classes)
-            step_logits.append(output_projections.unsqueeze(1))
-            class_probabilities = F.softmax(output_projections, dim=-1)
+            output_logits = (decoder_hidden.unsqueeze(1) * output_embeddings).sum(dim=-1)
+            step_logits.append(output_logits.unsqueeze(1))
+            class_probabilities = F.softmax(output_logits, dim=-1)
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
-            # (batch_size, 1)
             step_predictions.append(last_predictions.unsqueeze(1))
         # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
         # This is (batch_size, num_decoding_steps, num_classes)
@@ -329,6 +336,7 @@ class SimpleCopy(Model):
 
     def _prepare_decode_step_input(self,
                                    input_indices: torch.LongTensor,
+                                   embeddings: torch.LongTensor,
                                    decoder_hidden_state: torch.LongTensor = None,
                                    encoder_outputs: torch.LongTensor = None,
                                    encoder_outputs_mask: torch.LongTensor = None) -> torch.LongTensor:
@@ -356,7 +364,7 @@ class SimpleCopy(Model):
         """
         # input_indices : (batch_size,)  since we are processing these one timestep at a time.
         # (batch_size, target_embedding_dim)
-        embedded_input = self._target_embedder(input_indices)
+        embedded_input = batched_index_select(input_indices, embeddings, dim=1)
         if self._attention_function:
             # encoder_outputs : (batch_size, input_sequence_length, encoder_output_dim)
             # Ensuring mask is also a FloatTensor. Or else the multiplication within attention will
