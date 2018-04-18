@@ -123,8 +123,7 @@ class SimpleCopy(Model):
             self._decoder_input_dim = target_embedding_dim
         # TODO (pradeep): Do not hardcode decoder cell type.
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
-        self._output_embeddings = torch.Parameter(
-            torch.Tensor(num_classes, self._decoder_output_dim))
+        self._output_embeddings = torch.FloatTensor(num_classes, self._decoder_output_dim)
         self._copy_probability = Linear(self._decoder_output_dim, 1)
 
     def beam_search(self,  # type: ignore
@@ -307,8 +306,6 @@ class SimpleCopy(Model):
 
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
-            print('decoder dim', decoder_hidden.size(), 'encoder dim', encoder_outputs.size())
-            # (batch_size, num_classes)
             output_logits = (decoder_hidden.unsqueeze(1) * output_embeddings).sum(dim=-1)
             step_logits.append(output_logits.unsqueeze(1))
             class_probabilities = F.softmax(output_logits, dim=-1)
