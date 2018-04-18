@@ -291,7 +291,6 @@ class SimpleCopy(Model):
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
-        print(output_embeddings.size(), 'output embeddings shape')
         for timestep in range(num_decoding_steps):
             if timestep == 0:
                 # For the first timestep, when we do not have targets, we input start symbols.
@@ -437,7 +436,7 @@ class SimpleCopy(Model):
         if not isinstance(predicted_indices, numpy.ndarray):
             predicted_indices = predicted_indices.data.cpu().numpy()
         all_predicted_tokens = []
-        for indices in predicted_indices:
+        for instance_index, indices in enumerate(predicted_indices):
             indices = list(indices)
             # Collect indices till the first end_symbol
 
@@ -445,9 +444,13 @@ class SimpleCopy(Model):
                 indices = indices[:indices.index(self._end_index)]
             else:
                 print(indices, self._end_index)
-            predicted_tokens = [
-                self.vocab.get_token_from_index(x, namespace=self._target_namespace)
-                for x in indices]
+            predicted_tokens = []
+            for index in indices:
+                if index < self.vocab.get_vocab_size(self._target_namespace):
+                    token = self.vocab.get_token_from_index(index, namespace=self._target_namespace)
+                else:
+                    token = str(index - self.vocab.get_vocab_size(self._target_namespace))
+                predicted_tokens.append(token)
             all_predicted_tokens.append(predicted_tokens)
         output_dict["predicted_tokens"] = all_predicted_tokens
         return output_dict
