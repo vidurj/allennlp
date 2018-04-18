@@ -270,8 +270,6 @@ class SimpleCopy(Model):
         # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
-        a = encoder_outputs.data.cpu().numpy()
-        assert not np.any(np.isnan(a)), a
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
@@ -292,14 +290,8 @@ class SimpleCopy(Model):
         # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
         # print(self._output_embeddings.data.cpu().numpy())
         # print(encoder_outputs.data.cpu().numpy())
-        a = self._output_embeddings.data.cpu().numpy()
-        assert not np.any(np.isnan(a)), a
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
-        a = basic_actions.data.cpu().numpy()
-        assert not np.any(np.isnan(a)), a
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
-        a = output_embeddings.data.cpu().numpy()
-        assert not np.any(np.isnan(a)), a
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
             if self.training:
@@ -317,36 +309,13 @@ class SimpleCopy(Model):
                                                             decoder_hidden,
                                                             encoder_outputs,
                                                             source_mask)
-            print('decoder input ' * 10)
-            a = decoder_input.data.cpu().numpy()
-            print(a)
-            print(np.any(np.isnan(a)))
-            b = decoder_hidden.data.cpu().numpy()
-            print(b)
-            print(np.any(np.isnan(b)))
-            c = decoder_context.data.cpu().numpy()
-            print(c)
-            print(np.any(np.isnan(c)))
-
-            print('-' * 100)
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
-            print(decoder_hidden.data.cpu().numpy())
-            print('output embeddings shape', decoder_hidden.unsqueeze(1).size())
-            print(encoder_outputs.data.cpu().numpy())
-            print('output embeddings shape', output_embeddings.size())
             output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
-            print(output_logits.data.cpu().numpy())
-            print('output logits shape', output_logits.size())
 
             # output_logits (batch size, num actions + num tokens)
             class_probabilities = torch.nn.functional.softmax(output_logits, dim=-1)
-            print(class_probabilities.data.cpu().numpy())
-            # print(output_logits.data.cpu().numpy())
             step_logits.append(output_logits.unsqueeze(1))
-            # F.softmax(output_logits, dim=-1)
-            # print(class_probabilities.data.cpu().numpy())
-            # print('-' * 100)
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
@@ -400,8 +369,6 @@ class SimpleCopy(Model):
         # input_indices : (batch_size,)  since we are processing these one timestep at a time.
         # (batch_size, target_embedding_dim)
         embedded_input = batched_index_select(embeddings, input_indices)
-        a = embedded_input.data.cpu().numpy()
-        assert not np.any(np.isnan(a)), a
         if self._attention_function:
             # encoder_outputs : (batch_size, input_sequence_length, encoder_output_dim)
             # Ensuring mask is also a FloatTensor. Or else the multiplication within attention will
@@ -410,8 +377,6 @@ class SimpleCopy(Model):
             # (batch_size, input_sequence_length)
             input_weights = self._decoder_attention(decoder_hidden_state, encoder_outputs,
                                                     encoder_outputs_mask)
-            a = embedded_input.data.cpu().numpy()
-            assert not np.any(np.isnan(a)), input_weights
             # (batch_size, encoder_output_dim)
             attended_input = weighted_sum(encoder_outputs, input_weights)
             # (batch_size, encoder_output_dim + target_embedding_dim)
