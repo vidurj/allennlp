@@ -287,19 +287,9 @@ class SpanConstituencyParser(Model):
         top k trees.
         :return: A list of the num_tree parses, and their log probabilities.
         """
-
-        temp_index = span_to_index[(0, len(sentence))]
-        most_likely = label_probabilities_np[temp_index, :].argmax()
-        print('-' * 100)
-        print(label_probabilities_np[temp_index, :])
-        print(self.vocab.get_token_from_index(most_likely, "labels").split("-"))
-        print('-' * 100)
-
-
         empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
         all_labels = [self.vocab.get_token_from_index(index, "labels").split("-") for index in
                   range(self.vocab.get_vocab_size("labels"))]
-        print(all_labels)
 
         if not distinguish_between_labels:
             temp = np.zeros((len(span_to_index), 2))
@@ -313,7 +303,6 @@ class SpanConstituencyParser(Model):
                 label_index = label_probabilities_np[span_index, :].argmax()
                 span_to_label[span] = all_labels[label_index]
 
-            print(span_to_label[(0, len(sentence))], '!!!!!!')
             label_probabilities_np = temp
             empty_label_index = 0
 
@@ -322,7 +311,6 @@ class SpanConstituencyParser(Model):
         correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
         label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]\
             .reshape((len(span_to_index), 1))
-        print(label_log_probabilities_np)
         cache = {}
 
         def helper(left, right, must_be_constituent):
@@ -572,8 +560,8 @@ class SpanConstituencyParser(Model):
                         # was unlabled? In the first case, we delete span2 from the
                         # set of spans to form the tree - in the second case, we delete
                         # span1.
-                        if (span1.no_label_prob + span2.label_prob <
-                                    span2.no_label_prob + span1.label_prob):
+                        if (span1.no_label_prob * span2.label_prob <
+                                    span2.no_label_prob * span1.label_prob):
                             spans.pop(span2_index)
                         else:
                             spans.pop(span1_index)
