@@ -289,9 +289,11 @@ class SimpleCopy(Model):
         step_predictions = []
         # encoder_outputs has shape (batch size, num time steps, embedding dim)
         # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
+        print(self._output_embeddings.data.cpu().numpy())
+        print(encoder_outputs.data.cpu().numpy())
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
-        print(output_embeddings.data.cpu().numpy())
+
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
             decoder_input = self._prepare_decode_step_input(targets[:, timestep],
