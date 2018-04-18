@@ -310,7 +310,7 @@ class SpanConstituencyParser(Model):
             # To ensure that the empty label does not have the maximum probability for any span.
             label_probabilities_np[:, empty_label_index] = -1
             for span, span_index in span_to_index.items():
-                label_index = label_probabilities_np[span_index, :].argmax() + 1
+                label_index = label_probabilities_np[span_index, :].argmax()
                 span_to_label[span] = all_labels[label_index]
 
             print(span_to_label[(0, len(sentence))], '!!!!!!')
