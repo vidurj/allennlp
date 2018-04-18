@@ -270,26 +270,34 @@ class SpanConstituencyParser(Model):
                        pos_tags,
                        label_log_probabilities_np,
                        span_to_index,
-                       num_trees):
+                       num_trees,
+                       distinguish_between_labels=False):
         """
         :param sentence: The sentence for which top-k parses are being computed.
-        :param label_log_probabilities_np: A numpy array of shape (num_labels, num_spans)
+        :param label_log_probabilities_np: A numpy array of shape (num_spans, num_labels)
         :param span_to_index: A dictionary mapping span indices to column indices in
         label_log_probabilities.
         :param no_label_id: The id of the empty label.
         :param num_trees: The number of parses required.
+        :param distinguish_between_labels: Whether to distinguish between different labels for the
+        top k trees.
         :return: A list of the num_tree parses along with their log probabilities.
         """
         empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
         span_to_label = {}
         for span, index in span_to_index.items():
-            index = label_log_probabilities_np[1:, index].argmax() + 1
+            index = label_log_probabilities_np[index, 1:].argmax() + 1
             span_to_label[span] = self.vocab.get_token_from_index(index, "labels")
 
-        temp = np.zeros((2, len(span_to_index)))
-        temp[1, :] = 1 - label_log_probabilities_np[empty_label_index, :]
-        correction_term = np.sum(label_log_probabilities_np[empty_label_index, :])
-        label_log_probabilities_np = temp
+        if not distinguish_between_labels:
+            temp = np.zeros((len(span_to_index), 2))
+            temp[0, :] = label_log_probabilities_np[:, empty_label_index]
+            temp[1, :] = 1 - label_log_probabilities_np[:, empty_label_index]
+            label_log_probabilities_np = temp
+            empty_label_index = 0
+
+        correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
+        label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]
 
         cache = {}
 
@@ -301,7 +309,7 @@ class SpanConstituencyParser(Model):
 
             span_index = span_to_index[span]
             label = list(span_to_label[span])
-            actions = list(enumerate(label_log_probabilities_np[:, span_index]))
+            actions = list(enumerate(label_log_probabilities_np[span_index, :]))
             actions.sort(key=lambda x: - x[1])
             actions = actions[:num_trees]
 
@@ -311,7 +319,7 @@ class SpanConstituencyParser(Model):
                 options = []
                 for label_index, score in actions:
                     tree = Tree(pos_tag, [word])
-                    if label_index != 0:
+                    if label_index != empty_label_index:
                         while label:
                             tree = Tree(label.pop(), [tree])
                     options.append(([tree], score))
@@ -339,7 +347,7 @@ class SpanConstituencyParser(Model):
                 for (label_index, action_score) in actions:
                     for (children, children_score) in children_options:
                         option_score = action_score + children_score
-                        if label_index != 0:
+                        if label_index != empty_label_index:
                             while label:
                                 children = [Tree(label.pop(), children)]
                             option = children
