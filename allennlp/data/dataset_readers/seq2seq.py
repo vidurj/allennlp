@@ -90,19 +90,12 @@ class Seq2SeqDatasetReader(DatasetReader):
         if self._source_add_start_token:
             tokenized_source.insert(0, Token(START_SYMBOL))
         tokenized_source.append(Token(END_SYMBOL))
-        for token in tokenized_source:
-            assert not is_strict_num(
-                token.text), 'found number in instance source tokens {}'.format(token)
         source_field = TextField(tokenized_source, self._source_token_indexers)
         if target_string is not None:
             tokenized_target = self._target_tokenizer.tokenize(target_string)
             tokenized_target.insert(0, Token(START_SYMBOL))
             tokenized_target.append(Token(END_SYMBOL))
             target_field = TextField(tokenized_target, self._target_token_indexers)
-            for token in tokenized_target:
-                assert not is_strict_num(
-                    token.text), 'found number in instance target tokens {}'.format(
-                    token)
             return Instance({"source_tokens": source_field, "target_tokens": target_field})
         else:
             return Instance({'source_tokens': source_field})
