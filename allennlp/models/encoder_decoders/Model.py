@@ -299,10 +299,11 @@ class SimpleCopy(Model):
                                                             source_mask)
 
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input, (decoder_hidden, decoder_context))
-            output_logits = (decoder_hidden.unsqueeze(1) * output_embeddings).sum(dim=-1)
+            class_probabilities =  self._decoder_attention(decoder_hidden, output_embeddings)
+            output_logits = torch.log(class_probabilities)
             # print(output_logits.data.cpu().numpy())
             step_logits.append(output_logits.unsqueeze(1))
-            class_probabilities = F.softmax(output_logits, dim=-1)
+            # F.softmax(output_logits, dim=-1)
             # print(class_probabilities.data.cpu().numpy())
             # print('-' * 100)
             _, predicted_classes = torch.max(class_probabilities, 1)
