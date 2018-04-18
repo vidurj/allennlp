@@ -296,10 +296,19 @@ class SpanConstituencyParser(Model):
             temp = np.zeros((len(span_to_index), 2))
             temp[:, 0] = label_probabilities_np[:, empty_label_index]
             temp[:, 1] = 1 - label_probabilities_np[:, empty_label_index]
+
+            span_to_label = {}
+            # To ensure that the empty label does not have the maximum probability for any span.
+            label_probabilities_np[:, empty_label_index] = -1
+            for span, span_index in span_to_index.items():
+                label_index = label_probabilities_np[span_index, :].argmax() + 1
+                span_to_label[span] = all_labels[label_index]
+
             label_probabilities_np = temp
             empty_label_index = 0
 
-            label_log_probabilities_np = np.log(label_probabilities_np)
+
+        label_log_probabilities_np = np.log(label_probabilities_np)
         correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
         label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]\
             .reshape((len(span_to_index), 1))
@@ -312,13 +321,13 @@ class SpanConstituencyParser(Model):
             if span in cache:
                 return cache[span]
 
-            span_index = span_to_index[span]
+
             if not distinguish_between_labels:
-                label_index = label_log_probabilities_np[span_index, 1:].argmax() + 1
-                labels = [(), all_labels[label_index]]
+                labels = [(), span_to_label[span]]
             else:
                 labels = all_labels
 
+            span_index = span_to_index[span]
             actions = list(enumerate(label_log_probabilities_np[span_index, :]))
             actions.sort(key=lambda x: - x[1])
             actions = actions[:num_trees]
