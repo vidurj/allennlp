@@ -271,7 +271,7 @@ class SpanConstituencyParser(Model):
     def compute_k_best(self,
                        sentence,
                        pos_tags,
-                       label_log_probabilities_np,
+                       label_probabilities_np,
                        span_to_index,
                        num_trees,
                        distinguish_between_labels=False):
@@ -294,11 +294,12 @@ class SpanConstituencyParser(Model):
 
         if not distinguish_between_labels:
             temp = np.zeros((len(span_to_index), 2))
-            temp[:, 0] = label_log_probabilities_np[:, empty_label_index]
-            temp[:, 1] = np.log(1 - np.exp(label_log_probabilities_np[:, empty_label_index]))
-            label_log_probabilities_np = temp
+            temp[:, 0] = label_probabilities_np[:, empty_label_index]
+            temp[:, 1] = 1 - label_probabilities_np[:, empty_label_index]
+            label_probabilities_np = temp
             empty_label_index = 0
 
+            label_log_probabilities_np = np.log(label_probabilities_np)
         correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
         label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]\
             .reshape((len(span_to_index), 1))
