@@ -114,7 +114,7 @@ class SimpleCopy(Model):
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
         # we're using attention with ``DotProductSimilarity``, this is needed.
         self._decoder_output_dim = self._encoder.get_output_dim()
-        target_embedding_dim = self._source_embedder.get_output_dim()
+        target_embedding_dim = self._encoder.get_output_dim()
         if self._attention_function:
             self._decoder_attention = Attention(self._attention_function)
             # The output of attention, a weighted average over encoder outputs, will be
