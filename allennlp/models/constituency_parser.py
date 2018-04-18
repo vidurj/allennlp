@@ -292,6 +292,7 @@ class SpanConstituencyParser(Model):
         temp_index = span_to_index[(0, len(sentence))]
         most_likely = label_log_probabilities_np[temp_index, :].argmax()
         print('-' * 100)
+        print(label_log_probabilities_np[temp_index, :])
         print(self.vocab.get_token_from_index(most_likely, "labels").split("-"))
         print('-' * 100)
 
