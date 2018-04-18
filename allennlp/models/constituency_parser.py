@@ -295,7 +295,8 @@ class SpanConstituencyParser(Model):
             empty_label_index = 0
 
         correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
-        label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]
+        label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]\
+            .reshape((len(span_to_index), 1))
 
         cache = {}
 
