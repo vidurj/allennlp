@@ -5,7 +5,7 @@ import sys
 with open(sys.argv[1], 'r') as f:
     preds = f.read().splitlines()
 
-preds = ['num' + json.loads(x)['preds'][0] for x in preds]
+preds = ['num' + json.loads(x)['predictions'][0] for x in preds]
 
 
 with open(sys.argv[2], 'r') as f:
