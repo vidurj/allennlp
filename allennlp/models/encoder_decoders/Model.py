@@ -292,18 +292,15 @@ class SimpleCopy(Model):
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
-        print(output_embeddings.shape(), 'output embeddings shape')
+        print(output_embeddings.size(), 'output embeddings shape')
         for timestep in range(num_decoding_steps):
-            if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
-                input_choices = targets[:, timestep]
+            if timestep == 0:
+                # For the first timestep, when we do not have targets, we input start symbols.
+                # (batch_size,)
+                input_choices = Variable(source_mask.data.new()
+                                         .resize_(batch_size).fill_(self._start_index))
             else:
-                if timestep == 0:
-                    # For the first timestep, when we do not have targets, we input start symbols.
-                    # (batch_size,)
-                    input_choices = Variable(source_mask.data.new()
-                                             .resize_(batch_size).fill_(self._start_index))
-                else:
-                    input_choices = last_predictions
+                input_choices = last_predictions
 
             decoder_input = self._prepare_decode_step_input(input_choices,
                                                             output_embeddings,
