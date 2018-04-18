@@ -277,6 +277,7 @@ class SpanConstituencyParser(Model):
                        distinguish_between_labels=False):
         """
         :param sentence: The sentence for which top-k parses are being computed.
+        :param pos_tags: Part of speech tags for every token in the input sentence.
         :param label_log_probabilities_np: A numpy array of shape (num_spans, num_labels)
         :param span_to_index: A dictionary mapping span indices to column indices in
         label_log_probabilities.
@@ -287,8 +288,9 @@ class SpanConstituencyParser(Model):
         :return: A list of the num_tree parses, and their log probabilities.
         """
         empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
-        labels = [self.vocab.get_token_from_index(index, "labels") for index in
+        all_labels = [self.vocab.get_token_from_index(index, "labels").split("-") for index in
                   range(self.vocab.get_vocab_size("labels"))]
+        print(all_labels)
 
         if not distinguish_between_labels:
             temp = np.zeros((len(span_to_index), 2))
@@ -312,7 +314,9 @@ class SpanConstituencyParser(Model):
             span_index = span_to_index[span]
             if not distinguish_between_labels:
                 label_index = label_log_probabilities_np[span_index, 1:].argmax() + 1
-                labels = [(), self.vocab.get_token_from_index(label_index, "labels")]
+                labels = [(), all_labels[label_index]]
+            else:
+                labels = all_labels
 
             actions = list(enumerate(label_log_probabilities_np[span_index, :]))
             actions.sort(key=lambda x: - x[1])
