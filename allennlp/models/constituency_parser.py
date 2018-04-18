@@ -258,47 +258,64 @@ class SpanConstituencyParser(Model):
         output_dict["class_probabilities"] = [all_predictions[i, :num_spans[i], :] for i in range(batch_size)]
 
         output_dict["trees"] = trees
+        output_dict['top_k_trees'] = self.construct_topk_trees(all_predictions,
+                                                               all_spans,
+                                                               num_spans,
+                                                               all_sentences,
+                                                               all_pos_tags)
         return output_dict
 
-    @staticmethod
-    def kbest(sentence, num_trees, label_log_probabilities_np, span_to_index):
+    def compute_k_best(self,
+                       sentence,
+                       pos_tags,
+                       label_log_probabilities_np,
+                       span_to_index,
+                       num_trees):
         """
         :param sentence: The sentence for which top-k parses are being computed.
-        :param num_trees: The number of parses required.
         :param label_log_probabilities_np: A numpy array of shape (num_labels, num_spans)
         :param span_to_index: A dictionary mapping span indices to column indices in
         label_log_probabilities.
-        :return: A list of parses.
+        :param no_label_id: The id of the empty label.
+        :param num_trees: The number of parses required.
+        :return: A list of the num_tree parses along with their log probabilities.
         """
-        empty_label_index = 0
-        labels = [(), ('XX',)]
-        correction_term = np.sum(label_log_probabilities_np[0, :])
-        label_log_probabilities_np -= label_log_probabilities_np[0, :]
+        empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
+        span_to_label = {}
+        for span, index in span_to_index.items():
+            index = label_log_probabilities_np[1:, index].argmax() + 1
+            span_to_label[span] = self.vocab.get_token_from_index(index, "labels")
+
+        temp = np.zeros(2, len(span_to_index))
+        temp[1, :] = 1 - label_log_probabilities_np[empty_label_index, :]
+        correction_term = np.sum(label_log_probabilities_np[empty_label_index, :])
+        label_log_probabilities_np = temp
 
         cache = {}
 
         def helper(left, right, must_be_constituent):
             assert left < right
-            key = (left, right)
-            if key in cache:
-                return cache[key]
+            span = (left, right)
+            if span in cache:
+                return cache[span]
 
-            span_index = span_to_index[(left, right)]
+            span_index = span_to_index[span]
+            label = list(span_to_label[span])
             actions = list(enumerate(label_log_probabilities_np[:, span_index]))
             actions.sort(key=lambda x: - x[1])
             actions = actions[:num_trees]
 
             if right - left == 1:
-                tag, word = sentence[left]
+                word = sentence[left]
+                pos_tag = pos_tags[left]
                 options = []
                 for label_index, score in actions:
-                    tree = Tree(tag, [word])
-                    if label_index != empty_label_index:
-                        label = list(labels[label_index])
+                    tree = Tree(pos_tag, [word])
+                    if label_index != 0:
                         while label:
                             tree = Tree(label.pop(), [tree])
                     options.append(([tree], score))
-                cache[key] = options
+                cache[span] = options
             else:
                 if must_be_constituent:
                     actions = actions[1:]
@@ -323,7 +340,6 @@ class SpanConstituencyParser(Model):
                     for (children, children_score) in children_options:
                         option_score = action_score + children_score
                         if label_index != 0:
-                            label = labels[label_index]
                             while label:
                                 children = [Tree(label.pop(), children)]
                             option = children
@@ -336,8 +352,8 @@ class SpanConstituencyParser(Model):
                             options.add((option, option_score))
                         else:
                             break
-                cache[key] = options
-            return cache[key]
+                cache[span] = options
+            return cache[span]
 
         trees_and_scores = helper(0, len(sentence), must_be_constituent=True)[:num_trees]
         trees = []
@@ -383,40 +399,22 @@ class SpanConstituencyParser(Model):
         # Switch to using exclusive end spans.
         exclusive_end_spans = all_spans.clone()
         exclusive_end_spans[:, :, -1] += 1
-        no_label_id = self.vocab.get_token_index("NO-LABEL", "labels")
 
         trees: List[List[Tree]] = []
-        for batch_index, (scored_spans, spans, sentence) in enumerate(zip(predictions,
-                                                                          exclusive_end_spans,
-                                                                          sentences)):
-            selected_spans = []
-            for prediction, span in zip(scored_spans[:num_spans[batch_index]],
-                                        spans[:num_spans[batch_index]]):
-                start, end = span
-                no_label_prob = prediction[no_label_id]
-                label_prob, label_index = torch.max(prediction, -1)
-
-                # Does the span have a label != NO-LABEL or is it the root node?
-                # If so, include it in the spans that we consider.
-                if int(label_index) != no_label_id or (start == 0 and end == len(sentence)):
-                    # TODO(Mark): Remove this once pylint sorts out named tuples.
-                    # https://github.com/PyCQA/pylint/issues/1418
-                    selected_spans.append(SpanInformation(start=int(start), # pylint: disable=no-value-for-parameter
-                                                          end=int(end),
-                                                          label_prob=float(label_prob),
-                                                          no_label_prob=float(no_label_prob),
-                                                          label_index=int(label_index)))
-
-            # The spans we've selected might overlap, which causes problems when we try
-            # to construct the tree as they won't nest properly.
-            consistent_spans = self.resolve_overlap_conflicts_greedily(selected_spans)
-
-            spans_to_labels = {(span.start, span.end):
-                               self.vocab.get_token_from_index(span.label_index, "labels")
-                               for span in consistent_spans}
-            sentence_pos = pos_tags[batch_index] if pos_tags is not None else None
-            trees.append(self.construct_tree_from_spans(spans_to_labels, sentence, sentence_pos))
-
+        predictions_np = predictions.cpu().numpy()
+        exclusive_end_spans = exclusive_end_spans.cpu().numpy()
+        for batch_index in range(len(sentences)):
+            span_to_index = {}
+            for span_index in range(num_spans[batch_index]):
+                span = (exclusive_end_spans[batch_index, span_index, 0],
+                        exclusive_end_spans[batch_index, span_index, 1])
+                span_to_index[span] = span_index
+            top_k_trees_and_scores = self.compute_k_best(sentences[batch_index],
+                                                         pos_tags[batch_index],
+                                                         predictions_np[batch_index, :, :],
+                                                         span_to_index,
+                                                         num_trees=16)
+            trees.append([tree for tree, score in top_k_trees_and_scores])
         return trees
 
     def construct_trees(self,

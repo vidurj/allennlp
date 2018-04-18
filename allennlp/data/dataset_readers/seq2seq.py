@@ -12,6 +12,7 @@ from allennlp.data.instance import Instance
 from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 from allennlp.prepare_seq2seq_data import is_strict_num
+from allennlp.data.tokenizers.word_stemmer import PorterStemmer
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -64,6 +65,7 @@ class Seq2SeqDatasetReader(DatasetReader):
         self._source_token_indexers = source_token_indexers or {"tokens": SingleIdTokenIndexer()}
         self._target_token_indexers = target_token_indexers or self._source_token_indexers
         self._source_add_start_token = source_add_start_token
+        self._stemmer = PorterStemmer()
 
     @overrides
     def _read(self, file_path):
@@ -87,18 +89,27 @@ class Seq2SeqDatasetReader(DatasetReader):
                          target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
         tokenized_source = self._source_tokenizer.tokenize(source_string)
+        stem_to_index = {}
+        stemmed_source = []
+        for token in tokenized_source:
+            stemmed_text = self._stemmer.stem_word(token).text
+            if stemmed_text not in stem_to_index:
+                stem_to_index[stemmed_text] = str(len(stem_to_index))
+            stemmed_source.append('stem' + stem_to_index[stemmed_text])
+
         if self._source_add_start_token:
             tokenized_source.insert(0, Token(START_SYMBOL))
         tokenized_source.append(Token(END_SYMBOL))
         source_field = TextField(tokenized_source, self._source_token_indexers)
+        stem_field = TextField(stemmed_source, {"tokens": SingleIdTokenIndexer()})
         if target_string is not None:
             tokenized_target = self._target_tokenizer.tokenize(target_string)
             tokenized_target.insert(0, Token(START_SYMBOL))
             tokenized_target.append(Token(END_SYMBOL))
             target_field = TextField(tokenized_target, self._target_token_indexers)
-            return Instance({"source_tokens": source_field, "target_tokens": target_field})
+            return Instance({"source_tokens": source_field, "stem_tokens": stem_field, "target_tokens": target_field})
         else:
-            return Instance({'source_tokens': source_field})
+            return Instance({'source_tokens': source_field, "stem_tokens": stem_field})
 
     @classmethod
     def from_params(cls, params: Params) -> 'Seq2SeqDatasetReader':

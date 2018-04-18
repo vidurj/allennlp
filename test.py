@@ -57,3 +57,6 @@ ind = torch.FloatTensor([0, 1, 0])
 tensor_1 = torch.FloatTensor([[0, 0, 0], [1, 1, 1], [2, 2, 2]])
 tensor_2 = torch.FloatTensor([0, 1, 0])
 print((A * ind).sum(dim=-1))
+
+
+

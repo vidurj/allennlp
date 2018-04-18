@@ -250,6 +250,7 @@ class SimpleCopy(Model):
     @overrides
     def forward(self,  # type: ignore
                 source_tokens: Dict[str, torch.LongTensor],
+                stem_tokens: Dict[str, torch.LongTensor],
                 target_tokens: Dict[str, torch.LongTensor] = None) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
@@ -263,9 +264,14 @@ class SimpleCopy(Model):
         target_tokens : Dict[str, torch.LongTensor], optional (default = None)
            Output of ``Textfield.as_array()`` applied on target ``TextField``. We assume that the
            target tokens are also represented as a ``TextField``.
+           :param stem_tokens:
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
+        print(source_tokens.keys())
+        print(source_tokens.values())
         embedded_input = self._source_embedder(source_tokens)
+
+        stem_tokens = stem_tokens['tokens']
         batch_size, _, _ = embedded_input.size()
         # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
