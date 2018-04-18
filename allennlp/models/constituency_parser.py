@@ -284,10 +284,8 @@ class SpanConstituencyParser(Model):
         :return: A list of the num_tree parses along with their log probabilities.
         """
         empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
-        span_to_label = {}
-        for span, index in span_to_index.items():
-            index = label_log_probabilities_np[index, 1:].argmax() + 1
-            span_to_label[span] = self.vocab.get_token_from_index(index, "labels")
+        labels = [self.vocab.get_token_from_index(index, "labels") for index in
+                  range(self.vocab.get_vocab_size("labels"))]
 
         if not distinguish_between_labels:
             temp = np.zeros((len(span_to_index), 2))
@@ -308,7 +306,10 @@ class SpanConstituencyParser(Model):
                 return cache[span]
 
             span_index = span_to_index[span]
-            label = list(span_to_label[span])
+            if not distinguish_between_labels:
+                label_index = label_log_probabilities_np[span_index, 1:].argmax() + 1
+                labels = [(), self.vocab.get_token_from_index(label_index, "labels")]
+
             actions = list(enumerate(label_log_probabilities_np[span_index, :]))
             actions.sort(key=lambda x: - x[1])
             actions = actions[:num_trees]
@@ -320,6 +321,7 @@ class SpanConstituencyParser(Model):
                 for label_index, score in actions:
                     tree = Tree(pos_tag, [word])
                     if label_index != empty_label_index:
+                        label = list(labels[label_index])
                         while label:
                             tree = Tree(label.pop(), [tree])
                     options.append(([tree], score))
