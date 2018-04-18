@@ -62,8 +62,8 @@ class CopyTokenIndexer(TokenIndexer[int]):
                 index = is_int(text[3:])
                 if index is not None:
                     assert token not in vocabulary._token_to_index[self.namespace]
-                    print(text, index, vocabulary.get_vocab_size(), index + vocabulary.get_vocab_size())
-                    return index + vocabulary.get_vocab_size()
+                    print(text, index, vocabulary.get_vocab_size(self.namespace), index + vocabulary.get_vocab_size(self.namespace))
+                    return index + vocabulary.get_vocab_size(self.namespace)
             index = vocabulary.get_token_index(text, self.namespace)
         return index
 
