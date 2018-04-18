@@ -33,7 +33,8 @@ Plus   (num, num) : num
 
 
 def batched_index_select(input_tensor, index_tensor):
-    dummy = index_tensor.unsqueeze(1).unsqueeze(2).expand(index_tensor.size(0), 1, input_tensor.size(2))
+    dummy = index_tensor.unsqueeze(1).unsqueeze(2).expand(index_tensor.size(0), 1,
+                                                          input_tensor.size(2))
     out = input_tensor.gather(1, dummy)  # b x e x f
     return out.squeeze(dim=1)
 
@@ -290,6 +291,7 @@ class SimpleCopy(Model):
         # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
+        print(output_embeddings.data.cpu().numpy())
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
             decoder_input = self._prepare_decode_step_input(targets[:, timestep],
@@ -298,14 +300,15 @@ class SimpleCopy(Model):
                                                             encoder_outputs,
                                                             source_mask)
 
-            decoder_hidden, decoder_context = self._decoder_cell(decoder_input, (decoder_hidden, decoder_context))
-            class_probabilities =  self._decoder_attention(decoder_hidden, output_embeddings)
+            decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
+                                                                 (decoder_hidden, decoder_context))
+            class_probabilities = self._decoder_attention(decoder_hidden, output_embeddings)
             output_logits = torch.log(class_probabilities)
-            # print(output_logits.data.cpu().numpy())
+            print(output_logits.data.cpu().numpy())
             step_logits.append(output_logits.unsqueeze(1))
             # F.softmax(output_logits, dim=-1)
-            # print(class_probabilities.data.cpu().numpy())
-            # print('-' * 100)
+            print(class_probabilities.data.cpu().numpy())
+            print('-' * 100)
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
@@ -443,7 +446,8 @@ class SimpleCopy(Model):
             predicted_tokens = []
             for index in indices:
                 if index < self.vocab.get_vocab_size(self._target_namespace):
-                    token = self.vocab.get_token_from_index(index, namespace=self._target_namespace)
+                    token = self.vocab.get_token_from_index(index,
+                                                            namespace=self._target_namespace)
                 else:
                     token = str(index - self.vocab.get_vocab_size(self._target_namespace))
                 predicted_tokens.append(token)
