@@ -251,13 +251,16 @@ class SpanConstituencyParser(Model):
         all_sentences = output_dict["tokens"]
         all_pos_tags = output_dict["pos_tags"] if all(output_dict["pos_tags"]) else None
         num_spans = output_dict["num_spans"].data
-        trees = self.construct_trees(all_predictions, all_spans, num_spans, all_sentences, all_pos_tags)
 
         batch_size = all_predictions.size(0)
         output_dict["spans"] = [all_spans[i, :num_spans[i]] for i in range(batch_size)]
         output_dict["class_probabilities"] = [all_predictions[i, :num_spans[i], :] for i in range(batch_size)]
 
-        output_dict["trees"] = trees
+        output_dict["trees"] = self.construct_trees(all_predictions,
+                                                    all_spans,
+                                                    num_spans,
+                                                    all_sentences,
+                                                    all_pos_tags)
         output_dict['top_k_trees'] = self.construct_topk_trees(all_predictions,
                                                                all_spans,
                                                                num_spans,
