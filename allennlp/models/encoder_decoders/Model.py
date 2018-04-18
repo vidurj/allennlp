@@ -293,6 +293,8 @@ class SimpleCopy(Model):
         # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
         # print(self._output_embeddings.data.cpu().numpy())
         # print(encoder_outputs.data.cpu().numpy())
+        a = self._output_embeddings.data.cpu().numpy()
+        assert not np.any(np.isnan(a)), a
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         a = basic_actions.data.cpu().numpy()
         assert not np.any(np.isnan(a)), a
