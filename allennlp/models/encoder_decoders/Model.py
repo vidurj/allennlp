@@ -271,6 +271,8 @@ class SimpleCopy(Model):
         # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
+        a = encoder_outputs.data.cpu().numpy()
+        assert not np.any(np.isnan(a)), a
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
