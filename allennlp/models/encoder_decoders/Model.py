@@ -317,11 +317,12 @@ class SimpleCopy(Model):
             print('output embeddings shape', decoder_hidden.unsqueeze(1).size())
             print('output embeddings shape', output_embeddings.size())
             output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
+            print(output_logits.data.cpu().numpy())
             print('output logits shape', output_logits.size())
 
             # output_logits (batch size, num actions + num tokens)
             class_probabilities = torch.nn.functional.softmax(output_logits, dim=-1)
-
+            print(class_probabilities.data.cpu().numpy())
             # print(output_logits.data.cpu().numpy())
             step_logits.append(output_logits.unsqueeze(1))
             # F.softmax(output_logits, dim=-1)
