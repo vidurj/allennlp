@@ -114,7 +114,7 @@ class SimpleCopy(Model):
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
         # we're using attention with ``DotProductSimilarity``, this is needed.
         self._decoder_output_dim = self._encoder.get_output_dim()
-        target_embedding_dim = target_embedding_dim or self._source_embedder.get_output_dim()
+        target_embedding_dim = self._source_embedder.get_output_dim()
         if self._attention_function:
             self._decoder_attention = Attention(self._attention_function)
             # The output of attention, a weighted average over encoder outputs, will be
@@ -125,7 +125,7 @@ class SimpleCopy(Model):
         # TODO (pradeep): Do not hardcode decoder cell type.
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
         self._output_embeddings = torch.nn.Parameter(
-            torch.FloatTensor(num_classes, self._decoder_output_dim))
+            torch.FloatTensor(num_classes, target_embedding_dim))
         self._copy_probability = Linear(self._decoder_output_dim, 1)
 
     def beam_search(self,  # type: ignore
@@ -196,6 +196,7 @@ class SimpleCopy(Model):
                     encoder_outputs,
                     source_mask
                 )
+                print(decoder_input.size())
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
                                                                       decoder_context))
@@ -309,8 +310,7 @@ class SimpleCopy(Model):
                                                             encoder_outputs,
                                                             source_mask)
 
-            decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
-                                                                 (decoder_hidden, decoder_context))
+            decoder_hidden, decoder_context = self._decoder_cell(decoder_input, (decoder_hidden, decoder_context))
             output_logits = (decoder_hidden.unsqueeze(1) * output_embeddings).sum(dim=-1)
             step_logits.append(output_logits.unsqueeze(1))
             class_probabilities = F.softmax(output_logits, dim=-1)
