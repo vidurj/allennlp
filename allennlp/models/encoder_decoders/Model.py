@@ -37,7 +37,7 @@ def batched_index_select(input_tensor, index_tensor, dim):
     dummy = index_tensor.unsqueeze(2).expand(index_tensor.size(0), index_tensor.size(1),
                                              input_tensor.size(2))
     out = input_tensor.gather(dim, dummy)  # b x e x f
-    return out
+    return out.squeeze(dim=dim)
 
 
 @Model.register("simple_copy")
