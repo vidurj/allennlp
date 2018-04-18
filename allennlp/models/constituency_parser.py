@@ -313,6 +313,7 @@ class SpanConstituencyParser(Model):
                 label_index = label_probabilities_np[span_index, :].argmax() + 1
                 span_to_label[span] = all_labels[label_index]
 
+            print(span_to_label[(0, len(sentence))], '!!!!!!')
             label_probabilities_np = temp
             empty_label_index = 0
 
