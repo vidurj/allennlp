@@ -1,0 +1,1000 @@
+Tom has 500 slave , 700 mother . How many mother does he have ?	num5
+Tom has 200 lunchroom , 100 tub . How many lunchroom does he have ?	num2
+Tom has 100 ladybug , 600 toes , 700 garden , 300 approval . How many ladybug does he have ?	num2
+Tom has 500 whistle , 600 cream , 400 key . How many key does he have ?	num8
+Tom has 100 cable , 200 square . How many cable does he have ?	num2
+Tom has 200 size , 400 rabbit , 600 school , 900 owner . How many size does he have ?	num2
+Tom has 100 porter , 900 fact , 600 stick , 500 dinosaurs , 700 parcel . How many stick does he have ?	num8
+Tom has 500 patch , 800 trucks , 700 sail , 300 crime , 900 roll . How many sail does he have ?	num8
+Tom has 900 pump , 400 cloth , 800 wash , 500 snail , 200 control . How many wash does he have ?	num8
+Tom has 100 cent , 800 tongue , 500 stage , 400 substance . How many stage does he have ?	num8
+Tom has 700 skirt , 100 direction , 800 respect . How many respect does he have ?	num8
+Tom has 200 boat , 800 mouth , 700 pail . How many boat does he have ?	num2
+Tom has 400 canvas , 800 tray , 700 impulse , 900 end , 600 cause . How many tray does he have ?	num5
+Tom has 700 hot , 400 mask , 300 believe . How many mask does he have ?	num5
+Tom has 200 dress , 800 crayon , 900 thread , 500 swim . How many thread does he have ?	num8
+Tom has 200 dust , 700 baby , 800 camp , 900 books . How many books does he have ?	num11
+Tom has 600 effect , 700 winter , 500 structure , 900 coat . How many effect does he have ?	num2
+Tom has 400 friction , 100 boys , 700 quill . How many friction does he have ?	num2
+Tom has 900 songs , 800 bread , 200 error , 300 milk . How many milk does he have ?	num11
+Tom has 400 hook , 300 side . How many hook does he have ?	num2
+Tom has 100 school , 500 father , 800 sidewalk , 900 icicle . How many school does he have ?	num2
+Tom has 200 attempt , 800 eggs , 500 journey . How many attempt does he have ?	num2
+Tom has 500 bait , 900 fiction . How many fiction does he have ?	num5
+Tom has 900 tank , 800 curtain . How many tank does he have ?	num2
+Tom has 100 person , 600 bell , 800 mitten , 500 food . How many person does he have ?	num2
+Tom has 500 aftermath , 300 balloon , 100 cherries . How many cherries does he have ?	num8
+Tom has 800 alarm , 700 produce , 300 digestion . How many alarm does he have ?	num2
+Tom has 900 police , 500 animal , 600 queen , 200 veil , 300 achiever . How many achiever does he have ?	num14
+Tom has 500 operation , 600 face . How many face does he have ?	num5
+Tom has 300 rose , 500 owl , 600 beds , 200 eyes . How many rose does he have ?	num2
+Tom has 600 wool , 200 chess , 800 rabbits , 400 company , 300 fifth . How many company does he have ?	num11
+Tom has 600 hands , 400 cream . How many cream does he have ?	num5
+Tom has 500 fowl , 100 authority , 300 worm . How many fowl does he have ?	num2
+Tom has 400 snake , 200 station , 100 jeans . How many station does he have ?	num5
+Tom has 500 trees , 100 fog , 400 horse . How many horse does he have ?	num8
+Tom has 100 eggs , 800 airplane , 200 calculator , 500 cave . How many calculator does he have ?	num8
+Tom has 700 interest , 300 fairies , 900 chain . How many fairies does he have ?	num5
+Tom has 700 feeling , 200 support , 600 chance . How many chance does he have ?	num8
+Tom has 600 decision , 900 suggestion , 100 ship . How many decision does he have ?	num2
+Tom has 900 pollution , 700 celery . How many celery does he have ?	num5
+Tom has 600 earthquake , 800 account , 200 north , 700 apple , 100 hill . How many account does he have ?	num5
+Tom has 800 minute , 400 girl . How many minute does he have ?	num2
+Tom has 600 man , 700 earth , 400 insect , 800 balls , 300 writer . How many balls does he have ?	num11
+Tom has 600 sheet , 100 paint . How many paint does he have ?	num5
+Tom has 400 trousers , 800 anger . How many trousers does he have ?	num2
+Tom has 500 vacation , 100 number . How many vacation does he have ?	num2
+Tom has 400 oven , 500 treatment , 200 skirt , 100 top . How many oven does he have ?	num2
+Tom has 800 structure , 600 father , 100 furniture , 700 debt . How many furniture does he have ?	num8
+Tom has 500 celery , 700 loss , 300 request , 100 theory . How many loss does he have ?	num5
+Tom has 400 bead , 100 fireman , 900 ant . How many ant does he have ?	num8
+Tom has 100 creator , 200 coach , 800 hope . How many coach does he have ?	num5
+Tom has 300 machine , 400 winter , 500 nerve , 900 cabbage . How many nerve does he have ?	num8
+Tom has 300 middle , 700 view , 600 destruction , 100 store , 900 field . How many destruction does he have ?	num8
+Tom has 300 curtain , 600 tongue , 400 room , 800 run . How many room does he have ?	num8
+Tom has 900 rings , 400 fold , 600 quilt , 800 tent . How many tent does he have ?	num11
+Tom has 900 jelly , 600 partner , 400 chalk , 100 idea . How many idea does he have ?	num11
+Tom has 700 beast , 500 baseball , 100 exchange . How many baseball does he have ?	num5
+Tom has 200 feather , 300 laugh . How many feather does he have ?	num2
+Tom has 600 question , 700 cushion , 100 statement , 400 deer , 300 trail . How many question does he have ?	num2
+Tom has 500 use , 900 collar , 200 curve , 400 pear , 600 owner . How many use does he have ?	num2
+Tom has 500 laugh , 700 company , 200 ink . How many company does he have ?	num5
+Tom has 300 kite , 400 pipe , 100 swim , 800 frogs , 200 fall . How many swim does he have ?	num8
+Tom has 600 balance , 900 word , 100 range . How many word does he have ?	num5
+Tom has 500 finger , 900 teeth . How many teeth does he have ?	num5
+Tom has 500 writer , 400 play , 100 wine . How many play does he have ?	num5
+Tom has 600 committee , 500 picture . How many picture does he have ?	num5
+Tom has 200 event , 500 box , 800 cherries . How many event does he have ?	num2
+Tom has 700 downtown , 100 name , 800 spark . How many name does he have ?	num5
+Tom has 700 distribution , 300 measure . How many distribution does he have ?	num2
+Tom has 800 polish , 500 stitch . How many stitch does he have ?	num5
+Tom has 900 plantation , 700 machine , 400 stem , 600 cave . How many machine does he have ?	num5
+Tom has 200 tank , 300 lunchroom , 400 playground . How many playground does he have ?	num8
+Tom has 400 religion , 800 shape . How many shape does he have ?	num5
+Tom has 700 grain , 100 knee , 300 pan , 400 cushion . How many knee does he have ?	num5
+Tom has 500 quiet , 900 cherry . How many cherry does he have ?	num5
+Tom has 900 page , 600 company , 300 giraffe , 100 sofa . How many giraffe does he have ?	num8
+Tom has 300 gate , 400 sidewalk , 700 desk . How many desk does he have ?	num8
+Tom has 200 trees , 300 beetle . How many trees does he have ?	num2
+Tom has 800 peace , 300 wealth , 700 balls , 600 note , 200 boat . How many wealth does he have ?	num5
+Tom has 900 place , 300 bomb , 200 horse , 500 hospital . How many hospital does he have ?	num11
+Tom has 800 dock , 200 beginner , 900 road , 100 control . How many beginner does he have ?	num5
+Tom has 400 can , 800 cobweb , 500 shame . How many cobweb does he have ?	num5
+Tom has 300 selection , 400 earthquake , 500 elbow , 900 lamp , 100 silver . How many selection does he have ?	num2
+Tom has 400 love , 200 brake . How many love does he have ?	num2
+Tom has 900 game , 200 pie , 800 gold . How many game does he have ?	num2
+Tom has 600 plant , 800 feather . How many feather does he have ?	num5
+Tom has 500 leather , 400 servant , 300 locket , 100 event , 800 dirt . How many locket does he have ?	num8
+Tom has 600 fifth , 500 blood , 800 mailbox , 900 verse . How many mailbox does he have ?	num8
+Tom has 900 steam , 700 debt , 800 seashore , 300 attraction , 600 door . How many steam does he have ?	num2
+Tom has 700 friction , 400 banana , 800 tooth , 600 board , 900 idea . How many idea does he have ?	num14
+Tom has 300 stew , 500 base . How many stew does he have ?	num2
+Tom has 100 island , 500 lamp , 700 snow , 200 acoustics . How many acoustics does he have ?	num11
+Tom has 600 boy , 500 robin , 100 kitty , 200 actor , 300 summer . How many boy does he have ?	num2
+Tom has 500 attraction , 900 rate , 100 word , 400 playground , 800 comparison . How many comparison does he have ?	num14
+Tom has 400 memory , 500 sun , 600 pest , 700 giants , 800 burn . How many pest does he have ?	num8
+Tom has 800 push , 100 middle , 500 note , 900 quicksand , 400 show . How many note does he have ?	num8
+Tom has 700 salt , 100 blow , 400 pin . How many pin does he have ?	num8
+Tom has 500 road , 100 school , 200 milk , 600 story . How many story does he have ?	num11
+Tom has 900 good-bye , 100 friction , 700 umbrella , 600 industry , 500 trains . How many friction does he have ?	num5
+Tom has 700 mom , 400 veil , 200 insurance , 100 argument , 600 regret . How many veil does he have ?	num5
+Tom has 400 hot , 600 lunch , 200 flame . How many flame does he have ?	num8
+Tom has 100 value , 900 cobweb , 400 scarf , 500 care , 600 songs . How many songs does he have ?	num14
+Tom has 100 support , 400 vase . How many support does he have ?	num2
+Tom has 500 space , 100 crib , 300 protest , 400 plastic , 600 substance . How many crib does he have ?	num5
+Tom has 900 body , 700 sand , 800 iron , 600 vase , 400 slave . How many iron does he have ?	num8
+Tom has 100 partner , 200 jelly , 800 rhythm , 900 downtown , 600 place . How many place does he have ?	num14
+Tom has 300 cake , 100 north , 400 sail . How many north does he have ?	num5
+Tom has 400 quince , 500 history , 700 brake , 800 mountain . How many history does he have ?	num5
+Tom has 800 front , 600 balance , 300 winter . How many winter does he have ?	num8
+Tom has 900 pancake , 200 paint , 600 poison . How many pancake does he have ?	num2
+Tom has 400 nose , 900 plane . How many plane does he have ?	num5
+Tom has 200 parent , 300 chair . How many parent does he have ?	num2
+Tom has 200 protest , 300 baseball . How many baseball does he have ?	num5
+Tom has 400 humor , 300 blood . How many humor does he have ?	num2
+Tom has 500 grade , 700 chair , 600 cast . How many chair does he have ?	num5
+Tom has 300 rest , 700 quiver , 100 point , 600 waves . How many rest does he have ?	num2
+Tom has 800 act , 600 parent , 700 rub , 400 lip . How many lip does he have ?	num11
+Tom has 200 spoon , 100 bath , 700 trees , 600 recess . How many spoon does he have ?	num2
+Tom has 900 fact , 800 honey . How many fact does he have ?	num2
+Tom has 900 aunt , 800 insect , 300 quill , 500 attention . How many attention does he have ?	num11
+Tom has 100 space , 200 furniture , 700 belief . How many furniture does he have ?	num5
+Tom has 500 haircut , 200 swing . How many swing does he have ?	num5
+Tom has 300 society , 400 friend , 100 company , 900 fish . How many fish does he have ?	num11
+Tom has 100 letters , 400 arch , 800 chalk , 500 verse . How many verse does he have ?	num11
+Tom has 700 reason , 600 edge , 300 birds . How many birds does he have ?	num8
+Tom has 500 ring , 200 wish , 100 knee . How many knee does he have ?	num8
+Tom has 300 cake , 800 waves , 500 nose , 200 toothbrush . How many nose does he have ?	num8
+Tom has 300 circle , 500 chess , 700 badge , 100 ghost . How many circle does he have ?	num2
+Tom has 100 band , 500 brush , 200 plantation , 800 crack , 700 fact . How many crack does he have ?	num11
+Tom has 300 achiever , 400 pocket , 900 boys , 800 detail . How many pocket does he have ?	num5
+Tom has 500 parent , 200 cemetery , 900 yak . How many cemetery does he have ?	num5
+Tom has 100 chain , 200 selection . How many selection does he have ?	num5
+Tom has 600 bag , 800 run . How many bag does he have ?	num2
+Tom has 300 knee , 400 balls , 200 fish , 600 time . How many knee does he have ?	num2
+Tom has 100 army , 300 thumb , 700 sack , 600 stamp . How many stamp does he have ?	num11
+Tom has 600 bells , 400 tomatoes . How many bells does he have ?	num2
+Tom has 100 machine , 800 jelly , 400 wire , 300 underwear , 200 beef . How many machine does he have ?	num2
+Tom has 900 account , 600 sink , 300 eyes , 500 substance . How many sink does he have ?	num5
+Tom has 900 agreement , 600 kitten , 700 route , 400 peace , 300 chess . How many agreement does he have ?	num2
+Tom has 400 woman , 700 parent , 100 birthday , 200 wilderness , 500 clock . How many birthday does he have ?	num8
+Tom has 100 machine , 700 grade , 500 scissors , 200 paste . How many machine does he have ?	num2
+Tom has 900 request , 200 example , 300 slip , 700 route . How many example does he have ?	num5
+Tom has 400 sort , 300 box , 700 edge , 800 trees , 100 fruit . How many box does he have ?	num5
+Tom has 300 chance , 100 basket , 900 knee . How many chance does he have ?	num2
+Tom has 600 knee , 400 scale , 800 holiday , 200 lunchroom , 500 language . How many language does he have ?	num14
+Tom has 400 stocking , 800 plate , 700 teaching . How many plate does he have ?	num5
+Tom has 400 stocking , 700 caption , 600 page . How many caption does he have ?	num5
+Tom has 900 flame , 200 crayon . How many crayon does he have ?	num5
+Tom has 200 frogs , 600 wing . How many wing does he have ?	num5
+Tom has 100 book , 700 map , 600 wine , 300 apparatus , 500 bottle . How many bottle does he have ?	num14
+Tom has 300 joke , 800 governor , 500 paste , 600 pull . How many pull does he have ?	num11
+Tom has 400 record , 800 stomach , 300 effect . How many record does he have ?	num2
+Tom has 100 sense , 600 operation , 800 afterthought , 200 beast , 400 ink . How many afterthought does he have ?	num8
+Tom has 100 patch , 200 connection , 300 control , 800 brass . How many brass does he have ?	num11
+Tom has 400 town , 500 development , 800 ducks . How many ducks does he have ?	num8
+Tom has 100 agreement , 200 power . How many agreement does he have ?	num2
+Tom has 800 coal , 900 park , 300 rifle , 400 soup , 600 plane . How many rifle does he have ?	num8
+Tom has 500 design , 700 sand , 100 spring , 600 pin , 900 rub . How many rub does he have ?	num14
+Tom has 400 breakfast , 900 frame , 600 eggs , 100 rifle , 300 pollution . How many pollution does he have ?	num14
+Tom has 200 chicken , 400 jam , 900 pie , 600 star . How many chicken does he have ?	num2
+Tom has 100 fall , 900 pollution . How many pollution does he have ?	num5
+Tom has 300 finger , 100 farm , 500 balance . How many farm does he have ?	num5
+Tom has 300 dog , 800 picture , 900 arm . How many picture does he have ?	num5
+Tom has 500 porter , 400 stitch , 100 board , 700 opinion . How many opinion does he have ?	num11
+Tom has 900 building , 100 sort , 400 air . How many sort does he have ?	num5
+Tom has 500 scissors , 700 order , 100 airport , 200 look . How many airport does he have ?	num8
+Tom has 900 doll , 400 neck . How many neck does he have ?	num5
+Tom has 900 desk , 700 scissors . How many scissors does he have ?	num5
+Tom has 300 bit , 100 basket , 900 afternoon , 500 patch , 200 knowledge . How many knowledge does he have ?	num14
+Tom has 300 land , 100 destruction , 700 regret , 400 sleet , 800 guitar . How many guitar does he have ?	num14
+Tom has 200 quill , 700 jelly , 100 shade , 500 riddle . How many jelly does he have ?	num5
+Tom has 600 church , 700 muscle , 400 dirt . How many church does he have ?	num2
+Tom has 100 decision , 700 sign , 200 shelf , 600 rest , 300 heat . How many rest does he have ?	num11
+Tom has 400 mass , 100 test . How many test does he have ?	num5
+Tom has 100 bun , 900 fruit , 800 join , 700 vacation , 300 cars . How many fruit does he have ?	num5
+Tom has 900 swim , 300 blood . How many swim does he have ?	num2
+Tom has 100 vein , 300 tongue , 500 glass . How many glass does he have ?	num8
+Tom has 400 birth , 100 crack , 600 note , 200 planes . How many birth does he have ?	num2
+Tom has 800 coil , 400 badge , 600 guitar . How many badge does he have ?	num5
+Tom has 200 taste , 800 force , 500 hour , 100 page , 400 fowl . How many page does he have ?	num11
+Tom has 300 lamp , 100 ants , 600 clouds , 800 believe . How many ants does he have ?	num5
+Tom has 200 fireman , 900 air , 300 notebook , 600 canvas , 500 rainstorm . How many canvas does he have ?	num11
+Tom has 300 door , 600 kittens , 800 plantation , 500 produce , 200 step . How many step does he have ?	num14
+Tom has 300 wine , 500 quill , 800 desk , 200 plants . How many quill does he have ?	num5
+Tom has 600 day , 400 grain , 300 face . How many day does he have ?	num2
+Tom has 300 crown , 200 advertisement , 500 cattle , 600 bears . How many bears does he have ?	num11
+Tom has 500 kittens , 100 knot , 900 income , 200 treatment . How many income does he have ?	num8
+Tom has 800 pig , 300 pin , 500 scent , 400 drain , 600 distance . How many pin does he have ?	num5
+Tom has 200 head , 600 show . How many show does he have ?	num5
+Tom has 500 beast , 700 act . How many beast does he have ?	num2
+Tom has 400 lumber , 900 oatmeal , 700 sheet , 600 cable . How many cable does he have ?	num11
+Tom has 200 pencil , 300 police , 900 walk , 700 ants . How many police does he have ?	num5
+Tom has 100 doll , 600 trade . How many doll does he have ?	num2
+Tom has 800 stocking , 900 account , 400 order , 700 dog . How many stocking does he have ?	num2
+Tom has 100 addition , 800 flag , 700 boot , 400 trains . How many addition does he have ?	num2
+Tom has 200 fog , 300 country . How many country does he have ?	num5
+Tom has 100 anger , 800 chain , 200 robin , 400 celery . How many celery does he have ?	num11
+Tom has 300 power , 100 hour , 800 wish , 400 drop , 200 wealth . How many wealth does he have ?	num14
+Tom has 900 seed , 700 relation , 800 tramp , 500 trail . How many tramp does he have ?	num8
+Tom has 500 maid , 300 harbor , 800 feather , 200 oatmeal , 100 fan . How many feather does he have ?	num8
+Tom has 100 paste , 600 bone , 300 border . How many border does he have ?	num8
+Tom has 900 rub , 700 oil , 600 holiday . How many holiday does he have ?	num8
+Tom has 100 learning , 700 spoon , 300 rabbit . How many spoon does he have ?	num5
+Tom has 600 voyage , 500 quill . How many quill does he have ?	num5
+Tom has 100 join , 600 copper . How many copper does he have ?	num5
+Tom has 300 pump , 700 man . How many pump does he have ?	num2
+Tom has 900 sense , 700 air , 500 team , 600 time , 300 cannon . How many air does he have ?	num5
+Tom has 100 silver , 500 engine , 600 cent , 900 eyes , 400 dock . How many cent does he have ?	num8
+Tom has 400 lettuce , 300 owner , 900 tramp , 700 honey . How many owner does he have ?	num5
+Tom has 900 drink , 800 fear , 700 fire , 200 arm , 300 action . How many fire does he have ?	num8
+Tom has 100 expert , 900 stranger , 400 partner , 200 door , 700 icicle . How many icicle does he have ?	num14
+Tom has 100 cows , 900 border , 400 system , 200 cactus , 800 experience . How many system does he have ?	num8
+Tom has 500 afternoon , 100 boys , 800 argument , 200 side . How many boys does he have ?	num5
+Tom has 100 battle , 400 cobweb , 900 verse . How many battle does he have ?	num2
+Tom has 100 quicksand , 700 reading . How many quicksand does he have ?	num2
+Tom has 800 board , 400 color . How many color does he have ?	num5
+Tom has 200 drop , 600 beds , 400 prose . How many beds does he have ?	num5
+Tom has 600 pipe , 300 field , 800 turn , 500 cherry , 200 nut . How many turn does he have ?	num8
+Tom has 100 snake , 500 bridge , 900 home , 700 creature , 200 judge . How many creature does he have ?	num11
+Tom has 200 attention , 700 profit , 600 band , 800 coat , 500 stitch . How many profit does he have ?	num5
+Tom has 700 drain , 100 glue . How many drain does he have ?	num2
+Tom has 100 cat , 600 wheel , 200 pen , 500 apple , 300 addition . How many wheel does he have ?	num5
+Tom has 100 stomach , 200 band , 600 metal . How many stomach does he have ?	num2
+Tom has 400 time , 800 throat , 100 gun , 200 feeling . How many throat does he have ?	num5
+Tom has 800 owl , 100 bucket , 600 monkey , 700 throat , 900 knowledge . How many owl does he have ?	num2
+Tom has 500 steam , 200 teaching , 400 dirt , 700 side , 900 babies . How many babies does he have ?	num14
+Tom has 200 loss , 700 eye , 100 spring , 400 slave . How many eye does he have ?	num5
+Tom has 800 beef , 500 reading , 300 stitch , 700 pail , 400 summer . How many stitch does he have ?	num8
+Tom has 900 substance , 300 weather , 200 iron , 600 plantation , 700 rod . How many iron does he have ?	num8
+Tom has 300 gate , 400 country , 500 smile . How many gate does he have ?	num2
+Tom has 400 word , 600 order , 800 furniture , 700 toy , 500 fuel . How many furniture does he have ?	num8
+Tom has 400 waste , 900 page , 500 cover . How many page does he have ?	num5
+Tom has 600 railway , 100 cows . How many cows does he have ?	num5
+Tom has 900 person , 300 fact , 600 existence . How many existence does he have ?	num8
+Tom has 100 rule , 200 maid , 700 nut , 300 frog , 500 end . How many maid does he have ?	num5
+Tom has 200 stocking , 900 hospital , 700 window , 300 sleet . How many stocking does he have ?	num2
+Tom has 200 process , 900 boys , 100 shop , 800 servant , 600 fall . How many fall does he have ?	num14
+Tom has 200 sponge , 300 reaction , 500 island , 100 straw , 400 invention . How many sponge does he have ?	num2
+Tom has 300 tramp , 100 power , 400 icicle , 900 market . How many power does he have ?	num5
+Tom has 800 banana , 400 rake . How many banana does he have ?	num2
+Tom has 500 hair , 100 pizzas , 600 fireman . How many pizzas does he have ?	num5
+Tom has 500 scissors , 400 bath . How many scissors does he have ?	num2
+Tom has 800 boy , 300 meeting . How many boy does he have ?	num2
+Tom has 800 chain , 600 brake . How many chain does he have ?	num2
+Tom has 400 representative , 900 pickle , 800 sink , 600 boats , 300 hearing . How many representative does he have ?	num2
+Tom has 500 star , 700 sticks , 100 party , 400 bee , 900 show . How many sticks does he have ?	num5
+Tom has 900 nut , 400 steel . How many steel does he have ?	num5
+Tom has 300 action , 700 celery , 400 dinner , 200 mass . How many mass does he have ?	num11
+Tom has 400 skirt , 900 driving , 800 bag , 600 operation . How many skirt does he have ?	num2
+Tom has 600 wash , 300 fold , 200 plot , 100 use . How many fold does he have ?	num5
+Tom has 500 downtown , 600 chance , 800 country , 900 produce , 300 shade . How many shade does he have ?	num14
+Tom has 100 sense , 600 alarm , 500 brass , 800 trouble , 300 use . How many sense does he have ?	num2
+Tom has 200 match , 800 bears . How many match does he have ?	num2
+Tom has 900 death , 500 experience . How many experience does he have ?	num5
+Tom has 400 cellar , 100 jelly , 700 elbow . How many jelly does he have ?	num5
+Tom has 300 geese , 900 field , 600 monkey , 500 popcorn . How many field does he have ?	num5
+Tom has 300 territory , 800 crowd , 500 trucks . How many crowd does he have ?	num5
+Tom has 600 pen , 200 party . How many party does he have ?	num5
+Tom has 800 quiver , 200 goat , 500 card , 600 drain . How many card does he have ?	num8
+Tom has 500 cherries , 600 ducks , 300 paint , 800 desk . How many desk does he have ?	num11
+Tom has 400 decision , 600 drop . How many drop does he have ?	num5
+Tom has 700 room , 600 day , 300 carpenter , 800 shirt . How many carpenter does he have ?	num8
+Tom has 800 fuel , 500 regret , 600 shake , 300 detail . How many shake does he have ?	num8
+Tom has 500 rainstorm , 700 holiday , 400 plate , 600 crayon , 200 aftermath . How many holiday does he have ?	num5
+Tom has 200 lamp , 400 meal , 600 drawer . How many meal does he have ?	num5
+Tom has 200 kitty , 500 vegetable , 800 respect . How many kitty does he have ?	num2
+Tom has 100 earthquake , 400 seed , 300 throat . How many throat does he have ?	num8
+Tom has 300 string , 700 underwear , 400 prison , 600 stretch , 500 baseball . How many string does he have ?	num2
+Tom has 700 beef , 400 unit , 800 pickle , 900 money , 200 produce . How many money does he have ?	num11
+Tom has 600 store , 500 bit , 300 beam , 100 bag , 900 baby . How many store does he have ?	num2
+Tom has 600 insect , 800 control . How many control does he have ?	num5
+Tom has 100 beds , 700 hour , 400 burst , 600 passenger . How many hour does he have ?	num5
+Tom has 100 pest , 200 rice . How many pest does he have ?	num2
+Tom has 500 bucket , 200 language , 100 summer . How many bucket does he have ?	num2
+Tom has 100 punishment , 800 soap , 600 pen , 400 sticks . How many punishment does he have ?	num2
+Tom has 200 noise , 400 basin . How many noise does he have ?	num2
+Tom has 600 support , 700 hammer , 500 eye , 400 hot , 800 basketball . How many hot does he have ?	num11
+Tom has 500 shelf , 100 spot . How many shelf does he have ?	num2
+Tom has 700 produce , 400 engine , 800 basketball , 500 passenger , 600 structure . How many produce does he have ?	num2
+Tom has 300 chalk , 800 winter . How many winter does he have ?	num5
+Tom has 300 daughter , 400 cry , 700 distance , 500 action . How many cry does he have ?	num5
+Tom has 500 bell , 900 discovery , 700 elbow , 300 table . How many table does he have ?	num11
+Tom has 600 downtown , 900 cloud , 800 baseball . How many downtown does he have ?	num2
+Tom has 200 car , 100 snow , 600 quarter , 800 trick , 900 structure . How many quarter does he have ?	num8
+Tom has 900 bells , 500 pail . How many pail does he have ?	num5
+Tom has 900 tooth , 800 tramp , 700 bait . How many bait does he have ?	num8
+Tom has 200 songs , 400 horn . How many songs does he have ?	num2
+Tom has 400 linen , 700 jail . How many jail does he have ?	num5
+Tom has 600 day , 300 condition . How many day does he have ?	num2
+Tom has 600 finger , 300 rain . How many finger does he have ?	num2
+Tom has 600 pump , 800 picture , 300 eyes , 500 believe . How many pump does he have ?	num2
+Tom has 700 aunt , 200 airplane , 500 metal . How many aunt does he have ?	num2
+Tom has 400 motion , 900 glove , 500 flag , 700 debt . How many flag does he have ?	num8
+Tom has 100 vase , 700 song , 500 pencil , 800 silver . How many vase does he have ?	num2
+Tom has 500 brush , 400 group . How many brush does he have ?	num2
+Tom has 600 operation , 400 apparel . How many operation does he have ?	num2
+Tom has 400 tramp , 100 summer . How many tramp does he have ?	num2
+Tom has 100 blow , 800 hose . How many hose does he have ?	num5
+Tom has 700 paint , 400 lock , 200 scene , 100 ghost . How many paint does he have ?	num2
+Tom has 500 foot , 400 meal , 900 attack , 100 achiever . How many meal does he have ?	num5
+Tom has 200 sister , 300 earth , 100 observation , 900 tray . How many tray does he have ?	num11
+Tom has 300 cave , 500 control , 400 mailbox , 900 play . How many cave does he have ?	num2
+Tom has 100 beds , 500 jar . How many jar does he have ?	num5
+Tom has 100 activity , 500 beginner , 800 birds , 600 baby , 900 heat . How many baby does he have ?	num11
+Tom has 100 parent , 700 body , 600 cows . How many body does he have ?	num5
+Tom has 500 quicksand , 100 tail , 900 hate , 200 lamp . How many tail does he have ?	num5
+Tom has 200 dogs , 700 thrill , 400 transport . How many dogs does he have ?	num2
+Tom has 900 brothers , 300 view . How many brothers does he have ?	num2
+Tom has 600 plot , 300 copy . How many copy does he have ?	num5
+Tom has 400 knife , 800 floor , 900 stem , 500 talk . How many stem does he have ?	num8
+Tom has 200 play , 700 boats , 500 sea , 100 tendency , 900 snail . How many tendency does he have ?	num11
+Tom has 600 sleet , 800 distance , 900 water , 700 fairies . How many water does he have ?	num8
+Tom has 600 story , 400 instrument , 500 alley , 800 police . How many instrument does he have ?	num5
+Tom has 500 slip , 900 ocean , 800 quarter , 400 scent , 200 reason . How many slip does he have ?	num2
+Tom has 100 leather , 200 nest , 300 silver , 900 distribution , 500 spoon . How many leather does he have ?	num2
+Tom has 800 ball , 900 bee , 600 lake , 200 can . How many lake does he have ?	num8
+Tom has 200 process , 500 tiger . How many process does he have ?	num2
+Tom has 300 front , 700 comb , 100 twist , 200 island . How many comb does he have ?	num5
+Tom has 700 rainstorm , 800 eggnog , 500 help , 300 hobbies . How many help does he have ?	num8
+Tom has 200 field , 300 juice , 500 rose . How many rose does he have ?	num8
+Tom has 900 lead , 700 substance , 300 daughter , 800 touch , 200 tub . How many touch does he have ?	num11
+Tom has 200 banana , 700 burst , 900 mine , 400 impulse . How many burst does he have ?	num5
+Tom has 200 teeth , 900 bridge . How many teeth does he have ?	num2
+Tom has 600 can , 900 secretary , 500 income , 200 cart , 100 lizards . How many secretary does he have ?	num5
+Tom has 200 grade , 100 month , 900 anger , 300 governor , 700 touch . How many governor does he have ?	num11
+Tom has 500 train , 700 print , 900 lunchroom , 200 amount , 600 pan . How many lunchroom does he have ?	num8
+Tom has 300 beast , 100 weather , 700 hospital . How many beast does he have ?	num2
+Tom has 600 cellar , 300 level , 900 belief , 800 wrist . How many wrist does he have ?	num11
+Tom has 400 floor , 800 toothbrush , 100 grass . How many floor does he have ?	num2
+Tom has 300 side , 100 test , 700 mom , 200 anger . How many mom does he have ?	num8
+Tom has 200 haircut , 300 shade , 600 crack , 800 touch , 400 apparatus . How many shade does he have ?	num5
+Tom has 300 industry , 800 light , 100 flower , 200 cough , 600 committee . How many cough does he have ?	num11
+Tom has 200 love , 800 faucet . How many faucet does he have ?	num5
+Tom has 600 experience , 800 secretary . How many secretary does he have ?	num5
+Tom has 600 bone , 800 potato , 100 cabbage . How many bone does he have ?	num2
+Tom has 500 scent , 300 gun , 800 flowers , 400 bells . How many bells does he have ?	num11
+Tom has 400 self , 200 veil , 800 neck , 300 lock . How many lock does he have ?	num11
+Tom has 300 face , 600 condition . How many condition does he have ?	num5
+Tom has 700 name , 400 eggnog . How many eggnog does he have ?	num5
+Tom has 300 pin , 500 feeling , 700 fuel , 600 science , 200 alarm . How many pin does he have ?	num2
+Tom has 700 dolls , 300 attack , 200 jellyfish , 100 relation , 600 vessel . How many vessel does he have ?	num14
+Tom has 600 meal , 500 paste , 400 shop , 700 self . How many meal does he have ?	num2
+Tom has 700 clouds , 900 pot , 300 wilderness , 800 development . How many clouds does he have ?	num2
+Tom has 900 cracker , 400 smash . How many cracker does he have ?	num2
+Tom has 400 map , 900 room , 600 plough , 300 winter . How many room does he have ?	num5
+Tom has 600 school , 700 advice , 300 dock , 200 van , 900 horn . How many advice does he have ?	num5
+Tom has 100 fact , 800 umbrella . How many fact does he have ?	num2
+Tom has 900 bikes , 100 burn , 500 sticks . How many sticks does he have ?	num8
+Tom has 600 flock , 300 police . How many flock does he have ?	num2
+Tom has 100 size , 700 engine , 200 alarm , 800 month . How many engine does he have ?	num5
+Tom has 900 street , 300 way , 500 legs , 200 neck , 700 thread . How many thread does he have ?	num14
+Tom has 700 trade , 600 furniture , 800 walk . How many trade does he have ?	num2
+Tom has 600 plantation , 300 tendency , 500 fall , 800 passenger , 200 earthquake . How many fall does he have ?	num8
+Tom has 500 run , 400 milk , 700 record . How many record does he have ?	num8
+Tom has 500 bait , 700 church . How many church does he have ?	num5
+Tom has 300 peace , 100 sun , 200 badge , 900 behavior , 800 pie . How many sun does he have ?	num5
+Tom has 900 sofa , 100 rate , 500 time , 300 anger , 700 calculator . How many calculator does he have ?	num14
+Tom has 800 business , 900 company , 300 creator , 400 spade . How many company does he have ?	num5
+Tom has 800 quill , 200 brush , 500 learning , 300 curtain , 900 pets . How many learning does he have ?	num8
+Tom has 300 cork , 900 pest , 200 dogs . How many cork does he have ?	num2
+Tom has 900 line , 200 rate , 400 whistle . How many whistle does he have ?	num8
+Tom has 100 plants , 400 leaf , 700 book . How many book does he have ?	num8
+Tom has 300 songs , 800 brush , 400 bear , 100 back . How many songs does he have ?	num2
+Tom has 300 watch , 400 man . How many watch does he have ?	num2
+Tom has 300 rat , 200 vein . How many vein does he have ?	num5
+Tom has 600 bag , 300 quarter . How many bag does he have ?	num2
+Tom has 100 throne , 700 ducks , 800 burn , 500 leg . How many leg does he have ?	num11
+Tom has 600 camera , 800 tax , 500 beam , 200 respect , 900 door . How many tax does he have ?	num5
+Tom has 500 duck , 600 country , 300 believe . How many believe does he have ?	num8
+Tom has 600 lift , 500 committee . How many lift does he have ?	num2
+Tom has 400 neck , 800 oatmeal , 900 cow . How many neck does he have ?	num2
+Tom has 200 leather , 400 company , 500 discussion . How many leather does he have ?	num2
+Tom has 900 number , 100 decision , 200 chance , 600 touch . How many decision does he have ?	num5
+Tom has 800 card , 600 feet , 900 heart . How many heart does he have ?	num8
+Tom has 400 wrist , 700 brick . How many wrist does he have ?	num2
+Tom has 800 oatmeal , 300 passenger , 500 comparison . How many comparison does he have ?	num8
+Tom has 500 haircut , 700 home . How many haircut does he have ?	num2
+Tom has 900 tub , 400 key , 800 bucket , 300 gate , 500 steel . How many key does he have ?	num5
+Tom has 400 space , 300 quince . How many quince does he have ?	num5
+Tom has 200 hair , 800 carpenter . How many hair does he have ?	num2
+Tom has 500 mouth , 400 disgust , 700 dog . How many mouth does he have ?	num2
+Tom has 200 existence , 400 sweater , 700 achiever , 300 care , 900 pin . How many sweater does he have ?	num5
+Tom has 500 produce , 400 bottle , 100 airplane . How many bottle does he have ?	num5
+Tom has 400 hearing , 900 noise . How many hearing does he have ?	num2
+Tom has 800 jeans , 700 balance , 400 dirt , 600 wash . How many wash does he have ?	num11
+Tom has 700 bee , 300 church , 100 club , 400 arm , 600 ring . How many arm does he have ?	num11
+Tom has 700 waves , 100 change , 500 range , 300 thing , 400 eye . How many change does he have ?	num5
+Tom has 400 airplane , 900 shelf , 300 judge . How many airplane does he have ?	num2
+Tom has 100 kite , 200 bushes , 400 arm . How many kite does he have ?	num2
+Tom has 100 game , 300 regret , 500 manager , 700 island . How many regret does he have ?	num5
+Tom has 700 drain , 800 passenger , 100 crow , 400 shirt . How many crow does he have ?	num8
+Tom has 700 print , 600 jump . How many jump does he have ?	num5
+Tom has 700 cobweb , 600 hammer . How many hammer does he have ?	num5
+Tom has 200 payment , 900 playground , 600 sea , 800 north , 500 hydrant . How many hydrant does he have ?	num14
+Tom has 500 secretary , 300 cap . How many cap does he have ?	num5
+Tom has 900 love , 800 fang , 400 insurance . How many fang does he have ?	num5
+Tom has 100 spiders , 400 chess , 200 partner , 500 window , 600 spark . How many spiders does he have ?	num2
+Tom has 700 smile , 600 question . How many question does he have ?	num5
+Tom has 600 market , 700 haircut , 200 smile , 500 blood . How many smile does he have ?	num8
+Tom has 200 garden , 500 vacation , 700 insurance , 900 dress , 800 street . How many vacation does he have ?	num5
+Tom has 900 houses , 800 cave . How many houses does he have ?	num2
+Tom has 900 distance , 200 hand , 500 statement . How many distance does he have ?	num2
+Tom has 400 help , 600 scarecrow , 800 vacation , 700 sleet . How many sleet does he have ?	num11
+Tom has 600 mark , 700 ant , 200 hour , 300 reading , 900 eye . How many eye does he have ?	num14
+Tom has 400 teaching , 600 hole , 300 boundary , 700 beetle , 100 temper . How many hole does he have ?	num5
+Tom has 500 meeting , 200 feet . How many feet does he have ?	num5
+Tom has 700 stitch , 500 thought , 900 seat . How many stitch does he have ?	num2
+Tom has 100 yak , 200 beggar , 300 cattle , 700 tail . How many tail does he have ?	num11
+Tom has 400 plantation , 200 class , 600 burn . How many plantation does he have ?	num2
+Tom has 300 geese , 100 bone , 800 company , 700 fold . How many fold does he have ?	num11
+Tom has 900 attack , 600 fifth , 800 dirt , 300 women , 100 plot . How many attack does he have ?	num2
+Tom has 200 seashore , 500 sneeze . How many sneeze does he have ?	num5
+Tom has 700 limit , 800 crush , 100 mind , 900 mother . How many limit does he have ?	num2
+Tom has 700 bone , 400 oranges , 800 selection , 100 bit . How many bone does he have ?	num2
+Tom has 900 dad , 800 pail . How many pail does he have ?	num5
+Tom has 100 cannon , 700 flower . How many flower does he have ?	num5
+Tom has 600 care , 100 bait , 300 skin , 700 farm , 400 guitar . How many skin does he have ?	num8
+Tom has 400 beggar , 900 action , 700 grade . How many beggar does he have ?	num2
+Tom has 200 book , 900 potato , 300 mom . How many mom does he have ?	num8
+Tom has 100 list , 500 blow , 300 lettuce , 800 rabbit , 200 spring . How many rabbit does he have ?	num11
+Tom has 900 seat , 600 view , 700 scarecrow , 300 carriage , 800 fruit . How many carriage does he have ?	num11
+Tom has 500 sand , 100 look . How many sand does he have ?	num2
+Tom has 400 skirt , 900 rail . How many skirt does he have ?	num2
+Tom has 800 table , 200 chain , 500 lift . How many table does he have ?	num2
+Tom has 200 woman , 300 dog , 100 porter . How many porter does he have ?	num8
+Tom has 300 frogs , 100 ball , 900 cherry . How many cherry does he have ?	num8
+Tom has 500 ducks , 600 texture , 300 button , 100 fireman . How many ducks does he have ?	num2
+Tom has 700 bag , 200 houses , 800 tooth . How many tooth does he have ?	num8
+Tom has 200 songs , 400 hands , 700 teaching , 800 hose , 100 playground . How many teaching does he have ?	num8
+Tom has 500 key , 200 tongue , 800 order . How many key does he have ?	num2
+Tom has 800 teeth , 500 fiction , 900 sea , 400 head . How many teeth does he have ?	num2
+Tom has 900 bed , 500 desire , 300 brothers , 800 frame . How many brothers does he have ?	num8
+Tom has 300 advice , 800 name , 900 cow , 700 baby , 200 road . How many baby does he have ?	num11
+Tom has 800 ball , 100 goat , 700 breakfast , 300 volleyball , 600 pies . How many pies does he have ?	num14
+Tom has 900 list , 600 error , 100 berry , 300 stop , 500 breakfast . How many breakfast does he have ?	num14
+Tom has 600 laborer , 400 space , 300 guide , 800 quince , 200 tax . How many space does he have ?	num5
+Tom has 800 parent , 600 silk , 900 houses , 700 flower . How many houses does he have ?	num8
+Tom has 200 bike , 100 cake , 700 belief . How many cake does he have ?	num5
+Tom has 600 quiet , 100 teeth , 500 stew , 700 scarecrow , 800 word . How many scarecrow does he have ?	num11
+Tom has 900 leg , 100 mass , 400 lunchroom , 700 ring . How many lunchroom does he have ?	num8
+Tom has 300 waves , 400 geese , 500 bath . How many geese does he have ?	num5
+Tom has 400 harmony , 800 beginner , 200 mask , 100 trains , 300 transport . How many transport does he have ?	num14
+Tom has 500 stove , 100 shade . How many stove does he have ?	num2
+Tom has 800 button , 200 payment , 300 cherry . How many payment does he have ?	num5
+Tom has 700 arch , 500 rule , 800 nerve , 400 class . How many nerve does he have ?	num8
+Tom has 200 advertisement , 700 health . How many health does he have ?	num5
+Tom has 200 fireman , 800 clocks , 500 ground , 700 giants . How many clocks does he have ?	num5
+Tom has 400 lace , 900 temper , 800 ship , 500 fall , 700 help . How many ship does he have ?	num8
+Tom has 300 cub , 400 bells , 900 brain , 100 wrist . How many bells does he have ?	num5
+Tom has 500 plate , 200 vest , 900 birds , 300 pull . How many vest does he have ?	num5
+Tom has 400 day , 200 things , 600 word , 700 thunder , 900 summer . How many word does he have ?	num8
+Tom has 800 attack , 100 rub , 500 desire , 300 grain , 600 brass . How many grain does he have ?	num11
+Tom has 100 duck , 300 land , 700 toothpaste , 200 coat . How many coat does he have ?	num11
+Tom has 900 books , 500 event , 800 love , 400 rake . How many books does he have ?	num2
+Tom has 400 opinion , 200 purpose , 600 sea , 100 spot . How many opinion does he have ?	num2
+Tom has 600 rainstorm , 800 burst , 900 bikes . How many bikes does he have ?	num8
+Tom has 100 drawer , 600 edge . How many drawer does he have ?	num2
+Tom has 100 oatmeal , 600 button , 400 birth , 300 bell . How many oatmeal does he have ?	num2
+Tom has 300 room , 600 cats , 100 oil , 200 nerve , 800 comfort . How many oil does he have ?	num8
+Tom has 800 copy , 400 harbor . How many copy does he have ?	num2
+Tom has 600 cabbage , 700 owner , 100 drug , 400 change . How many change does he have ?	num11
+Tom has 300 steel , 500 son , 400 boot , 600 creator , 800 ladybug . How many ladybug does he have ?	num14
+Tom has 200 decision , 400 sleep . How many sleep does he have ?	num5
+Tom has 300 flavor , 400 cup , 800 moon . How many moon does he have ?	num8
+Tom has 200 debt , 700 tiger , 600 touch . How many tiger does he have ?	num5
+Tom has 900 key , 600 aftermath , 700 cherries , 800 hospital , 100 juice . How many juice does he have ?	num14
+Tom has 500 scene , 400 texture , 300 wind . How many texture does he have ?	num5
+Tom has 700 women , 600 brake , 800 form , 200 quiver . How many women does he have ?	num2
+Tom has 700 trees , 500 cow . How many cow does he have ?	num5
+Tom has 400 machine , 100 dolls . How many dolls does he have ?	num5
+Tom has 500 beds , 800 machine , 600 dinosaurs , 700 brother , 900 sleep . How many brother does he have ?	num11
+Tom has 100 news , 300 sense , 700 move . How many news does he have ?	num2
+Tom has 200 cake , 600 sky , 900 market . How many sky does he have ?	num5
+Tom has 400 disease , 300 tree , 200 thread , 600 pin . How many pin does he have ?	num11
+Tom has 600 hospital , 500 quiet . How many quiet does he have ?	num5
+Tom has 200 advice , 500 cow , 600 competition , 700 fiction , 900 voyage . How many cow does he have ?	num5
+Tom has 500 cats , 200 tank , 400 reward , 600 honey , 100 office . How many tank does he have ?	num5
+Tom has 300 story , 200 aunt . How many story does he have ?	num2
+Tom has 300 bedroom , 600 kitten . How many kitten does he have ?	num5
+Tom has 300 linen , 200 car , 500 nest , 900 bomb . How many bomb does he have ?	num11
+Tom has 200 lawyer , 600 whistle , 100 store , 700 sail . How many sail does he have ?	num11
+Tom has 700 soap , 800 lift , 500 chin , 300 button , 600 measure . How many chin does he have ?	num8
+Tom has 400 babies , 700 shade , 200 potato , 100 jail , 300 garden . How many jail does he have ?	num11
+Tom has 800 jellyfish , 700 son , 500 pig . How many pig does he have ?	num8
+Tom has 900 cemetery , 300 cause , 800 lock . How many lock does he have ?	num8
+Tom has 600 reason , 300 laugh , 900 rake , 700 bell , 800 credit . How many rake does he have ?	num8
+Tom has 300 stranger , 800 powder , 500 snail , 600 cloth . How many powder does he have ?	num5
+Tom has 500 maid , 400 advertisement , 800 game , 900 toothpaste . How many maid does he have ?	num2
+Tom has 900 dress , 600 insurance , 500 crush . How many dress does he have ?	num2
+Tom has 900 park , 200 furniture , 400 knife , 600 yak . How many park does he have ?	num2
+Tom has 500 company , 400 letter , 700 square , 300 oatmeal . How many company does he have ?	num2
+Tom has 900 burst , 400 wash , 600 company , 800 size . How many burst does he have ?	num2
+Tom has 500 part , 400 stomach , 800 juice . How many juice does he have ?	num8
+Tom has 900 crack , 500 fifth , 300 quill , 700 government , 100 verse . How many crack does he have ?	num2
+Tom has 900 oranges , 500 kettle , 700 music , 300 sink , 800 copy . How many copy does he have ?	num14
+Tom has 400 kite , 700 throat , 100 duck . How many duck does he have ?	num8
+Tom has 700 jump , 300 camera . How many camera does he have ?	num5
+Tom has 500 quince , 600 battle , 900 notebook , 400 language , 300 fork . How many fork does he have ?	num14
+Tom has 300 appliance , 500 rat , 600 clock . How many appliance does he have ?	num2
+Tom has 800 sound , 400 coal . How many coal does he have ?	num5
+Tom has 100 fiction , 800 paste , 200 patch . How many patch does he have ?	num8
+Tom has 800 behavior , 400 belief , 300 sweater , 100 anger . How many sweater does he have ?	num8
+Tom has 400 engine , 500 servant , 100 sun , 300 month . How many month does he have ?	num11
+Tom has 800 rat , 100 slope , 600 coast , 700 cabbage , 400 arch . How many slope does he have ?	num5
+Tom has 300 condition , 500 seat , 800 paste . How many condition does he have ?	num2
+Tom has 500 road , 400 punishment , 100 foot . How many foot does he have ?	num8
+Tom has 400 smoke , 600 bread . How many bread does he have ?	num5
+Tom has 700 cause , 100 pets , 800 list , 600 coast , 300 taste . How many cause does he have ?	num2
+Tom has 200 noise , 900 duck , 600 crime , 400 garden . How many duck does he have ?	num5
+Tom has 400 bears , 500 wrench , 600 value , 200 shock . How many shock does he have ?	num11
+Tom has 400 cabbage , 700 cherry , 800 experience , 100 eggnog . How many experience does he have ?	num8
+Tom has 100 grade , 500 stocking . How many stocking does he have ?	num5
+Tom has 900 dolls , 100 station , 400 size . How many dolls does he have ?	num2
+Tom has 100 work , 300 fact , 800 curtain , 500 faucet , 400 cake . How many curtain does he have ?	num8
+Tom has 900 crack , 400 protest , 100 salt , 600 coach , 700 condition . How many crack does he have ?	num2
+Tom has 700 spoon , 500 rain . How many spoon does he have ?	num2
+Tom has 200 ticket , 500 arch . How many arch does he have ?	num5
+Tom has 900 slope , 200 memory , 600 transport , 500 ducks . How many slope does he have ?	num2
+Tom has 100 system , 800 substance , 600 plate . How many system does he have ?	num2
+Tom has 200 wish , 500 pencil , 600 learning . How many learning does he have ?	num8
+Tom has 500 uncle , 900 flag , 300 fish . How many fish does he have ?	num8
+Tom has 100 destruction , 200 nail , 800 condition . How many condition does he have ?	num8
+Tom has 900 space , 600 tent , 300 sugar , 400 smell . How many smell does he have ?	num11
+Tom has 400 button , 600 pizzas , 700 wilderness , 900 whip , 500 week . How many week does he have ?	num14
+Tom has 700 chickens , 100 operation , 800 cave , 300 bead , 900 amount . How many amount does he have ?	num14
+Tom has 200 sponge , 500 apparel , 300 turkey . How many turkey does he have ?	num8
+Tom has 400 low , 300 fact , 900 driving . How many low does he have ?	num2
+Tom has 800 cable , 700 goose , 400 house , 600 approval . How many house does he have ?	num8
+Tom has 900 mother , 800 apple , 500 pan , 100 peace . How many mother does he have ?	num2
+Tom has 400 coal , 700 man , 300 flesh . How many coal does he have ?	num2
+Tom has 300 rifle , 500 quarter , 100 legs , 800 glove , 600 butter . How many quarter does he have ?	num5
+Tom has 500 guitar , 400 impulse , 700 price , 300 volcano , 800 holiday . How many price does he have ?	num8
+Tom has 300 trousers , 200 bulb , 700 cake , 900 knowledge . How many trousers does he have ?	num2
+Tom has 800 toes , 100 border . How many toes does he have ?	num2
+Tom has 900 quicksand , 800 horses . How many horses does he have ?	num5
+Tom has 400 vase , 600 meal , 800 society , 700 advertisement . How many society does he have ?	num8
+Tom has 900 amusement , 300 faucet , 100 house , 700 income , 600 quiver . How many faucet does he have ?	num5
+Tom has 400 voyage , 200 scent . How many voyage does he have ?	num2
+Tom has 400 rule , 700 building , 500 screw , 300 debt , 200 grade . How many debt does he have ?	num11
+Tom has 900 instrument , 200 pancake . How many instrument does he have ?	num2
+Tom has 700 riddle , 200 woman . How many woman does he have ?	num5
+Tom has 600 snake , 800 war , 100 ear , 300 notebook . How many snake does he have ?	num2
+Tom has 300 clock , 200 glue , 800 time , 100 weight , 500 jump . How many jump does he have ?	num14
+Tom has 100 paste , 400 throne , 800 magic , 200 shoes , 700 van . How many paste does he have ?	num2
+Tom has 500 ice , 200 advertisement , 600 goat , 800 front . How many goat does he have ?	num8
+Tom has 900 grade , 300 horses , 400 soap , 800 winter . How many grade does he have ?	num2
+Tom has 800 bit , 900 feet , 400 drink , 600 copper , 200 van . How many feet does he have ?	num5
+Tom has 800 knowledge , 500 burn , 600 partner . How many knowledge does he have ?	num2
+Tom has 300 fairies , 100 person , 800 authority . How many fairies does he have ?	num2
+Tom has 900 treatment , 200 competition , 700 profit , 800 soap . How many profit does he have ?	num8
+Tom has 700 pig , 300 hall , 200 monkey , 100 country , 600 mine . How many pig does he have ?	num2
+Tom has 800 roof , 700 note , 600 toad , 400 trade . How many roof does he have ?	num2
+Tom has 900 boy , 400 throat , 700 wire . How many boy does he have ?	num2
+Tom has 100 scarecrow , 900 stone , 600 hospital . How many stone does he have ?	num5
+Tom has 100 flag , 600 trousers . How many flag does he have ?	num2
+Tom has 100 tomatoes , 600 donkey , 500 van , 900 ant . How many van does he have ?	num8
+Tom has 500 lip , 300 income , 600 hobbies , 200 aftermath , 700 screw . How many lip does he have ?	num2
+Tom has 500 curve , 600 lunch , 100 needle . How many curve does he have ?	num2
+Tom has 200 bells , 400 cap , 700 pie . How many bells does he have ?	num2
+Tom has 300 attraction , 500 linen , 200 stranger , 600 side , 800 spiders . How many side does he have ?	num11
+Tom has 600 clock , 700 shoes . How many shoes does he have ?	num5
+Tom has 100 beef , 700 rule . How many rule does he have ?	num5
+Tom has 400 winter , 300 growth . How many growth does he have ?	num5
+Tom has 700 prose , 800 monkey , 600 crayon . How many prose does he have ?	num2
+Tom has 300 brush , 400 step , 200 can . How many can does he have ?	num8
+Tom has 300 afternoon , 600 crow , 800 lift , 900 girls , 100 creator . How many crow does he have ?	num5
+Tom has 500 neck , 600 bridge , 800 fact , 200 mass . How many mass does he have ?	num11
+Tom has 400 building , 100 metal , 500 flock . How many flock does he have ?	num8
+Tom has 900 can , 100 science , 200 appliance , 700 size , 500 walk . How many appliance does he have ?	num8
+Tom has 600 brass , 200 expert , 300 goldfish , 900 poison , 800 linen . How many expert does he have ?	num5
+Tom has 200 company , 600 owl , 500 price , 300 loaf . How many loaf does he have ?	num11
+Tom has 300 steam , 800 owner , 600 whip , 400 airport , 500 mother . How many owner does he have ?	num5
+Tom has 500 copper , 100 disgust . How many disgust does he have ?	num5
+Tom has 800 tank , 500 visitor , 400 roof , 100 kick , 900 statement . How many tank does he have ?	num2
+Tom has 500 cows , 100 fog , 400 government , 600 jar , 900 party . How many government does he have ?	num8
+Tom has 200 deer , 800 glove , 400 representative , 300 hearing . How many representative does he have ?	num8
+Tom has 900 yak , 100 change . How many change does he have ?	num5
+Tom has 800 hall , 100 bit , 200 eyes , 500 grade . How many eyes does he have ?	num8
+Tom has 800 cemetery , 100 sand . How many cemetery does he have ?	num2
+Tom has 200 fuel , 500 curtain , 300 bomb , 400 hand , 800 credit . How many bomb does he have ?	num8
+Tom has 100 learning , 700 eggs , 300 cracker , 800 skate . How many cracker does he have ?	num8
+Tom has 800 loaf , 300 morning , 700 science , 100 air , 400 wound . How many wound does he have ?	num14
+Tom has 100 ink , 400 boats , 300 slip , 900 crate , 200 geese . How many ink does he have ?	num2
+Tom has 700 drink , 800 effect . How many drink does he have ?	num2
+Tom has 800 rule , 600 cook , 900 sock . How many cook does he have ?	num5
+Tom has 300 ornament , 700 cow , 500 grape , 200 appliance . How many cow does he have ?	num5
+Tom has 500 soap , 900 game , 700 lunchroom , 300 cattle . How many cattle does he have ?	num11
+Tom has 200 ant , 900 stitch . How many stitch does he have ?	num5
+Tom has 300 smash , 500 join , 900 game , 800 babies , 200 canvas . How many smash does he have ?	num2
+Tom has 500 eggs , 200 day , 600 part . How many part does he have ?	num8
+Tom has 200 can , 700 kettle , 500 sleet . How many sleet does he have ?	num8
+Tom has 200 weight , 500 fiction , 300 animal , 400 bulb , 700 swing . How many fiction does he have ?	num5
+Tom has 500 tomatoes , 300 stew , 400 fuel . How many tomatoes does he have ?	num2
+Tom has 100 circle , 400 servant , 600 island . How many island does he have ?	num8
+Tom has 400 trail , 500 turkey , 800 action . How many turkey does he have ?	num5
+Tom has 600 marble , 400 flower , 700 pickle , 300 oil , 100 brothers . How many marble does he have ?	num2
+Tom has 600 books , 100 pipe . How many pipe does he have ?	num5
+Tom has 800 regret , 200 education . How many regret does he have ?	num2
+Tom has 700 increase , 800 pin . How many pin does he have ?	num5
+Tom has 400 observation , 300 advice , 800 bike , 700 boats , 500 playground . How many boats does he have ?	num11
+Tom has 400 butter , 600 coil . How many butter does he have ?	num2
+Tom has 200 laborer , 400 cobweb , 600 camp , 500 father . How many cobweb does he have ?	num5
+Tom has 800 pizzas , 400 eye , 200 roll , 300 kite , 700 dogs . How many kite does he have ?	num11
+Tom has 500 kick , 900 rub . How many kick does he have ?	num2
+Tom has 200 giraffe , 600 weather . How many weather does he have ?	num5
+Tom has 100 spot , 700 soup . How many spot does he have ?	num2
+Tom has 600 writer , 300 fruit , 200 table . How many writer does he have ?	num2
+Tom has 900 scent , 700 cub . How many scent does he have ?	num2
+Tom has 400 bun , 900 squirrel , 700 elbow . How many bun does he have ?	num2
+Tom has 200 achiever , 600 list . How many achiever does he have ?	num2
+Tom has 600 nail , 400 sign , 300 tent , 500 quilt . How many sign does he have ?	num5
+Tom has 800 kiss , 900 journey , 600 wealth . How many kiss does he have ?	num2
+Tom has 800 dinosaurs , 400 street , 300 finger . How many street does he have ?	num5
+Tom has 400 alley , 700 observation , 100 hospital , 300 push , 800 thumb . How many observation does he have ?	num5
+Tom has 800 pain , 200 ring , 500 bait . How many pain does he have ?	num2
+Tom has 800 ant , 600 skate , 400 record . How many skate does he have ?	num5
+Tom has 100 chickens , 200 toe , 600 animal , 800 parent . How many toe does he have ?	num5
+Tom has 200 copy , 400 growth , 300 toes . How many toes does he have ?	num8
+Tom has 500 low , 200 pan , 300 exchange . How many pan does he have ?	num5
+Tom has 600 can , 200 night , 700 skate , 300 hook . How many night does he have ?	num5
+Tom has 600 peace , 100 nation , 800 sun . How many peace does he have ?	num2
+Tom has 300 society , 600 nerve , 700 name . How many nerve does he have ?	num5
+Tom has 400 money , 300 doctor , 500 balls , 900 joke . How many money does he have ?	num2
+Tom has 200 owl , 400 finger , 100 flame . How many finger does he have ?	num5
+Tom has 800 vacation , 100 mark . How many mark does he have ?	num5
+Tom has 600 creator , 400 shake . How many shake does he have ?	num5
+Tom has 700 floor , 200 police . How many floor does he have ?	num2
+Tom has 300 use , 200 opinion . How many opinion does he have ?	num5
+Tom has 100 fish , 300 boy , 500 debt , 400 plane . How many plane does he have ?	num11
+Tom has 800 mouth , 100 attack , 600 surprise . How many attack does he have ?	num5
+Tom has 800 reaction , 200 sort . How many sort does he have ?	num5
+Tom has 100 horse , 400 gun , 600 question , 500 leather , 300 sock . How many question does he have ?	num8
+Tom has 800 houses , 500 smell , 700 list , 200 bell , 900 giraffe . How many bell does he have ?	num11
+Tom has 600 news , 500 hammer . How many hammer does he have ?	num5
+Tom has 200 finger , 700 afterthought . How many afterthought does he have ?	num5
+Tom has 700 border , 400 heart , 900 nose , 300 cats , 800 lawyer . How many lawyer does he have ?	num14
+Tom has 800 expansion , 300 push . How many push does he have ?	num5
+Tom has 400 flavor , 600 achiever . How many flavor does he have ?	num2
+Tom has 400 joke , 600 history , 800 beggar . How many joke does he have ?	num2
+Tom has 800 love , 200 action , 500 straw , 900 car , 600 quince . How many action does he have ?	num5
+Tom has 500 match , 600 current , 300 scale , 200 body . How many current does he have ?	num5
+Tom has 700 stem , 300 drop . How many stem does he have ?	num2
+Tom has 200 drawer , 100 noise , 900 cannon , 600 jar , 400 clock . How many clock does he have ?	num14
+Tom has 600 ear , 300 badge , 400 houses , 100 beam , 800 apple . How many apple does he have ?	num14
+Tom has 400 rule , 300 bird , 700 degree , 500 tongue , 600 part . How many tongue does he have ?	num11
+Tom has 800 leg , 400 maid , 700 cord , 600 scarf , 200 stomach . How many leg does he have ?	num2
+Tom has 200 lunch , 900 destruction , 600 loaf , 400 girls . How many lunch does he have ?	num2
+Tom has 700 ornament , 600 lock . How many ornament does he have ?	num2
+Tom has 200 eyes , 500 book , 400 order . How many book does he have ?	num5
+Tom has 600 soap , 300 lace , 400 cakes , 900 stick . How many stick does he have ?	num11
+Tom has 900 bear , 700 peace , 400 calendar , 300 bone . How many calendar does he have ?	num8
+Tom has 100 ear , 800 wall , 500 weather . How many weather does he have ?	num8
+Tom has 800 family , 400 cake . How many family does he have ?	num2
+Tom has 500 chin , 200 guide , 700 ice , 400 train , 600 scarf . How many ice does he have ?	num8
+Tom has 400 finger , 500 joke , 900 crime , 100 stranger . How many finger does he have ?	num2
+Tom has 300 rub , 500 quilt . How many rub does he have ?	num2
+Tom has 800 cover , 900 position . How many cover does he have ?	num2
+Tom has 800 kittens , 900 use , 500 visitor . How many visitor does he have ?	num8
+Tom has 200 leg , 800 hen , 300 board , 400 invention . How many board does he have ?	num8
+Tom has 300 grain , 100 chairs , 700 lock . How many lock does he have ?	num8
+Tom has 200 operation , 400 substance , 300 selection , 100 girls , 800 death . How many selection does he have ?	num8
+Tom has 300 language , 200 milk , 100 partner , 600 grandfather , 800 nest . How many language does he have ?	num2
+Tom has 800 wash , 200 jelly . How many wash does he have ?	num2
+Tom has 500 meat , 700 game , 300 night . How many game does he have ?	num5
+Tom has 500 operation , 600 list , 300 class . How many operation does he have ?	num2
+Tom has 200 statement , 300 bubble . How many bubble does he have ?	num5
+Tom has 200 crate , 900 brick , 100 goat . How many crate does he have ?	num2
+Tom has 800 calendar , 200 scale . How many calendar does he have ?	num2
+Tom has 900 shoes , 700 mine . How many mine does he have ?	num5
+Tom has 300 metal , 200 can . How many can does he have ?	num5
+Tom has 600 thumb , 500 knot , 800 magic . How many knot does he have ?	num5
+Tom has 800 spark , 200 line , 600 quiver , 100 birth , 400 growth . How many spark does he have ?	num2
+Tom has 900 reaction , 500 alarm . How many reaction does he have ?	num2
+Tom has 500 bird , 800 jellyfish , 200 arithmetic , 600 stick , 900 motion . How many arithmetic does he have ?	num8
+Tom has 100 teaching , 900 bushes . How many teaching does he have ?	num2
+Tom has 400 fruit , 200 jelly , 300 expert , 900 stocking , 100 yak . How many fruit does he have ?	num2
+Tom has 100 woman , 400 committee , 600 scene , 500 shoe , 800 fan . How many woman does he have ?	num2
+Tom has 500 canvas , 200 part , 600 noise , 100 clover , 300 berry . How many clover does he have ?	num11
+Tom has 300 queen , 900 parcel , 600 suggestion . How many parcel does he have ?	num5
+Tom has 500 hearing , 200 sister , 400 pickle . How many hearing does he have ?	num2
+Tom has 800 jellyfish , 600 wound , 900 talk . How many jellyfish does he have ?	num2
+Tom has 200 leather , 700 food , 300 cushion , 600 icicle , 100 friction . How many cushion does he have ?	num8
+Tom has 400 caption , 900 muscle , 200 salt . How many muscle does he have ?	num5
+Tom has 800 whip , 600 cushion , 700 heat , 500 taste . How many whip does he have ?	num2
+Tom has 800 account , 700 locket , 300 range . How many locket does he have ?	num5
+Tom has 300 rhythm , 700 sneeze , 800 summer , 500 wax , 600 desire . How many sneeze does he have ?	num5
+Tom has 200 window , 300 frame . How many frame does he have ?	num5
+Tom has 200 wren , 500 surprise , 100 fold , 600 eyes , 700 page . How many page does he have ?	num14
+Tom has 500 appliance , 400 bed , 900 comparison , 100 camera . How many comparison does he have ?	num8
+Tom has 700 laugh , 100 club . How many club does he have ?	num5
+Tom has 700 cover , 500 sign , 600 lunchroom , 900 winter . How many winter does he have ?	num11
+Tom has 700 pig , 400 money , 600 stream . How many money does he have ?	num5
+Tom has 700 texture , 800 title , 100 relation , 200 building . How many texture does he have ?	num2
+Tom has 500 air , 900 dogs . How many air does he have ?	num2
+Tom has 700 oven , 400 club . How many club does he have ?	num5
+Tom has 700 toes , 100 hill , 500 shock , 600 driving . How many toes does he have ?	num2
+Tom has 100 floor , 300 powder , 700 crook , 500 change . How many change does he have ?	num11
+Tom has 300 instrument , 700 hook . How many instrument does he have ?	num2
+Tom has 100 suggestion , 400 dinosaurs . How many suggestion does he have ?	num2
+Tom has 400 lunchroom , 500 effect , 200 paper , 700 bushes , 600 cloud . How many paper does he have ?	num8
+Tom has 400 plants , 200 wren , 700 friend , 300 goat . How many goat does he have ?	num11
+Tom has 700 snail , 100 glue , 400 leaf , 200 gate , 300 nut . How many nut does he have ?	num14
+Tom has 400 steel , 300 ray , 900 measure . How many steel does he have ?	num2
+Tom has 900 play , 300 flame , 200 operation , 700 sound . How many sound does he have ?	num11
+Tom has 100 fairies , 900 cap , 700 letters , 400 credit , 300 bomb . How many credit does he have ?	num11
+Tom has 600 pot , 300 kettle , 400 riddle , 900 bread . How many riddle does he have ?	num8
+Tom has 400 heat , 800 glass , 500 clocks . How many clocks does he have ?	num8
+Tom has 500 seed , 200 interest , 400 scale , 800 trees . How many scale does he have ?	num8
+Tom has 100 action , 800 month , 600 stem , 200 kittens . How many stem does he have ?	num8
+Tom has 100 fork , 700 wing . How many wing does he have ?	num5
+Tom has 200 quince , 100 time , 500 measure , 400 touch , 700 screw . How many screw does he have ?	num14
+Tom has 500 cloud , 800 rhythm , 200 mind . How many rhythm does he have ?	num5
+Tom has 400 comfort , 900 minute , 300 eyes , 100 stage . How many eyes does he have ?	num8
+Tom has 500 cub , 900 guitar , 100 table , 600 porter . How many table does he have ?	num8
+Tom has 300 angle , 400 straw . How many straw does he have ?	num5
+Tom has 300 view , 400 shirt , 600 servant , 800 cattle , 700 underwear . How many view does he have ?	num2
+Tom has 400 collar , 500 lunchroom , 700 knife , 200 carpenter . How many collar does he have ?	num2
+Tom has 700 glass , 600 bells . How many glass does he have ?	num2
+Tom has 700 need , 200 middle , 300 bait , 900 clouds , 800 month . How many clouds does he have ?	num11
+Tom has 500 snow , 100 corn , 900 air , 700 joke . How many snow does he have ?	num2
+Tom has 300 balls , 700 week . How many balls does he have ?	num2
+Tom has 300 boy , 500 vest . How many vest does he have ?	num5
+Tom has 400 engine , 200 branch , 900 toad . How many branch does he have ?	num5
+Tom has 500 volleyball , 100 downtown , 200 beam , 800 wren , 900 power . How many beam does he have ?	num8
+Tom has 500 tendency , 300 income , 900 nation . How many tendency does he have ?	num2
+Tom has 900 bottle , 300 boundary . How many bottle does he have ?	num2
+Tom has 300 sea , 100 brass , 400 stretch , 700 goat . How many sea does he have ?	num2
+Tom has 100 bottle , 300 bears , 600 loss , 400 stove , 200 flesh . How many loss does he have ?	num8
+Tom has 400 sister , 700 wilderness . How many sister does he have ?	num2
+Tom has 100 argument , 900 nose , 300 sock , 800 curve , 700 attention . How many curve does he have ?	num11
+Tom has 700 thing , 800 bear . How many bear does he have ?	num5
+Tom has 700 afternoon , 800 spy , 500 boy , 200 push . How many boy does he have ?	num8
+Tom has 800 stranger , 100 branch , 300 cracker , 600 guide , 900 sound . How many sound does he have ?	num14
+Tom has 900 cabbage , 500 umbrella , 600 hospital , 200 quartz , 100 holiday . How many cabbage does he have ?	num2
+Tom has 700 eggnog , 400 beggar , 100 bit , 800 ocean , 200 magic . How many bit does he have ?	num8
+Tom has 100 pollution , 800 potato , 700 river . How many potato does he have ?	num5
+Tom has 800 route , 700 celery , 100 boot , 900 station , 300 reading . How many boot does he have ?	num8
+Tom has 700 slope , 600 frame , 800 disgust , 300 face , 100 price . How many disgust does he have ?	num8
+Tom has 300 square , 200 exchange . How many square does he have ?	num2
+Tom has 800 side , 600 effect . How many effect does he have ?	num5
+Tom has 400 care , 200 morning , 900 twist . How many care does he have ?	num2
+Tom has 700 look , 300 balance , 600 operation . How many look does he have ?	num2
+Tom has 100 lake , 600 straw , 900 throne . How many throne does he have ?	num8
+Tom has 500 comb , 900 scale , 400 jeans , 800 cork , 600 party . How many scale does he have ?	num5
+Tom has 300 nut , 200 trade . How many nut does he have ?	num2
+Tom has 300 room , 800 army . How many army does he have ?	num5
+Tom has 200 sound , 400 line , 900 kite . How many line does he have ?	num5
+Tom has 100 number , 200 girl , 600 grass . How many number does he have ?	num2
+Tom has 100 achiever , 400 spoon , 500 vegetable , 200 lift . How many vegetable does he have ?	num8
+Tom has 400 pear , 100 value . How many value does he have ?	num5
+Tom has 800 waves , 400 hands . How many waves does he have ?	num2
+Tom has 100 trousers , 700 gun . How many gun does he have ?	num5
+Tom has 200 rings , 700 volcano , 900 creator , 100 hammer , 500 aftermath . How many hammer does he have ?	num11
+Tom has 300 shame , 900 circle . How many circle does he have ?	num5
+Tom has 800 stove , 300 town , 600 kitty , 200 spy . How many stove does he have ?	num2
+Tom has 400 brain , 200 regret , 700 rabbit , 300 father , 600 pets . How many father does he have ?	num11
+Tom has 900 instrument , 500 cherry , 600 beetle . How many cherry does he have ?	num5
+Tom has 200 brass , 400 nation . How many nation does he have ?	num5
+Tom has 200 rub , 300 degree , 500 measure , 600 board , 700 oil . How many rub does he have ?	num2
+Tom has 900 prose , 700 hall , 100 salt , 200 approval . How many approval does he have ?	num11
+Tom has 200 map , 300 skate , 600 kittens . How many skate does he have ?	num5
+Tom has 900 cake , 600 laugh . How many cake does he have ?	num2
+Tom has 600 day , 300 cap , 700 popcorn . How many cap does he have ?	num5
+Tom has 100 hair , 500 bucket , 800 blood . How many blood does he have ?	num8
+Tom has 800 snakes , 500 waves , 700 design , 900 land . How many design does he have ?	num8
+Tom has 400 battle , 900 dime , 700 night . How many dime does he have ?	num5
+Tom has 800 seat , 200 net , 600 badge , 400 coal , 500 kitty . How many net does he have ?	num5
+Tom has 700 frog , 900 vacation , 400 health . How many vacation does he have ?	num5
+Tom has 800 iron , 900 jail . How many iron does he have ?	num2
+Tom has 900 society , 400 reason , 200 play , 100 linen , 800 sweater . How many sweater does he have ?	num14
+Tom has 300 needle , 700 pies , 500 squirrel , 100 sound , 800 experience . How many needle does he have ?	num2
+Tom has 100 cobweb , 500 society , 400 machine , 600 sort , 900 tray . How many sort does he have ?	num11
+Tom has 300 answer , 900 shoe , 400 sack , 200 fireman , 800 laugh . How many shoe does he have ?	num5
+Tom has 300 voice , 200 crush , 800 snails , 700 canvas . How many canvas does he have ?	num11
+Tom has 800 bushes , 300 quiver , 100 brake . How many bushes does he have ?	num2
+Tom has 800 weather , 400 effect . How many effect does he have ?	num5
+Tom has 500 sheep , 900 watch , 800 wall , 700 oranges , 200 plot . How many sheep does he have ?	num2
+Tom has 500 slip , 800 ghost , 600 sponge , 200 window . How many window does he have ?	num11
+Tom has 700 nation , 900 jump , 800 look , 100 space . How many space does he have ?	num11
+Tom has 700 wren , 800 egg , 500 wax , 300 money . How many money does he have ?	num11
+Tom has 600 camera , 700 hen , 400 soda . How many hen does he have ?	num5
+Tom has 700 hydrant , 600 elbow , 500 pigs , 400 trousers , 100 form . How many pigs does he have ?	num8
+Tom has 900 cake , 100 receipt , 400 change , 200 dolls . How many dolls does he have ?	num11
+Tom has 300 blow , 500 mountain , 700 liquid . How many mountain does he have ?	num5
+Tom has 500 bell , 400 boundary , 300 hope , 800 deer , 600 books . How many deer does he have ?	num11
+Tom has 600 advertisement , 100 bedroom , 700 net , 300 sort , 400 straw . How many advertisement does he have ?	num2
+Tom has 700 secretary , 100 afternoon , 900 toothpaste , 300 oatmeal , 400 expansion . How many afternoon does he have ?	num5
+Tom has 900 bone , 800 crime , 700 moon . How many moon does he have ?	num8
+Tom has 800 wrist , 900 sleep . How many sleep does he have ?	num5
+Tom has 500 bite , 300 letter . How many letter does he have ?	num5
+Tom has 200 cloth , 100 order , 300 circle , 400 card , 800 current . How many order does he have ?	num5
+Tom has 700 army , 300 vessel . How many vessel does he have ?	num5
+Tom has 100 bat , 700 meat , 300 kittens , 600 moon . How many moon does he have ?	num11
+Tom has 700 night , 900 camera . How many night does he have ?	num2
+Tom has 900 sound , 700 balance , 800 girl , 300 cow , 200 bear . How many bear does he have ?	num14
+Tom has 100 bottle , 200 smell , 700 pets , 600 degree . How many degree does he have ?	num11
+Tom has 600 property , 500 pin , 700 dinner . How many property does he have ?	num2
+Tom has 200 face , 100 rat , 900 match . How many face does he have ?	num2
+Tom has 400 arch , 900 hands , 100 maid , 500 kettle , 600 engine . How many maid does he have ?	num8
+Tom has 800 carpenter , 200 magic , 500 line , 900 quill , 300 seat . How many carpenter does he have ?	num2
+Tom has 400 lunch , 800 secretary , 100 passenger , 900 clock , 200 noise . How many secretary does he have ?	num5
+Tom has 100 morning , 200 street , 800 friend , 500 care . How many friend does he have ?	num8
+Tom has 400 pull , 500 bead . How many pull does he have ?	num2
+Tom has 600 holiday , 900 kittens , 100 blood , 300 celery . How many blood does he have ?	num8
+Tom has 700 creature , 300 quartz , 400 playground , 200 celery . How many playground does he have ?	num8
+Tom has 900 sign , 500 cattle , 700 ray . How many ray does he have ?	num8
+Tom has 700 scale , 500 wall , 100 north , 900 dress . How many wall does he have ?	num5
+Tom has 200 spot , 800 feast . How many feast does he have ?	num5
+Tom has 400 mind , 600 voyage , 100 way . How many mind does he have ?	num2
+Tom has 700 connection , 200 blow , 400 border , 300 table . How many blow does he have ?	num5
+Tom has 400 nation , 200 reward . How many reward does he have ?	num5
+Tom has 800 shake , 500 cough , 400 cent . How many cough does he have ?	num5
+Tom has 300 rule , 400 print , 100 desk . How many rule does he have ?	num2
+Tom has 800 advice , 300 screw . How many screw does he have ?	num5
+Tom has 300 notebook , 700 development , 900 cat , 400 hobbies , 600 dog . How many hobbies does he have ?	num11
+Tom has 800 celery , 500 punishment , 700 ornament . How many celery does he have ?	num2
+Tom has 200 horn , 400 quiet , 800 dime , 500 farmer , 600 force . How many horn does he have ?	num2
+Tom has 700 meeting , 100 cast , 200 frogs , 500 religion . How many cast does he have ?	num5
+Tom has 900 hour , 700 wound , 500 sign . How many sign does he have ?	num8
+Tom has 800 brothers , 200 pleasure , 100 flame . How many flame does he have ?	num8
+Tom has 600 balance , 100 hydrant , 800 earthquake , 300 position . How many balance does he have ?	num2
+Tom has 200 motion , 900 crib , 100 nut , 500 bread , 600 existence . How many existence does he have ?	num14
+Tom has 400 seashore , 500 friction , 800 history , 900 tank . How many tank does he have ?	num11
+Tom has 700 twist , 200 shock , 600 soap , 400 lunchroom . How many shock does he have ?	num5
+Tom has 500 wind , 200 horses , 800 book , 400 duck , 300 kitty . How many wind does he have ?	num2
+Tom has 400 stream , 800 sleep , 600 joke . How many stream does he have ?	num2
+Tom has 800 bushes , 700 flesh , 400 brother , 500 salt . How many salt does he have ?	num11
+Tom has 900 peace , 100 use . How many peace does he have ?	num2
+Tom has 900 trees , 200 truck , 500 join . How many trees does he have ?	num2
+Tom has 400 downtown , 500 journey , 600 border , 200 disgust , 100 history . How many journey does he have ?	num5
+Tom has 200 comb , 900 plate . How many comb does he have ?	num2
+Tom has 800 machine , 100 drawer , 700 trucks . How many drawer does he have ?	num5
+Tom has 100 lunch , 600 shape , 800 respect . How many respect does he have ?	num8
+Tom has 600 distance , 300 market . How many market does he have ?	num5
+Tom has 500 spoon , 800 egg . How many egg does he have ?	num5
+Tom has 400 copper , 300 water , 100 church , 800 finger . How many finger does he have ?	num11
+Tom has 200 sock , 700 lamp , 600 bushes , 800 visitor . How many lamp does he have ?	num5
+Tom has 100 writing , 300 library , 600 laborer , 400 church , 200 crown . How many laborer does he have ?	num8
+Tom has 500 bottle , 600 railway , 900 hate . How many railway does he have ?	num5
+Tom has 400 value , 600 friend , 700 end . How many end does he have ?	num8
+Tom has 800 squirrel , 900 stream , 300 clock , 200 fireman . How many fireman does he have ?	num11
+Tom has 700 oil , 400 basketball , 500 finger , 100 planes . How many finger does he have ?	num8
+Tom has 100 pickle , 700 wave , 600 mitten . How many pickle does he have ?	num2
+Tom has 100 jar , 800 thought , 300 turkey , 200 passenger . How many jar does he have ?	num2
+Tom has 100 cherries , 800 design , 700 moon , 200 channel , 900 aunt . How many channel does he have ?	num11
+Tom has 500 deer , 800 flowers , 400 support , 600 process , 200 level . How many deer does he have ?	num2
+Tom has 300 wire , 100 tramp , 700 science , 900 kick , 500 car . How many car does he have ?	num14
+Tom has 100 root , 500 silver , 800 morning . How many silver does he have ?	num5
+Tom has 200 secretary , 900 muscle , 300 fiction . How many muscle does he have ?	num5
+Tom has 800 level , 100 fairies . How many level does he have ?	num2
+Tom has 800 good-bye , 200 donkey . How many donkey does he have ?	num5
+Tom has 100 north , 900 insect , 500 curve , 300 hour . How many curve does he have ?	num8
+Tom has 600 help , 200 partner . How many help does he have ?	num2
+Tom has 800 desire , 200 answer , 600 beam , 500 rain , 300 stove . How many rain does he have ?	num11
+Tom has 400 hole , 600 cork , 700 sink . How many hole does he have ?	num2
+Tom has 800 believe , 900 wheel , 500 tin . How many wheel does he have ?	num5
+Tom has 300 ink , 100 glue , 700 bucket , 200 wound , 500 weight . How many bucket does he have ?	num8
+Tom has 200 pen , 800 paste , 400 smoke , 500 bubble . How many bubble does he have ?	num11
+Tom has 600 playground , 700 bat , 400 plough . How many plough does he have ?	num8
+Tom has 200 beds , 400 guide , 700 space . How many beds does he have ?	num2
+Tom has 800 advice , 600 apples , 200 profit , 700 drawer . How many drawer does he have ?	num11
+Tom has 500 show , 400 daughter , 900 wilderness . How many daughter does he have ?	num5
+Tom has 700 jam , 600 stamp , 300 umbrella . How many umbrella does he have ?	num8
+Tom has 900 spade , 500 substance , 600 foot . How many substance does he have ?	num5
+Tom has 700 birds , 400 transport , 600 protest . How many transport does he have ?	num5
+Tom has 800 humor , 400 hot , 600 edge , 900 top . How many humor does he have ?	num2
+Tom has 200 partner , 400 shock . How many partner does he have ?	num2
+Tom has 900 ground , 800 acoustics , 300 run , 400 bread . How many ground does he have ?	num2
+Tom has 700 flag , 800 verse , 500 language . How many verse does he have ?	num5
+Tom has 800 band , 500 leg . How many leg does he have ?	num5
+Tom has 200 beast , 800 plough , 900 noise , 700 cannon . How many cannon does he have ?	num11
+Tom has 800 party , 100 thumb . How many party does he have ?	num2
+Tom has 100 insect , 200 gate , 600 need , 700 walk , 500 mom . How many mom does he have ?	num14
+Tom has 100 value , 300 egg , 900 record . How many value does he have ?	num2
+Tom has 600 list , 800 print , 700 pollution . How many list does he have ?	num2
+Tom has 200 fuel , 500 cave , 100 underwear , 400 jam , 700 quilt . How many fuel does he have ?	num2
+Tom has 500 toes , 400 neck , 200 basketball , 100 cracker , 800 ornament . How many cracker does he have ?	num11
+Tom has 900 stomach , 300 quiver , 200 ladybug , 500 connection , 700 night . How many connection does he have ?	num11
+Tom has 600 market , 300 squirrel , 400 crayon . How many squirrel does he have ?	num5
+Tom has 800 smash , 900 crush , 200 brush , 700 slip . How many slip does he have ?	num11
+Tom has 800 current , 700 balloon . How many current does he have ?	num2
+Tom has 700 road , 900 tooth . How many road does he have ?	num2
+Tom has 900 border , 400 jellyfish , 200 vein . How many jellyfish does he have ?	num5
+Tom has 500 playground , 700 curve , 300 butter , 800 pigs , 400 coil . How many coil does he have ?	num14
+Tom has 500 meeting , 800 degree , 900 hall , 300 push , 700 snakes . How many meeting does he have ?	num2
+Tom has 700 club , 100 friction , 300 need , 500 cherries . How many need does he have ?	num8
+Tom has 800 coast , 600 mice , 300 list . How many coast does he have ?	num2
+Tom has 700 wool , 600 business , 300 songs . How many business does he have ?	num5
+Tom has 900 sponge , 800 cover , 100 furniture . How many sponge does he have ?	num2
+Tom has 100 notebook , 700 friend , 800 account , 300 thumb , 900 thread . How many friend does he have ?	num5
+Tom has 600 trucks , 500 caption , 400 lace . How many lace does he have ?	num8
+Tom has 100 book , 800 kettle , 200 name , 400 disgust . How many disgust does he have ?	num11
+Tom has 500 protest , 900 horse , 300 slope , 800 bell . How many slope does he have ?	num8
+Tom has 700 detail , 900 place , 400 size . How many place does he have ?	num5
+Tom has 600 animal , 100 destruction . How many destruction does he have ?	num5
+Tom has 900 square , 600 knowledge . How many square does he have ?	num2
+Tom has 100 jump , 700 maid , 300 organization . How many jump does he have ?	num2
+Tom has 700 cabbage , 500 list , 600 tiger . How many cabbage does he have ?	num2
+Tom has 100 curtain , 700 pain , 500 pear , 400 shoe , 300 trouble . How many pain does he have ?	num5
+Tom has 300 mother , 800 flowers . How many mother does he have ?	num2
+Tom has 900 fiction , 200 net . How many fiction does he have ?	num2
+Tom has 700 hall , 500 wing , 200 volcano , 900 pancake , 300 clocks . How many pancake does he have ?	num11
+Tom has 300 quartz , 800 start , 200 stew , 100 vegetable , 400 lamp . How many lamp does he have ?	num14
+Tom has 600 soap , 100 mice , 400 stem . How many mice does he have ?	num5
+Tom has 100 fire , 800 father . How many father does he have ?	num5
+Tom has 100 purpose , 200 breath . How many breath does he have ?	num5
+Tom has 100 earth , 200 dad , 400 control . How many earth does he have ?	num2
+Tom has 300 scale , 800 rule . How many rule does he have ?	num5
+Tom has 400 night , 700 bear , 500 start , 800 cent , 200 name . How many name does he have ?	num14
+Tom has 400 blow , 200 value , 900 baby , 700 son , 500 garden . How many value does he have ?	num5
+Tom has 600 mouth , 100 hot , 300 snow , 200 stamp , 500 distribution . How many distribution does he have ?	num14
+Tom has 100 development , 500 experience , 600 meat , 800 bell , 900 farmer . How many meat does he have ?	num8
+Tom has 700 statement , 400 drink , 100 spiders , 800 friction . How many drink does he have ?	num5
+Tom has 300 store , 600 basket , 500 cakes , 100 owner , 700 toy . How many owner does he have ?	num11
+Tom has 100 boys , 200 flower , 800 hole , 500 van . How many hole does he have ?	num8
+Tom has 200 tooth , 100 attention , 400 rain , 900 attraction , 800 shop . How many attention does he have ?	num5
+Tom has 100 parent , 400 cry , 900 lake , 600 giants . How many lake does he have ?	num8
+Tom has 600 island , 400 bead , 100 wheel . How many wheel does he have ?	num8
+Tom has 800 feast , 900 operation . How many operation does he have ?	num5
+Tom has 300 glove , 100 dolls , 400 use , 900 vase , 500 friends . How many use does he have ?	num8
+Tom has 200 edge , 800 crown , 400 expansion , 100 flag , 700 eye . How many expansion does he have ?	num8
+Tom has 700 amusement , 600 chickens , 900 goat , 500 bone , 800 pump . How many chickens does he have ?	num5
+Tom has 600 chicken , 200 stick , 700 touch . How many stick does he have ?	num5
+Tom has 900 cub , 700 room , 500 attack , 100 ink , 800 letter . How many ink does he have ?	num11
+Tom has 600 sticks , 900 development , 400 face , 100 jewel . How many jewel does he have ?	num11
+Tom has 700 sheep , 400 rest , 100 writer , 200 trick . How many writer does he have ?	num8
+Tom has 100 operation , 600 bomb , 900 behavior , 800 net . How many net does he have ?	num11
+Tom has 900 comparison , 500 root . How many root does he have ?	num5
+Tom has 100 love , 700 curve . How many love does he have ?	num2
+Tom has 100 plate , 800 station , 500 meat . How many station does he have ?	num5
+Tom has 900 head , 800 industry , 400 hall . How many hall does he have ?	num8
+Tom has 100 ants , 900 circle . How many ants does he have ?	num2
+Tom has 800 sea , 600 authority , 400 island , 300 animal . How many sea does he have ?	num2
+Tom has 900 part , 300 position . How many position does he have ?	num5
+Tom has 800 battle , 400 veil , 500 bit , 600 key . How many key does he have ?	num11
+Tom has 500 ducks , 600 bath , 300 front , 800 need . How many need does he have ?	num11
+Tom has 400 value , 900 join . How many join does he have ?	num5
+Tom has 800 song , 700 clam . How many song does he have ?	num2
+Tom has 600 hill , 200 clocks , 300 breath , 100 lift , 700 rose . How many hill does he have ?	num2
+Tom has 400 apparel , 700 rifle , 500 dogs , 800 hose . How many hose does he have ?	num11
+Tom has 100 distance , 800 waste , 500 plastic , 300 country . How many plastic does he have ?	num8
+Tom has 300 soap , 700 tub , 500 shape , 900 holiday . How many tub does he have ?	num5
+Tom has 700 calendar , 200 invention , 300 believe , 500 roll . How many invention does he have ?	num5
+Tom has 400 control , 700 apple , 800 songs , 500 song , 600 flock . How many apple does he have ?	num5
+Tom has 100 blood , 400 gold , 800 division , 700 stocking . How many blood does he have ?	num2
+Tom has 500 degree , 200 club , 800 comparison , 700 question , 300 cook . How many question does he have ?	num11
+Tom has 600 thought , 200 drink . How many drink does he have ?	num5
+Tom has 300 oranges , 200 paint , 700 rice , 400 rate . How many rice does he have ?	num8
+Tom has 200 shock , 300 hand , 400 can . How many shock does he have ?	num2
+Tom has 300 pigs , 200 curtain , 800 friction . How many curtain does he have ?	num5
+Tom has 100 bridge , 500 ladybug , 900 eyes . How many eyes does he have ?	num8
+Tom has 700 sweater , 400 orange , 600 father , 200 edge , 100 motion . How many orange does he have ?	num5
+Tom has 900 news , 100 flag . How many flag does he have ?	num5
+Tom has 400 train , 600 ring , 300 knee , 200 gate . How many ring does he have ?	num5
+Tom has 400 police , 300 digestion , 600 smash , 100 alarm , 900 jar . How many smash does he have ?	num8
+Tom has 100 seat , 200 shake . How many shake does he have ?	num5
+Tom has 600 office , 400 quartz , 800 iron , 100 ant . How many iron does he have ?	num8
+Tom has 200 balls , 600 kitty . How many balls does he have ?	num2
+Tom has 800 basketball , 500 art , 600 brother . How many basketball does he have ?	num2
+Tom has 800 power , 600 fifth , 200 lift . How many lift does he have ?	num8
+Tom has 500 banana , 600 event , 800 name , 700 pencil . How many event does he have ?	num5
+Tom has 600 cattle , 900 jeans . How many jeans does he have ?	num5
+Tom has 500 boundary , 200 hose , 800 cow , 700 dog . How many boundary does he have ?	num2
+Tom has 100 potato , 400 morning , 800 root , 700 pies , 300 arithmetic . How many pies does he have ?	num11
+Tom has 800 middle , 100 apparel , 500 sugar , 200 toy , 400 army . How many toy does he have ?	num11
+Tom has 900 scarecrow , 300 lawyer , 100 cabbage , 700 parcel , 200 spot . How many spot does he have ?	num14
+Tom has 500 grade , 100 oatmeal , 200 shoe . How many oatmeal does he have ?	num5
+Tom has 500 arm , 400 straw , 900 salt . How many straw does he have ?	num5
+Tom has 900 caption , 800 order , 400 basket , 500 church , 300 chance . How many order does he have ?	num5
+Tom has 500 fact , 800 nose , 200 trick . How many fact does he have ?	num2
+Tom has 900 leather , 700 plot , 800 rod , 300 music . How many leather does he have ?	num2
+Tom has 600 cry , 500 holiday . How many cry does he have ?	num2
+Tom has 700 pear , 100 request , 600 sheep . How many pear does he have ?	num2
+Tom has 300 disgust , 600 pull . How many pull does he have ?	num5
+Tom has 300 toothpaste , 400 body , 600 move , 100 request . How many body does he have ?	num5
+Tom has 100 death , 600 ant . How many death does he have ?	num2
+Tom has 600 slope , 800 mice , 300 sun , 200 goat , 700 boys . How many goat does he have ?	num11
+Tom has 400 finger , 200 coal . How many finger does he have ?	num2
+Tom has 200 soda , 700 move , 900 temper . How many temper does he have ?	num8
+Tom has 900 activity , 100 jellyfish , 300 houses , 500 camera , 400 rake . How many camera does he have ?	num11
+Tom has 100 bear , 500 town , 400 umbrella , 300 vase . How many bear does he have ?	num2
+Tom has 600 comfort , 700 birds , 400 cat , 800 holiday , 500 sheet . How many sheet does he have ?	num14
+Tom has 800 attack , 300 decision . How many decision does he have ?	num5
+Tom has 200 division , 700 rhythm . How many rhythm does he have ?	num5
+Tom has 100 muscle , 500 feet . How many feet does he have ?	num5
+Tom has 100 steel , 600 insect , 700 men , 900 eyes . How many steel does he have ?	num2
+Tom has 800 knife , 900 nest , 500 quill . How many quill does he have ?	num8
+Tom has 700 appliance , 600 glass . How many appliance does he have ?	num2
+Tom has 500 team , 700 advertisement , 600 guide . How many guide does he have ?	num8
+Tom has 900 glue , 500 mice , 100 earth , 800 pancake , 600 order . How many earth does he have ?	num8
+Tom has 800 cemetery , 500 daughter . How many daughter does he have ?	num5
+Tom has 900 cart , 500 wealth , 600 copy . How many wealth does he have ?	num5
+Tom has 900 food , 600 hobbies . How many food does he have ?	num2
+Tom has 100 morning , 200 level . How many morning does he have ?	num2
+Tom has 700 snail , 300 kitten , 900 clover , 800 hammer , 400 start . How many clover does he have ?	num8
+Tom has 200 girl , 600 loss , 700 crib , 300 jeans , 900 camp . How many jeans does he have ?	num11
+Tom has 500 punishment , 800 range , 600 fowl , 700 cows . How many punishment does he have ?	num2
+Tom has 900 head , 500 beggar . How many beggar does he have ?	num5
+Tom has 400 debt , 800 word , 300 shame , 900 pot , 200 creature . How many shame does he have ?	num8
+Tom has 800 owner , 700 glass , 600 smile , 500 shock . How many smile does he have ?	num8

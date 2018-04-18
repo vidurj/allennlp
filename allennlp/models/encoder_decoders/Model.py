@@ -33,7 +33,6 @@ Plus   (num, num) : num
 
 
 def batched_index_select(input_tensor, index_tensor):
-    print('shapes!', input_tensor.size(), index_tensor.size())
     dummy = index_tensor.unsqueeze(1).unsqueeze(2).expand(index_tensor.size(0), 1, input_tensor.size(2))
     out = input_tensor.gather(1, dummy)  # b x e x f
     return out.squeeze(dim=1)

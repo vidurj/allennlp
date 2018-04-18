@@ -189,16 +189,19 @@ def prepare_synthetic_data():
     number_tokens = [str(i * 100) for i in range(1, 10)]
 
     def sample_question(size, objects):
-        fruit_section = []
+        question = ['Tom', 'has']
         random.shuffle(number_tokens)
-        for index in range(size):
-            fruit_string = ' '.join(objects[index])
-            fruit_section.append(number_tokens[index] + ' ' + fruit_string)
         question_index = random.randint(0, size - 1)
-        fruit_string = ' '.join(objects[question_index])
-        question = 'Tom has ' + ' , '.join(fruit_section) \
-                   + ' . How many ' + fruit_string + ' does he have ?'
-        return question, number_tokens[question_index]
+        for index in range(size):
+            if index == question_index:
+                solution = len(question)
+            question.append(number_tokens[index])
+            question.append(objects[index])
+            question.append(',')
+        question = question[:-1]
+        question.extend(['.', 'How', 'many', objects[question_index], 'does', 'he', 'have', '?'])
+        assert question[solution] == number_tokens[question_index]
+        return ' '.join(question), 'num' + str(solution)
 
     with open('objects.txt', 'r') as f:
         tokens = f.read().lower().split()
@@ -209,7 +212,7 @@ def prepare_synthetic_data():
     print(len(objects))
     train_objects = objects[:-10]
     train = []
-    for _ in range(10000):
+    for _ in range(1000):
         size = random.randint(2, 5)
         random.shuffle(train_objects)
         question, answer = sample_question(size, train_objects)
