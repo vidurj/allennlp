@@ -311,7 +311,6 @@ class SimpleCopy(Model):
             output_logits = (decoder_hidden.unsqueeze(1) * output_embeddings).sum(dim=-1)
             step_logits.append(output_logits.unsqueeze(1))
             class_probabilities = F.softmax(output_logits, dim=-1)
-            print('class probabilities', class_probabilities.data.cpu().numpy())
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
