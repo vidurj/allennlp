@@ -20,7 +20,6 @@ from allennlp.training.metrics import EvalbBracketingScorer
 from allennlp.common.checks import ConfigurationError
 import numpy as np
 from sortedcontainers import SortedList
-import math
 
 class SpanInformation(NamedTuple):
     """
@@ -272,7 +271,7 @@ class SpanConstituencyParser(Model):
     def compute_k_best(self,
                        sentence,
                        pos_tags,
-                       label_log_probabilities_np,
+                       label_probabilities_np,
                        span_to_index,
                        num_trees,
                        distinguish_between_labels=False):
@@ -290,9 +289,9 @@ class SpanConstituencyParser(Model):
         """
 
         temp_index = span_to_index[(0, len(sentence))]
-        most_likely = label_log_probabilities_np[temp_index, :].argmax()
+        most_likely = label_probabilities_np[temp_index, :].argmax()
         print('-' * 100)
-        print(label_log_probabilities_np[temp_index, :])
+        print(label_probabilities_np[temp_index, :])
         print(self.vocab.get_token_from_index(most_likely, "labels").split("-"))
         print('-' * 100)
 
@@ -304,19 +303,21 @@ class SpanConstituencyParser(Model):
 
         if not distinguish_between_labels:
             temp = np.zeros((len(span_to_index), 2))
-            temp[:, 0] = label_log_probabilities_np[:, empty_label_index]
-            temp[:, 1] = np.log(1 - np.exp(label_log_probabilities_np[:, empty_label_index]) + 10 ** -5)
+            temp[:, 0] = label_probabilities_np[:, empty_label_index]
+            temp[:, 1] = 1 - label_probabilities_np[:, empty_label_index]
 
             span_to_label = {}
             # To ensure that the empty label does not have the maximum probability for any span.
-            label_log_probabilities_np[:, empty_label_index] = - math.inf
+            label_probabilities_np[:, empty_label_index] = -1
             for span, span_index in span_to_index.items():
-                label_index = label_log_probabilities_np[span_index, :].argmax() + 1
+                label_index = label_probabilities_np[span_index, :].argmax() + 1
                 span_to_label[span] = all_labels[label_index]
 
-            label_log_probabilities_np = temp
+            label_probabilities_np = temp
             empty_label_index = 0
 
+
+        label_log_probabilities_np = np.log(label_probabilities_np)
         correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
         label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]\
             .reshape((len(span_to_index), 1))
