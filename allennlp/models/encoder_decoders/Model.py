@@ -301,7 +301,7 @@ class SimpleCopy(Model):
                 input_choices = Variable(source_mask.data.new()
                                          .resize_(batch_size, 1).fill_(self._start_index))
             else:
-                input_choices = last_predictions
+                input_choices = last_predictions.resize_(batch_size, 1)
 
             decoder_input = self._prepare_decode_step_input(input_choices,
                                                             output_embeddings,
@@ -366,7 +366,7 @@ class SimpleCopy(Model):
         """
         # input_indices : (batch_size,)  since we are processing these one timestep at a time.
         # (batch_size, target_embedding_dim)
-        embedded_input = batched_index_select(input_indices, embeddings, dim=1)
+        embedded_input = batched_index_select(embeddings, input_indices, dim=1)
         if self._attention_function:
             # encoder_outputs : (batch_size, input_sequence_length, encoder_output_dim)
             # Ensuring mask is also a FloatTensor. Or else the multiplication within attention will
