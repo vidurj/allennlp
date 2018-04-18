@@ -290,7 +290,7 @@ class SimpleCopy(Model):
         # encoder_outputs has shape (batch size, num time steps, embedding dim)
         # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
-        output_embeddings = torch.cat([self._output_embeddings, encoder_outputs], dim=1)
+        output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         print(output_embeddings.shape(), 'output embeddings shape')
         for timestep in range(num_decoding_steps):
