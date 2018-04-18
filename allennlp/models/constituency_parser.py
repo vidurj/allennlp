@@ -278,7 +278,7 @@ class SpanConstituencyParser(Model):
         """
         :param sentence: The sentence for which top-k parses are being computed.
         :param pos_tags: Part of speech tags for every token in the input sentence.
-        :param label_log_probabilities_np: A numpy array of shape (num_spans, num_labels)
+        :param label_probabilities_np: A numpy array of shape (num_spans, num_labels)
         :param span_to_index: A dictionary mapping span indices to column indices in
         label_log_probabilities.
         :param no_label_id: The id of the empty label.
@@ -287,6 +287,14 @@ class SpanConstituencyParser(Model):
         top k trees.
         :return: A list of the num_tree parses, and their log probabilities.
         """
+
+        temp_index = span_to_index[(0, len(sentence))]
+        most_likely = label_probabilities_np[temp_index, :].argmax()
+        print('-' * 100)
+        print(self.vocab.get_token_from_index(most_likely, "labels").split("-"))
+        print('-' * 100)
+
+
         empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
         all_labels = [self.vocab.get_token_from_index(index, "labels").split("-") for index in
                   range(self.vocab.get_vocab_size("labels"))]
@@ -384,11 +392,6 @@ class SpanConstituencyParser(Model):
                 cache[span] = options
             return cache[span]
 
-        temp_index = span_to_index[(0, len(sentence))]
-        most_likely = label_probabilities_np[temp_index, :].argmax()
-        print('-' * 100)
-        print(self.vocab.get_token_from_index(most_likely, "labels").split("-"))
-        print('-' * 100)
         trees_and_scores = helper(0, len(sentence), must_be_constituent=True)[:num_trees]
         trees = []
         scores = []
