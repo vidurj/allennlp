@@ -23,7 +23,7 @@
   "test_data_path": "synthetic_dev.txt",
   "model": {
     "type": "simple_copy",
-    "max_decoding_steps": 1,
+    "max_decoding_steps": 3,
     "source_embedder": {
       "tokens": {
         "vocab_namespace": "source_tokens",
