@@ -311,7 +311,8 @@ class SimpleCopy(Model):
                                                             decoder_hidden,
                                                             encoder_outputs,
                                                             source_mask)
-
+            print('decoder input ' * 10)
+            print(decoder_input.data.cpu().numpy())
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
             print(decoder_hidden.data.cpu().numpy())
