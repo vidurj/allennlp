@@ -299,7 +299,7 @@ class SimpleCopy(Model):
                 # For the first timestep, when we do not have targets, we input start symbols.
                 # (batch_size,)
                 input_choices = Variable(source_mask.data.new()
-                                         .resize_(batch_size).fill_(self._start_index))
+                                         .resize_(batch_size, 1).fill_(self._start_index))
             else:
                 input_choices = last_predictions
 
