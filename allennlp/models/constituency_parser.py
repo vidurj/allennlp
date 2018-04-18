@@ -302,7 +302,7 @@ class SpanConstituencyParser(Model):
         correction_term = np.sum(label_log_probabilities_np[:, empty_label_index])
         label_log_probabilities_np -= label_log_probabilities_np[:, empty_label_index]\
             .reshape((len(span_to_index), 1))
-
+        print(label_log_probabilities_np)
         cache = {}
 
         def helper(left, right, must_be_constituent):
@@ -335,8 +335,6 @@ class SpanConstituencyParser(Model):
                     options.append(([tree], score))
                 cache[span] = options
             else:
-                if must_be_constituent:
-                    actions = actions[1:]
                 children_options = SortedList(key=lambda x: - x[1])
                 for split in range(left + 1, right):
                     left_trees_options = helper(left, split, must_be_constituent=True)
@@ -362,6 +360,8 @@ class SpanConstituencyParser(Model):
                             while label:
                                 children = [Tree(label.pop(), children)]
                             option = children
+                        elif must_be_constituent:
+                            continue
                         else:
                             option = children
                         if len(options) < num_trees:
