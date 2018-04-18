@@ -351,6 +351,7 @@ class SpanConstituencyParser(Model):
                     for (children, children_score) in children_options:
                         option_score = action_score + children_score
                         if label_index != empty_label_index:
+                            label = list(labels[label_index])
                             while label:
                                 children = [Tree(label.pop(), children)]
                             option = children
