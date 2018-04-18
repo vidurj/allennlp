@@ -270,7 +270,6 @@ class SimpleCopy(Model):
         # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
-        print(type(encoder_outputs), 'encoder outputs type')
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
@@ -312,6 +311,7 @@ class SimpleCopy(Model):
             output_logits = (decoder_hidden.unsqueeze(1) * output_embeddings).sum(dim=-1)
             step_logits.append(output_logits.unsqueeze(1))
             class_probabilities = F.softmax(output_logits, dim=-1)
+            print('class probabilities', class_probabilities.data.cpu().numpy())
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
