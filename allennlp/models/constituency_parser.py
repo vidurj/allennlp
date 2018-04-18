@@ -289,8 +289,8 @@ class SpanConstituencyParser(Model):
 
         if not distinguish_between_labels:
             temp = np.zeros((len(span_to_index), 2))
-            temp[0, :] = label_log_probabilities_np[:, empty_label_index]
-            temp[1, :] = 1 - label_log_probabilities_np[:, empty_label_index]
+            temp[:, 0] = label_log_probabilities_np[:, empty_label_index]
+            temp[:, 1] = 1 - label_log_probabilities_np[:, empty_label_index]
             label_log_probabilities_np = temp
             empty_label_index = 0
 
