@@ -312,7 +312,17 @@ class SimpleCopy(Model):
                                                             encoder_outputs,
                                                             source_mask)
             print('decoder input ' * 10)
-            print(decoder_input.data.cpu().numpy())
+            a = decoder_input.data.cpu().numpy()
+            print(a)
+            print(np.any(np.isnan(a)))
+            b = decoder_hidden.data.cpu().numpy()
+            print(b)
+            print(np.any(np.isnan(b)))
+            c = decoder_context.data.cpu().numpy()
+            print(c)
+            print(np.any(np.isnan(c)))
+            
+            print('-' * 100)
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
             print(decoder_hidden.data.cpu().numpy())
