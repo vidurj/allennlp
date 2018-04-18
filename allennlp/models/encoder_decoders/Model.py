@@ -293,7 +293,8 @@ class SimpleCopy(Model):
         # print(encoder_outputs.data.cpu().numpy())
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
-
+        a = output_embeddings.data.cpu().numpy()
+        assert not np.any(np.isnan(a)), a
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
             if self.training:
@@ -321,7 +322,7 @@ class SimpleCopy(Model):
             c = decoder_context.data.cpu().numpy()
             print(c)
             print(np.any(np.isnan(c)))
-            
+
             print('-' * 100)
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
@@ -394,6 +395,8 @@ class SimpleCopy(Model):
         # input_indices : (batch_size,)  since we are processing these one timestep at a time.
         # (batch_size, target_embedding_dim)
         embedded_input = batched_index_select(embeddings, input_indices)
+        a = embedded_input.data.cpu().numpy()
+        assert not np.any(np.isnan(a)), a
         if self._attention_function:
             # encoder_outputs : (batch_size, input_sequence_length, encoder_output_dim)
             # Ensuring mask is also a FloatTensor. Or else the multiplication within attention will
@@ -402,6 +405,8 @@ class SimpleCopy(Model):
             # (batch_size, input_sequence_length)
             input_weights = self._decoder_attention(decoder_hidden_state, encoder_outputs,
                                                     encoder_outputs_mask)
+            a = embedded_input.data.cpu().numpy()
+            assert not np.any(np.isnan(a)), input_weights
             # (batch_size, encoder_output_dim)
             attended_input = weighted_sum(encoder_outputs, input_weights)
             # (batch_size, encoder_output_dim + target_embedding_dim)
