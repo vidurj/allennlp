@@ -296,7 +296,17 @@ class SimpleCopy(Model):
 
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
-            decoder_input = self._prepare_decode_step_input(targets[:, timestep],
+            if self.training:
+                input_choices = targets[:, timestep]
+            else:
+                if timestep == 0:
+                    # For the first timestep, when we do not have targets, we input start symbols.
+                    # (batch_size,)
+                    input_choices = Variable(source_mask.data.new()
+                                             .resize_(batch_size).fill_(self._start_index))
+                else:
+                    input_choices = last_predictions
+            decoder_input = self._prepare_decode_step_input(input_choices,
                                                             output_embeddings,
                                                             decoder_hidden,
                                                             encoder_outputs,
