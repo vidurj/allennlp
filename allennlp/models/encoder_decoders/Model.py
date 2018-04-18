@@ -314,9 +314,9 @@ class SimpleCopy(Model):
 
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
-            output_logits = (output_embeddings * decoder_hidden).sum(dim=-1)
+            output_logits = (output_embeddings.unsqueeze(1) * decoder_hidden).sum(dim=-1)
             print('output logits shape', output_logits.size())
-            print('output embeddings shape', output_embeddings.size())
+            print('output embeddings shape', output_embeddings.unsqueeze(1).size())
             # output_logits (batch size, num actions + num tokens)
             class_probabilities = torch.nn.functional.softmax(output_logits, dim=-1)
 
