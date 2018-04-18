@@ -281,7 +281,7 @@ class SpanConstituencyParser(Model):
         :param num_trees: The number of parses required.
         :param distinguish_between_labels: Whether to distinguish between different labels for the
         top k trees.
-        :return: A list of the num_tree parses along with their log probabilities.
+        :return: A list of the num_tree parses, and their log probabilities.
         """
         empty_label_index = self.vocab.get_token_index("NO-LABEL", "labels")
         labels = [self.vocab.get_token_from_index(index, "labels") for index in
@@ -420,12 +420,12 @@ class SpanConstituencyParser(Model):
                 span = (exclusive_end_spans[batch_index, span_index, 0],
                         exclusive_end_spans[batch_index, span_index, 1])
                 span_to_index[span] = span_index
-            top_k_trees_and_scores = self.compute_k_best(sentences[batch_index],
+            top_k_trees, _ = self.compute_k_best(sentences[batch_index],
                                                          pos_tags[batch_index],
                                                          predictions_np[batch_index, :, :],
                                                          span_to_index,
                                                          num_trees=16)
-            trees.append([tree for tree, score in top_k_trees_and_scores])
+            trees.append(top_k_trees)
         return trees
 
     def construct_trees(self,
