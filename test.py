@@ -45,11 +45,15 @@ A = torch.FloatTensor([[[0, 0, 0], [1, 1, 1]], [[2, 2, 2], [3, 3, 3]], [[4, 4, 4
 ind = torch.LongTensor([0, 1, 0])
 
 
-def batched_index_select(t, dim, inds):
-    dummy = inds.unsqueeze(1).unsqueeze(2).expand(inds.size(0), 1, t.size(2))
-    print(dummy.size())
-    out = t.gather(dim, dummy)  # b x e x f
-    return out.squeeze(1)
+# def batched_index_select(t, dim, inds):
+#     dummy = inds.unsqueeze(1).unsqueeze(2).expand(inds.size(0), 1, t.size(2))
+#     print(dummy.size())
+#     out = t.gather(dim, dummy)  # b x e x f
+#     return out.squeeze(1)
+#
+# dim = 1
+# print(batched_index_select(A, dim, ind))
 
-dim = 1
-print(batched_index_select(A, dim, ind))
+tensor_1 = torch.FloatTensor([[0, 0, 0], [1, 1, 1], [2, 2, 2]])
+tensor_2 = torch.FloatTensor([])
+print((tensor_1 * tensor_2).sum(dim=-1))
