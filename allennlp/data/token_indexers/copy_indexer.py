@@ -65,6 +65,8 @@ class CopyTokenIndexer(TokenIndexer[int]):
                     print(vocabulary.get_token_from_index(0, self.namespace))
                     print(vocabulary.get_token_from_index(1, self.namespace))
                     print(vocabulary.get_token_from_index(2, self.namespace))
+                    print(vocabulary.get_token_from_index(3, self.namespace))
+                    print(vocabulary.get_token_from_index(4, self.namespace))
                     print(text, index, vocabulary.get_vocab_size(self.namespace), index + vocabulary.get_vocab_size(self.namespace))
                     return index + vocabulary.get_vocab_size(self.namespace)
             index = vocabulary.get_token_index(text, self.namespace)
