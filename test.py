@@ -42,7 +42,7 @@ import torch
 
 
 A = torch.FloatTensor([[[0, 0, 0], [1, 1, 1]], [[2, 2, 2], [3, 3, 3]], [[4, 4, 4], [5, 5, 5]]])
-ind = torch.LongTensor([0, 1, 0])
+ind = torch.FloatTensor([0, 1, 0])
 
 
 # def batched_index_select(t, dim, inds):
@@ -55,5 +55,5 @@ ind = torch.LongTensor([0, 1, 0])
 # print(batched_index_select(A, dim, ind))
 
 tensor_1 = torch.FloatTensor([[0, 0, 0], [1, 1, 1], [2, 2, 2]])
-tensor_2 = torch.FloatTensor([])
-print((tensor_1 * tensor_2).sum(dim=-1))
+tensor_2 = torch.FloatTensor([0, 1, 0])
+print((A * ind).sum(dim=-1))
