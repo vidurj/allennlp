@@ -123,7 +123,8 @@ class SimpleCopy(Model):
             self._decoder_input_dim = target_embedding_dim
         # TODO (pradeep): Do not hardcode decoder cell type.
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
-        self._output_embeddings = torch.FloatTensor(num_classes, self._decoder_output_dim)
+        self._output_embeddings = torch.nn.Parameter(
+            torch.FloatTensor(num_classes, self._decoder_output_dim))
         self._copy_probability = Linear(self._decoder_output_dim, 1)
 
     def beam_search(self,  # type: ignore
@@ -269,6 +270,7 @@ class SimpleCopy(Model):
         # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
+        print(type(encoder_outputs), 'encoder outputs type')
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
@@ -285,7 +287,12 @@ class SimpleCopy(Model):
         step_logits = []
         step_probabilities = []
         step_predictions = []
-        output_embeddings = torch.cat([self._output_embeddings, encoder_outputs], dim = -1)
+        # encoder_outputs has shape (batch size, num time steps, embedding dim)
+        # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
+        basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
+        output_embeddings = torch.cat([self._output_embeddings, encoder_outputs], dim=1)
+        # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
+        print(output_embeddings.shape(), 'output embeddings shape')
         for timestep in range(num_decoding_steps):
             if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
                 input_choices = targets[:, timestep]
