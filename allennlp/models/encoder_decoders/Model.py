@@ -289,8 +289,8 @@ class SimpleCopy(Model):
         step_predictions = []
         # encoder_outputs has shape (batch size, num time steps, embedding dim)
         # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
-        print(self._output_embeddings.data.cpu().numpy())
-        print(encoder_outputs.data.cpu().numpy())
+        # print(self._output_embeddings.data.cpu().numpy())
+        # print(encoder_outputs.data.cpu().numpy())
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
 
@@ -306,11 +306,11 @@ class SimpleCopy(Model):
                                                                  (decoder_hidden, decoder_context))
             class_probabilities = self._decoder_attention(decoder_hidden, output_embeddings)
             output_logits = torch.log(class_probabilities)
-            print(output_logits.data.cpu().numpy())
+            # print(output_logits.data.cpu().numpy())
             step_logits.append(output_logits.unsqueeze(1))
             # F.softmax(output_logits, dim=-1)
-            print(class_probabilities.data.cpu().numpy())
-            print('-' * 100)
+            # print(class_probabilities.data.cpu().numpy())
+            # print('-' * 100)
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
