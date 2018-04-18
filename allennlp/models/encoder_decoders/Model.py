@@ -302,7 +302,7 @@ class SimpleCopy(Model):
                 input_choices = Variable(source_mask.data.new()
                                          .resize_(batch_size, 1).fill_(self._start_index))
             else:
-                input_choices = last_predictions.resize_(batch_size, 1)
+                input_choices = last_predictions.unsqueeze(1)
 
             decoder_input = self._prepare_decode_step_input(input_choices,
                                                             output_embeddings,
