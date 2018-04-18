@@ -314,7 +314,9 @@ class SimpleCopy(Model):
 
             decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                  (decoder_hidden, decoder_context))
+            print(decoder_hidden.data.cpu().numpy())
             print('output embeddings shape', decoder_hidden.unsqueeze(1).size())
+            print(encoder_outputs.data.cpu().numpy())
             print('output embeddings shape', output_embeddings.size())
             output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
             print(output_logits.data.cpu().numpy())
