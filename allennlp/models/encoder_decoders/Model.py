@@ -294,6 +294,8 @@ class SimpleCopy(Model):
         # print(self._output_embeddings.data.cpu().numpy())
         # print(encoder_outputs.data.cpu().numpy())
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
+        a = basic_actions.data.cpu().numpy()
+        assert not np.any(np.isnan(a)), a
         output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
         a = output_embeddings.data.cpu().numpy()
         assert not np.any(np.isnan(a)), a
