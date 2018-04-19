@@ -51,7 +51,7 @@
       "num_epochs": 100,
       "grad_norm": 5.0,
       "patience": 100,
-//      "cuda_device": 0,
+      "cuda_device": 0,
       "optimizer": {
         "type": "adadelta",
         "lr": 1.0,
