@@ -125,6 +125,7 @@ class SimpleCopy(Model):
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
         self._output_embeddings = torch.nn.Parameter(torch.randn(num_classes, target_embedding_dim) / 10)
         self._copy_probability = Linear(self._decoder_output_dim, 1)
+        self._scale = torch.nn.Parameter(torch.randn(1) / 10)
 
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
@@ -264,7 +265,7 @@ class SimpleCopy(Model):
         target_tokens : Dict[str, torch.LongTensor], optional (default = None)
            Output of ``Textfield.as_array()`` applied on target ``TextField``. We assume that the
            target tokens are also represented as a ``TextField``.
-           :param stem_tokens:
+           stem_tokens:
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
         print(source_tokens.keys())
@@ -272,7 +273,14 @@ class SimpleCopy(Model):
         embedded_input = self._source_embedder(source_tokens)
 
         stem_tokens = stem_tokens['tokens']
-        batch_size, _, _ = embedded_input.size()
+        max_vocab_index = torch.max(stem_tokens)
+        random_vocab = self._scale * torch.randn(max_vocab_index, 50)
+        batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
+        random_embeddings = torch\
+            .index_select(input=random_vocab, dim=0, index=stem_tokens.view(stem_tokens.numel()))\
+            .view((batch_size, num_timesteps, 50))
+
+
         # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
