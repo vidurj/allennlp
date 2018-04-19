@@ -18,6 +18,7 @@ from allennlp.modules.similarity_functions import SimilarityFunction
 from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
 from allennlp.type_checking import valid_next_characters, update_state
+import random
 
 """
 And (bool, ...) : bool
@@ -125,9 +126,10 @@ class SimpleCopy(Model):
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
         self._output_embeddings = torch.nn.Parameter(
             torch.randn(num_classes, target_embedding_dim) / 10)
-        self._copy_probability = Linear(self._decoder_output_dim, 1)
-        self._scale = torch.nn.Parameter(torch.randn(1) / 10)
         self._random_embedding_size = 50
+        self._stem_embedding = torch.nn.Parameter(torch.randn(250, self._random_embedding_size))
+        self._permutable_indices = list(range(3, 250))
+
 
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
@@ -274,8 +276,8 @@ class SimpleCopy(Model):
 
         stem_tokens = stem_tokens['tokens']
         batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
-        random_vocab = torch.randn(num_timesteps, self._random_embedding_size)
-        random_vocab = self._scale * random_vocab
+        random.shuffle(self._permutable_indices)
+        random_vocab = self._stem_embedding[[0, 1, 2] + self._permutable_indices, :]
         print('tokens shape', stem_tokens.size())
         flattened_indices = stem_tokens.view(stem_tokens.numel())
         random_embeddings = torch.index_select(random_vocab, 0, flattened_indices)
