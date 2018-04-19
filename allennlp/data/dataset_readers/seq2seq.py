@@ -96,7 +96,7 @@ class Seq2SeqDatasetReader(DatasetReader):
             stemmed_text = self._stemmer.stem_word(token).text
             if stemmed_text not in stem_to_index:
                 stem_to_index[stemmed_text] = str(len(stem_to_index))
-            stemmed_source.append(Token('stem' + stem_to_index[stemmed_text]))
+            stemmed_source.append(Token(stem_to_index[stemmed_text]))
         stemmed_source.append(Token(END_SYMBOL))
         if self._source_add_start_token:
             tokenized_source.insert(0, Token(START_SYMBOL))
