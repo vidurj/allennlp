@@ -210,32 +210,32 @@ def prepare_synthetic_data():
         if len(token) > 2:
             objects.append(token)
     print(len(objects))
-    train_objects = objects[:-10]
+    train_objects = objects[:-100]
     train = []
     questions = []
     answers = []
-    # for _ in range(10000):
-    #     size = random.randint(2, 5)
-    #     random.shuffle(train_objects)
-    #     question, answer = sample_question(size, train_objects)
-    #     train.append(question + '\t' + answer)
-    #     questions.append(question)
-    #     answers.append(answer)
-    #
-    # with open('synthetic_train.txt', 'w') as f:
-    #     f.write('\n'.join(train))
-    #
-    # with open('synthetic_train.json', 'w') as f:
-    #     f.write('\n'.join(questions))
-    #
-    # with open('synthetic_train_solutions.txt', 'w') as f:
-    #     f.write('\n'.join(answers))
+    for _ in range(10000):
+        size = random.randint(2, 5)
+        random.shuffle(train_objects)
+        question, answer = sample_question(size, train_objects)
+        train.append(question + '\t' + answer)
+        questions.append(question)
+        answers.append(answer)
+
+    with open('synthetic_train.txt', 'w') as f:
+        f.write('\n'.join(train))
+
+    with open('synthetic_train.json', 'w') as f:
+        f.write('\n'.join(questions))
+
+    with open('synthetic_train_solutions.txt', 'w') as f:
+        f.write('\n'.join(answers))
 
     dev = []
-    dev_objects = objects[:-10]
+    dev_objects = objects[-100:]
     answers = []
     questions = []
-    for _ in range(10000):
+    for _ in range(100):
         size = random.randint(2, 9)
         random.shuffle(dev_objects)
         question, answer = sample_question(size, dev_objects)

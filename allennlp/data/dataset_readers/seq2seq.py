@@ -13,6 +13,7 @@ from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
 from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
 from allennlp.prepare_seq2seq_data import is_strict_num
 from allennlp.data.tokenizers.word_stemmer import PorterStemmer
+import random
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -63,9 +64,11 @@ class Seq2SeqDatasetReader(DatasetReader):
         self._source_tokenizer = source_tokenizer or WordTokenizer()
         self._target_tokenizer = target_tokenizer or self._source_tokenizer
         self._source_token_indexers = source_token_indexers or {"tokens": SingleIdTokenIndexer()}
+        self._stem_token_indexer = {"tokens": SingleIdTokenIndexer()}
         self._target_token_indexers = target_token_indexers or self._source_token_indexers
         self._source_add_start_token = source_add_start_token
         self._stemmer = PorterStemmer()
+        self._tokens = ['stem' + str(i) for i in range(200)]
 
     @overrides
     def _read(self, file_path):
@@ -88,20 +91,22 @@ class Seq2SeqDatasetReader(DatasetReader):
     def text_to_instance(self, source_string: str,
                          target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
+        random.shuffle(self._tokens)
         tokenized_source = self._source_tokenizer.tokenize(source_string)
         stem_to_index = {}
-        stemmed_source = []
+        assert self._source_add_start_token
+        stemmed_source = [Token(START_SYMBOL)]
         for token in tokenized_source:
             stemmed_text = self._stemmer.stem_word(token).text
             if stemmed_text not in stem_to_index:
-                stem_to_index[stemmed_text] = str(len(stem_to_index))
-            stemmed_source.append('stem' + stem_to_index[stemmed_text])
-
+                stem_to_index[stemmed_text] = len(stem_to_index)
+            stemmed_source.append(Token(self._tokens[stem_to_index[stemmed_text]]))
+        stemmed_source.append(Token(END_SYMBOL))
         if self._source_add_start_token:
             tokenized_source.insert(0, Token(START_SYMBOL))
         tokenized_source.append(Token(END_SYMBOL))
         source_field = TextField(tokenized_source, self._source_token_indexers)
-        stem_field = TextField(stemmed_source, {"tokens": SingleIdTokenIndexer()})
+        stem_field = TextField(stemmed_source, self._stem_token_indexer)
         if target_string is not None:
             tokenized_target = self._target_tokenizer.tokenize(target_string)
             tokenized_target.insert(0, Token(START_SYMBOL))
