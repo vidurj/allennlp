@@ -128,7 +128,6 @@ class SimpleCopy(Model):
         self._copy_probability = Linear(self._decoder_output_dim, 1)
         self._scale = torch.nn.Parameter(torch.randn(1) / 10)
         self._random_embedding_size = 50
-        self._stem_embedder = Embedding(250, self._random_embedding_size)
 
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
@@ -273,9 +272,21 @@ class SimpleCopy(Model):
         # (batch_size, input_sequence_length, encoder_output_dim)
         embedded_input = self._source_embedder(source_tokens)
 
-        stem_embeddings = self._stem_embedder(stem_tokens['tokens'])
+        stem_tokens = stem_tokens['tokens']
         batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
-        embedded_input = torch.cat([embedded_input, stem_embeddings], dim=2)
+        random_vocab = Variable(
+            torch.randn(batch_size * num_timesteps, self._random_embedding_size),
+            requires_grad=False)
+        random_vocab = self._scale * random_vocab
+        print('tokens shape', stem_tokens.size())
+        flattened_indices = stem_tokens.view(stem_tokens.numel())
+        random_embeddings = torch.index_select(random_vocab, 0, flattened_indices)
+        # (batch_size, nm_timesteps, embedding_dim)
+        random_embeddings = random_embeddings.view((batch_size,
+                                                    num_timesteps,
+                                                    self._random_embedding_size))
+        embedded_input = torch.cat([embedded_input, random_embeddings], dim=2)
+        # assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
