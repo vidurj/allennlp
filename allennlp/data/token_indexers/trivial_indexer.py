@@ -7,7 +7,6 @@ from allennlp.common import Params
 from allennlp.data.vocabulary import Vocabulary
 from allennlp.data.tokenizers.token import Token
 from allennlp.data.token_indexers.token_indexer import TokenIndexer
-from allennlp.data.dataset_readers.seq2seq import START_SYMBOL, END_SYMBOL
 
 
 def is_int(token):
@@ -45,9 +44,9 @@ class TrivialTokenIndexer(TokenIndexer[int]):
             # this id instead.
             return token.text_id
         else:
-            if token.text == START_SYMBOL:
+            if token.text == "@@START@@":
                 return 1
-            elif token.text == END_SYMBOL:
+            elif token.text == "@@END@@":
                 return 2
             else:
                 return int(token.text) + 3
