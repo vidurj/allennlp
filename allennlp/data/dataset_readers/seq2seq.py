@@ -96,8 +96,8 @@ class Seq2SeqDatasetReader(DatasetReader):
         for token in tokenized_source:
             stemmed_text = self._stemmer.stem_word(token).text
             if stemmed_text not in stem_to_index:
-                if len(stem_to_index) > 150:
-                    index = random.randint(0, 150)
+                if len(stem_to_index) > 250:
+                    index = random.randint(0, 250)
                 else:
                     index = len(stem_to_index)
                 stem_to_index[stemmed_text] = str(index)

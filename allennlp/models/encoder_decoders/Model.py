@@ -127,8 +127,8 @@ class SimpleCopy(Model):
         self._output_embeddings = torch.nn.Parameter(
             torch.randn(num_classes, target_embedding_dim) / 10)
         self._random_embedding_size = 50
-        self._stem_embedding = torch.nn.Parameter(torch.randn(151, self._random_embedding_size))
-        self._permutable_indices = list(range(3, 151))
+        self._stem_embedding = torch.nn.Parameter(torch.randn(251, self._random_embedding_size))
+        self._permutable_indices = list(range(3, 251))
 
 
     def beam_search(self,  # type: ignore
