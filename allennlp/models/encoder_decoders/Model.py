@@ -127,8 +127,9 @@ class SimpleCopy(Model):
         self._output_embeddings = torch.nn.Parameter(
             torch.randn(num_classes, target_embedding_dim) / 10)
         self._random_embedding_size = 50
-        self._stem_embedding = torch.nn.Parameter(torch.randn(251, self._random_embedding_size))
-        self._permutable_indices = list(range(3, 251))
+        self._stem_scale = torch.nn.Parameter(torch.randn(1) / 10)
+        # self._stem_embedding = torch.nn.Parameter(torch.randn(251, self._random_embedding_size))
+        # self._permutable_indices = list(range(3, 251))
 
 
     def beam_search(self,  # type: ignore
@@ -276,8 +277,10 @@ class SimpleCopy(Model):
 
         stem_tokens = stem_tokens['tokens']
         batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
-        random.shuffle(self._permutable_indices)
-        random_vocab = self._stem_embedding[[0, 1, 2] + self._permutable_indices, :]
+        # random.shuffle(self._permutable_indices)
+        random_vocab = torch.randn(num_timesteps, self._random_embedding_size)
+        random_vocab *= self._stem_scale.expand_as(random_vocab)
+        #self._stem_embedding[[0, 1, 2] + self._permutable_indices, :]
         flattened_indices = stem_tokens.view(stem_tokens.numel())
         random_embeddings = torch.index_select(random_vocab, 0, flattened_indices)
         # (batch_size, nm_timesteps, embedding_dim)
