@@ -10,7 +10,7 @@ from allennlp.data.dataset_readers.dataset_reader import DatasetReader
 from allennlp.data.fields import TextField
 from allennlp.data.instance import Instance
 from allennlp.data.tokenizers import Token, Tokenizer, WordTokenizer
-from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer
+from allennlp.data.token_indexers import TokenIndexer, SingleIdTokenIndexer, TrivialTokenIndexer
 from allennlp.prepare_seq2seq_data import is_strict_num
 from allennlp.data.tokenizers.word_stemmer import PorterStemmer
 
@@ -102,7 +102,7 @@ class Seq2SeqDatasetReader(DatasetReader):
             tokenized_source.insert(0, Token(START_SYMBOL))
         tokenized_source.append(Token(END_SYMBOL))
         source_field = TextField(tokenized_source, self._source_token_indexers)
-        stem_field = TextField(stemmed_source, {"tokens": SingleIdTokenIndexer()})
+        stem_field = TextField(stemmed_source, {"tokens": TrivialTokenIndexer()})
         if target_string is not None:
             tokenized_target = self._target_tokenizer.tokenize(target_string)
             tokenized_target.insert(0, Token(START_SYMBOL))

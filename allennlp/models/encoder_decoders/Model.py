@@ -274,9 +274,7 @@ class SimpleCopy(Model):
 
         stem_tokens = stem_tokens['tokens']
         batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
-        random_vocab = Variable(
-            torch.randn(batch_size * num_timesteps, self._random_embedding_size),
-            requires_grad=False)
+        random_vocab = torch.randn(num_timesteps, self._random_embedding_size)
         random_vocab = self._scale * random_vocab
         print('tokens shape', stem_tokens.size())
         flattened_indices = stem_tokens.view(stem_tokens.numel())

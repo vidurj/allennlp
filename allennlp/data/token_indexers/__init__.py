@@ -10,3 +10,4 @@ from allennlp.data.token_indexers.token_characters_indexer import TokenCharacter
 from allennlp.data.token_indexers.token_indexer import TokenIndexer
 from allennlp.data.token_indexers.elmo_indexer import ELMoTokenCharactersIndexer
 from allennlp.data.token_indexers.copy_indexer import CopyTokenIndexer
+from allennlp.data.token_indexers.trivial_indexer import TrivialTokenIndexer
