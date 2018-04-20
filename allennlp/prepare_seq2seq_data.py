@@ -186,7 +186,7 @@ def standardize_logical_form_with_validation(text, number_to_token, randomize):
 
 
 def prepare_synthetic_data():
-    number_tokens = [str(i * 100) for i in range(1, 10)]
+    number_tokens = [str(i * 100) for i in range(1, 100)]
 
     def sample_question(size, objects):
         question = ['Tom', 'has']
@@ -235,8 +235,8 @@ def prepare_synthetic_data():
     dev_objects = objects[-100:]
     answers = []
     questions = []
-    for _ in range(10000):
-        size = random.randint(2, 9)
+    for _ in range(1000):
+        size = random.randint(6, 20)
         random.shuffle(dev_objects)
         question, answer = sample_question(size, dev_objects)
         dev.append(question + '\t' + answer)
