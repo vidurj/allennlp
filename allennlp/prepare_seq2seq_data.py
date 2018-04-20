@@ -235,7 +235,7 @@ def prepare_synthetic_data():
     dev_objects = objects[-100:]
     answers = []
     questions = []
-    for _ in range(100):
+    for _ in range(10000):
         size = random.randint(2, 9)
         random.shuffle(dev_objects)
         question, answer = sample_question(size, dev_objects)
