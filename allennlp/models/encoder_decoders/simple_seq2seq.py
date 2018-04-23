@@ -10,9 +10,14 @@ from torch.nn.modules.linear import Linear
 from torch.nn.modules.rnn import LSTMCell
 
 from allennlp.common import Params
+<<<<<<< HEAD
 from allennlp.data.dataset_readers.seq2seq import START_SYMBOL, END_SYMBOL
 from allennlp.data.vocabulary import Vocabulary
 from allennlp.models.model import Model
+=======
+from allennlp.common.util import START_SYMBOL, END_SYMBOL
+from allennlp.data.vocabulary import Vocabulary
+>>>>>>> 0df8978073fe1ebe1af18af5cab48ce70eecca81
 from allennlp.modules import Attention, TextFieldEmbedder, Seq2SeqEncoder
 from allennlp.modules.similarity_functions import SimilarityFunction
 from allennlp.modules.token_embedders import Embedding
