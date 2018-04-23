@@ -341,8 +341,7 @@ class SimpleCopy(Model):
             step_logits.append(output_logits.unsqueeze(1))
             _, predicted_classes = torch.max(class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
-            last_predictions = predicted_classes
-            step_predictions.append(last_predictions.unsqueeze(1))
+            step_predictions.append(predicted_classes.unsqueeze(1))
         # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
         # This is (batch_size, num_decoding_steps, num_classes)
         logits = torch.cat(step_logits, 1)
@@ -355,6 +354,7 @@ class SimpleCopy(Model):
             target_mask = get_text_field_mask(target_tokens)
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
+            print(target_mask * torch.eq(all_predictions, targets))
             # TODO: Define metrics
             # if random.random() < 0.01:
             #     print('\naccuracy',
