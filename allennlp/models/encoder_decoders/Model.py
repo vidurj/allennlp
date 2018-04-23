@@ -345,6 +345,7 @@ class SimpleCopy(Model):
             class_probabilities = torch.nn.functional.softmax(output_logits, dim=-1)
             step_logits.append(output_logits.unsqueeze(1))
             _, predicted_classes = torch.max(class_probabilities, 1)
+            last_predictions = predicted_classes
             step_probabilities.append(class_probabilities.unsqueeze(1))
             step_predictions.append(predicted_classes.unsqueeze(1))
         # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
