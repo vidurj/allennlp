@@ -17,10 +17,8 @@ from allennlp.models.semantic_parsing.nlvr.nlvr_direct_semantic_parser import Nl
 from allennlp.models.semantic_parsing.wikitables.wikitables_semantic_parser import WikiTablesSemanticParser
 from allennlp.models.semantic_role_labeler import SemanticRoleLabeler
 from allennlp.models.simple_tagger import SimpleTagger
-<<<<<<< HEAD
 from allennlp.models.coreference_resolution.coref import CoreferenceResolver
 from allennlp.models.constituency_parser import SpanConstituencyParser
 from allennlp.models.biattentive_classification_network import BiattentiveClassificationNetwork
 from allennlp.models.encoder_decoders.Model import SimpleCopy
-=======
->>>>>>> 0df8978073fe1ebe1af18af5cab48ce70eecca81
+
