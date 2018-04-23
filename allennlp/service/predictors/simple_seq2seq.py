@@ -203,7 +203,7 @@ class Interpreter(cmd.Cmd):
 
     def do_solve(self, text):
         self._model.eval()
-        source, number_to_token = standardize_question(text, randomize=False)
+        source, number_to_token = standardize_question(text)
         instance = self._dataset_reader.text_to_instance(source)
         batch = instances_to_batch([instance], self._model, for_training=False)
         predictions = self._model.beam_search(batch['source_tokens'], bestk=1)
@@ -214,7 +214,7 @@ class Interpreter(cmd.Cmd):
 
     def do_add_instance(self, line):
         source, target = line.split('\t')
-        source, number_to_token = standardize_question(source, randomize=True)
+        source, number_to_token = standardize_question(source)
         target = self.parse_target(target, number_to_token)
         if target is not None:
             labeled_instance = self._dataset_reader.text_to_instance(source, target)
