@@ -142,7 +142,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         instances, return_dicts = zip(*self._batch_json_to_instances(inputs))
         output_string = ''
         for instance in instances:
-            instance_output = self._model.beam_search(instance.fields['source_tokens'].as_array(),
+            instance_output = self._model.beam_search(instance.fields['source_tokens'].as_tensor(),
                                                       bestk=200)
             output_string += instance_output
         return output_string
