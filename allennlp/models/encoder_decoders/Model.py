@@ -327,6 +327,10 @@ class SimpleCopy(Model):
                                              .resize_(batch_size).fill_(self._start_index))
                 else:
                     input_choices = last_predictions
+            print(input_choices)
+            print(output_embeddings)
+            print(decoder_hidden)
+            print(encoder_outputs)
             decoder_input = self._prepare_decode_step_input(input_choices,
                                                             output_embeddings,
                                                             decoder_hidden,
