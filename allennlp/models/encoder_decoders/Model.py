@@ -136,7 +136,8 @@ class SimpleCopy(Model):
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
                     stem_tokens: Dict[str, torch.LongTensor] = None,
-                    bestk: int = 10) -> Dict[str, torch.Tensor]:
+                    bestk: int = 10,
+                    softmax_temperature = 0.1) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
         Decoder logic for producing the entire target sequence.
@@ -211,7 +212,7 @@ class SimpleCopy(Model):
                                                                       decoder_context))
                 output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
                 class_log_probabilities = \
-                    F.log_softmax(output_logits, dim=-1).data.cpu().numpy()[0]
+                    F.log_softmax(softmax_temperature * output_logits, dim=-1).data.cpu().numpy()[0]
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
                                                       action_list[-1],
