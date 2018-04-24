@@ -114,7 +114,7 @@ class SimpleTrainer:
 
 @Predictor.register('simple_seq2seq_beam')
 class SimpleSeq2SeqPredictorBeam(Predictor):
-    bestk = 200
+    bestk = 20
     """
     Wrapper for the :class:`~allennlp.models.encoder_decoder.simple_seq2seq` model.
     """
@@ -135,9 +135,9 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
         if 'stem_tokens' in model_input:
-            output = self._model.beam_search(model_input['source_tokens'], model_input['stem_tokens'], bestk=200)
+            output = self._model.beam_search(model_input['source_tokens'], model_input['stem_tokens'], bestk=20)
         else:
-            output = self._model.beam_search(model_input['source_tokens'], bestk=200)
+            output = self._model.beam_search(model_input['source_tokens'], bestk=20)
         return output
 
     @overrides
