@@ -135,8 +135,8 @@ class SimpleCopy(Model):
 
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
-                    stem_tokens: Dict[str, torch.LongTensor],
-                    bestk: int) -> Dict[str, torch.Tensor]:
+                    stem_tokens: Dict[str, torch.LongTensor] = None,
+                    bestk: int = 10) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
         Decoder logic for producing the entire target sequence.
@@ -156,7 +156,7 @@ class SimpleCopy(Model):
         valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
-        batch_size, num_timesteps = source_tokens['tokens'].size()
+        batch_size, num_timesteps = source_tokens['source_elmo'].size()
         valid_numbers = {str(i) for i in range(num_timesteps)}
 
         target_vocab_size = self.vocab.get_vocab_size(self._target_namespace)
