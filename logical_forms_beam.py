@@ -19,6 +19,7 @@ for _line, tokens in zip(lines, question_tokens):
                 token = tokens[int(token)]
             processed_tokens.append(token)
         preds.append(' '.join(processed_tokens))
+    preds.append('***')
 
 with open(sys.argv[3], 'w') as f:
     f.write('\n'.join(preds))
