@@ -19,7 +19,7 @@
   "test_data_path": "test.txt",
   "model": {
     "type": "simple_copy",
-    "max_decoding_steps": 3,
+    "max_decoding_steps": 150,
     "source_embedder": {
       "source_elmo":{
        "type": "elmo_token_embedder",
@@ -44,7 +44,7 @@
     "iterator": {
       "type": "bucket",
       "sorting_keys": [["source_tokens", "num_tokens"], ["target_tokens", "num_tokens"]],
-      "batch_size" : 100
+      "batch_size" : 250
     },
     "trainer": {
       "num_serialized_models_to_keep": 2,
