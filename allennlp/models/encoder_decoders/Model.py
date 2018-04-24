@@ -157,7 +157,7 @@ class SimpleCopy(Model):
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
         batch_size, num_timesteps, _ = source_tokens['source_elmo'].size()
-        valid_numbers = {str(i) for i in range(num_timesteps)}
+        valid_numbers = {'index' + str(i) for i in range(num_timesteps)}
 
         target_vocab_size = self.vocab.get_vocab_size(self._target_namespace)
 
