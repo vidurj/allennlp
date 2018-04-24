@@ -160,9 +160,13 @@ class SimpleCopy(Model):
         valid_numbers = {'index' + str(i) for i in range(num_timesteps)}
 
         target_vocab_size = self.vocab.get_vocab_size(self._target_namespace)
+        print('target vocab size is', target_vocab_size)
 
         decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size = \
             self._prepare_decoder_start_state(source_tokens, stem_tokens)
+
+        print('output embeddings shape is', output_embeddings.size())
+        print('num timesteps is', num_timesteps)
 
         assert batch_size == 1, batch_size
 
