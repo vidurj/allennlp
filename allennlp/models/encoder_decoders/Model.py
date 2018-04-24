@@ -135,6 +135,7 @@ class SimpleCopy(Model):
 
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
+                    stem_tokens: Dict[str, torch.LongTensor],
                     bestk: int) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
@@ -150,18 +151,23 @@ class SimpleCopy(Model):
            target tokens are also represented as a ``TextField``.
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
-        source_indices = source_tokens['tokens'].data.cpu().numpy()
-        embedded_input = self._source_embedder(source_tokens)
-        batch_size, _, _ = embedded_input.size()
+
+        valid_variables = {'var' + str(i) for i in range(20)}
+        valid_variables.add('(')
+        valid_variables.add('?')
+        valid_units = {'unit' + str(i) for i in range(20)}
+        batch_size, num_timesteps = source_tokens['tokens'].size()
+        valid_numbers = {str(i) for i in range(num_timesteps)}
+
+        target_vocab_size = self.vocab.get_vocab_size(self._target_namespace)
+
+        decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size = \
+            self._prepare_decoder_start_state(source_tokens, stem_tokens)
+
         assert batch_size == 1, batch_size
-        source_mask = get_text_field_mask(source_tokens)
-        encoder_outputs = self._encoder(embedded_input, source_mask)
-        final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
-        decoder_hidden = final_encoder_output
-        decoder_context = Variable(encoder_outputs.data.new()
-                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
-        # For each action I should keep around a score, a context and a hidden state, and input choices
+
         state = source_mask.data.new().resize_(batch_size)
+
         model = {
             'last_prediction': self._start_index,
             'decoder_hidden': decoder_hidden,
@@ -171,18 +177,10 @@ class SimpleCopy(Model):
             'arg_numbers': [0],
             'function_calls': []
         }
-        valid_variables = {'var' + str(i) for i in range(20)}
-        valid_variables.add('(')
-        valid_variables.add('?')
-        valid_units = {'unit' + str(i) for i in range(20)}
-        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in
-                         source_indices[0]}
-        valid_numbers = {x for x in valid_numbers if x.startswith('num')}
-        # print(valid_numbers)
-        valid_numbers.add('(')
-        valid_numbers.add('?')
+
         models = [model]
         complete_models = []
+
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
@@ -195,24 +193,23 @@ class SimpleCopy(Model):
                 decoder_hidden = model['decoder_hidden']
                 decoder_context = model['decoder_context']
                 cur_log_probability = model['cur_log_probability']
+
                 decoder_input = self._prepare_decode_step_input(
                     Variable(state.fill_(last_prediction)),
+                    output_embeddings,
                     decoder_hidden,
                     encoder_outputs,
                     source_mask
                 )
-                print(decoder_input.size())
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
                                                                       decoder_context))
-                output_projections = self._output_projection_layer(decoder_hidden)
+                output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
                 class_log_probabilities = \
-                    F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
+                    F.log_softmax(output_logits, dim=-1).data.cpu().numpy()[0]
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
                     class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
                                                class_log_probabilities.shape[0])
-                decoded_new_variable = False
-                decoded_new_unit = False
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
                                                       action_list[-1],
@@ -220,16 +217,12 @@ class SimpleCopy(Model):
                                                       valid_variables,
                                                       valid_units)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
-                    action = self.vocab.get_token_from_index(action_index, self._target_namespace)
+                    if action_index < target_vocab_size:
+                        action = self.vocab.get_token_from_index(action_index, self._target_namespace)
+                    else:
+                        action = str(action_index - target_vocab_size)
                     if action not in valid_actions:
                         continue
-                    # if action.startswith('var'):
-                    #     seen = action in action_list
-                    #     # If a variable is new, we do not distinguish between which variable it is
-                    #     if not seen and decoded_new_variable:
-                    #         continue
-                    #     elif not seen:
-                    #         decoded_new_variable = True
 
                     function_calls, arg_numbers = update_state(model['function_calls'],
                                                                model['arg_numbers'], action)
@@ -254,6 +247,37 @@ class SimpleCopy(Model):
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
 
+
+    def _generate_random_embeddings(self, batch_size, num_timesteps, stem_tokens):
+        random_vocab = torch.randn(num_timesteps, self._random_embedding_size)
+        random_vocab = torch.autograd.Variable(random_vocab, requires_grad=False)
+        random_vocab = random_vocab.cuda() * self._stem_scale.cuda()
+        random_vocab = torch.cat([self._special_tokens, random_vocab], dim=0)
+        flattened_indices = stem_tokens.view(stem_tokens.numel())
+        random_embeddings = torch.index_select(random_vocab, 0, flattened_indices)
+        # (batch_size, nm_timesteps, embedding_dim)
+        random_embeddings = random_embeddings.view((batch_size,
+                                                    num_timesteps,
+                                                    self._random_embedding_size))
+        return random_embeddings
+
+
+    def _prepare_decoder_start_state(self, source_tokens, stem_tokens):
+        embedded_input = self._source_embedder(source_tokens)
+        batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
+        random_embeddings = self._generate_random_embeddings(batch_size,
+                                                             num_timesteps,
+                                                             stem_tokens['tokens'])
+        embedded_input = torch.cat([embedded_input, random_embeddings], dim=2)
+        source_mask = get_text_field_mask(source_tokens)
+        encoder_outputs = self._encoder(embedded_input, source_mask)
+        decoder_hidden = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
+        decoder_context = Variable(encoder_outputs.data.new()
+                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
+        basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
+        output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
+        return decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size
+
     @overrides
     def forward(self,  # type: ignore
                 source_tokens: Dict[str, torch.LongTensor],
@@ -274,26 +298,6 @@ class SimpleCopy(Model):
            stem_tokens:
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
-        embedded_input = self._source_embedder(source_tokens)
-
-        stem_tokens = stem_tokens['tokens']
-        batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
-        # random.shuffle(self._permutable_indices)
-        random_vocab = torch.randn(num_timesteps, self._random_embedding_size)
-        random_vocab = torch.autograd.Variable(random_vocab, requires_grad=False)
-        random_vocab = random_vocab.cuda() * self._stem_scale.cuda()
-        random_vocab = torch.cat([self._special_tokens, random_vocab], dim=0)
-        flattened_indices = stem_tokens.view(stem_tokens.numel())
-        random_embeddings = torch.index_select(random_vocab, 0, flattened_indices)
-        # (batch_size, nm_timesteps, embedding_dim)
-        random_embeddings = random_embeddings.view((batch_size,
-                                                    num_timesteps,
-                                                    self._random_embedding_size))
-        embedded_input = torch.cat([embedded_input, random_embeddings], dim=2)
-        # assert batch_size == 1
-        source_mask = get_text_field_mask(source_tokens)
-        encoder_outputs = self._encoder(embedded_input, source_mask)
-        final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
             target_sequence_length = targets.size()[1]
@@ -302,23 +306,17 @@ class SimpleCopy(Model):
             num_decoding_steps = target_sequence_length - 1
         else:
             num_decoding_steps = self._max_decoding_steps
-        decoder_hidden = final_encoder_output
-        decoder_context = Variable(encoder_outputs.data.new()
-                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
         last_predictions = None
         step_logits = []
         step_probabilities = []
         step_predictions = []
-        # encoder_outputs has shape (batch size, num time steps, embedding dim)
-        # self._output_embeddings needs to be expanded to (batch size, num actions, embedding dim)
-        # print(self._output_embeddings.data.cpu().numpy())
-        # print(encoder_outputs.data.cpu().numpy())
-        basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
-        output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
+
+        decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size = \
+            self._prepare_decoder_start_state(source_tokens, stem_tokens)
+
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
             if self.training:
-                assert targets is not None
                 input_choices = targets[:, timestep]
             else:
                 if timestep == 0:
@@ -327,6 +325,7 @@ class SimpleCopy(Model):
                     input_choices = Variable(source_mask.data.new()
                                              .resize_(batch_size).fill_(self._start_index))
                 else:
+                    assert last_predictions is not None
                     input_choices = last_predictions
             decoder_input = self._prepare_decode_step_input(input_choices,
                                                             output_embeddings,
@@ -463,7 +462,6 @@ class SimpleCopy(Model):
         This method trims the output predictions to the first end symbol, replaces indices with
         corresponding tokens, and adds a field called ``predicted_tokens`` to the ``output_dict``.
         """
-        print('here!')
         predicted_indices = output_dict["predictions"]
         if not isinstance(predicted_indices, numpy.ndarray):
             predicted_indices = predicted_indices.data.cpu().numpy()

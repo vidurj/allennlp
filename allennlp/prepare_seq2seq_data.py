@@ -92,6 +92,9 @@ def standardize_question(text):
     number_to_tokens = defaultdict(list)
     for index, token in enumerate(source_tokenized):
         number = is_num(token)
+        if number is not None and (source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent'):
+            number /= 100
+            number = round(number, PRECISION)
         if number is not None:
             number_to_tokens[number].append('num' + str(index))
     return ' '.join(source_tokenized), number_to_tokens
@@ -357,6 +360,6 @@ if __name__ == '__main__':
         additional_data = json.load(f)
 
     all_train_subsets = create_sentence_aligned_data(data[:-100])
-    write_data(all_train_subsets + data[:-100], 'train.txt', randomize=True, num_iters=3)
-    write_data(data[-100:], 'dev.txt', randomize=False, num_iters=1)
+    # write_data(all_train_subsets + data[:-100], 'train.txt', randomize=True, num_iters=3)
+    write_data(data[-100:], 'dev.txt', randomize=False, num_iters=1, silent=True)
     write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
