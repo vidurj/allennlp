@@ -147,7 +147,9 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
                         index = int(token[5:])
                         if len(input_tokens) <= index:
                             print(index, len(input_tokens))
-                        token = str(is_num(input_tokens[index]))
+                        possible_number = is_num(input_tokens[index])
+                        if possible_number is not None:
+                            token = str(possible_number)
                     new_tokens.append(token)
                 new_line = ' '.join(new_tokens)
                 new_lines.append(new_line)
