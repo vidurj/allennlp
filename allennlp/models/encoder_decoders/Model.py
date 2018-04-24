@@ -300,7 +300,6 @@ class SimpleCopy(Model):
     @overrides
     def forward(self,  # type: ignore
                 source_tokens: Dict[str, torch.LongTensor],
-                stem_tokens: Dict[str, torch.LongTensor],
                 target_tokens: Dict[str, torch.LongTensor] = None) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
@@ -316,6 +315,7 @@ class SimpleCopy(Model):
            target tokens are also represented as a ``TextField``.
            stem_tokens:
         """
+        stem_tokens = None
         # (batch_size, input_sequence_length, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
