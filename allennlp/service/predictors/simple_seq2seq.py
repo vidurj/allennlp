@@ -135,7 +135,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
         if 'stem_tokens' in model_input:
-            output = self._model.beam_search(model_input['source_tokens'], model_input['stem_tokens'], bestk=20)
+            output = self._model.beam_search(model_input['source_tokens'], stem_tokens=model_input['stem_tokens'], bestk=20)
         else:
             output = self._model.beam_search(model_input['source_tokens'], bestk=20)
         return output
