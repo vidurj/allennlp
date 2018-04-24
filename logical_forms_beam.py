@@ -14,7 +14,7 @@ for _line, tokens in zip(lines, question_tokens):
     programs = _line.replace('"', '').replace("\\n", '\n').replace('\n***\n', '').split('\n')
     for program in programs:
         processed_tokens = []
-        for token in json.loads(program)['predicted_tokens']:
+        for token in program.split():
             if token.isdigit():
                 token = tokens[int(token)]
             processed_tokens.append(token)
