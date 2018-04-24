@@ -326,7 +326,8 @@ def create_sentence_aligned_data(alignments):
     print(key_to_sentence.keys())
     for q_index, semantics in question_to_sentence_semantics.items():
         valid = [(i, l) for i, l in enumerate(semantics) if len(l) > 0]
-        for size in range(1, len(valid)):
+        # TODO picking single sentence or all sentences
+        for size in [1, len(valid)]:
             for sequence in itertools.combinations(valid, size):
                 sequence = list(sequence)
                 sequence.sort(key=lambda x: x[0])
@@ -360,6 +361,6 @@ if __name__ == '__main__':
         additional_data = json.load(f)
 
     all_train_subsets = create_sentence_aligned_data(data[:-100])
-    # write_data(all_train_subsets + data[:-100], 'train.txt', randomize=True, num_iters=3)
+    write_data(all_train_subsets + data[:-100], 'train.txt', randomize=True, num_iters=3)
     write_data(data[-100:], 'dev.txt', randomize=False, num_iters=1, silent=True)
     write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)

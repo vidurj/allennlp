@@ -217,7 +217,7 @@ class SimpleCopy(Model):
                     if action_index < target_vocab_size:
                         action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     else:
-                        action = str(action_index - target_vocab_size)
+                        action = 'index' + str(action_index - target_vocab_size)
                     if action not in valid_actions:
                         continue
 
@@ -477,7 +477,8 @@ class SimpleCopy(Model):
                     token = self.vocab.get_token_from_index(index,
                                                             namespace=self._target_namespace)
                 else:
-                    token = str(index - self.vocab.get_vocab_size(self._target_namespace))
+                    token = 'index' + \
+                            str(index - self.vocab.get_vocab_size(self._target_namespace))
                 predicted_tokens.append(token)
             all_predicted_tokens.append(predicted_tokens)
         output_dict["predicted_tokens"] = all_predicted_tokens
