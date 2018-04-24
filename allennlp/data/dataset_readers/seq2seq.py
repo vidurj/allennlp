@@ -119,7 +119,7 @@ class Seq2SeqDatasetReader(DatasetReader):
             stemmed_source.append(Token(END_SYMBOL))
             stem_field = TextField(stemmed_source, {"tokens": TrivialTokenIndexer()})
             tag_to_field["stem_tokens"] = stem_field
-            
+
         return Instance(tag_to_field)
 
     @classmethod
