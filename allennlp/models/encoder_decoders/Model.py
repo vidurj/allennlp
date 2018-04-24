@@ -283,10 +283,10 @@ class SimpleCopy(Model):
     def _prepare_decoder_start_state(self, source_tokens, stem_tokens):
         embedded_input = self._source_embedder(source_tokens)
         batch_size, num_timesteps, original_embedding_dim = embedded_input.size()
-        random_embeddings = self._generate_random_embeddings(batch_size,
-                                                             num_timesteps,
-                                                             stem_tokens['tokens'])
-        embedded_input = torch.cat([embedded_input, random_embeddings], dim=2)
+        # random_embeddings = self._generate_random_embeddings(batch_size,
+        #                                                      num_timesteps,
+        #                                                      stem_tokens['tokens'])
+        # embedded_input = torch.cat([embedded_input, random_embeddings], dim=2)
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
         decoder_hidden = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
