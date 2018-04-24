@@ -11,7 +11,7 @@ with open(sys.argv[1], 'r') as f:
 assert len(lines) == len(question_tokens), (len(lines), len(question_tokens))
 preds = []
 for _line, tokens in zip(lines, question_tokens):
-    programs = _line.replace('"', '').replace("\\n", '\n').replace('\n***\n', '').split('\n')
+    programs = _line.strip().replace('"', '').replace("\\n", '\n').replace('\n***\n', '').split('\n')
     for program in programs:
         processed_tokens = []
         for token in program.split():

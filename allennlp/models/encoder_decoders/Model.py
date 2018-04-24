@@ -352,7 +352,7 @@ class SimpleCopy(Model):
             target_mask = get_text_field_mask(target_tokens)
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
-            print(target_mask * torch.eq(all_predictions, targets))
+            # print(target_mask * torch.eq(all_predictions, targets))
             # TODO: Define metrics
             # if random.random() < 0.01:
             #     print('\naccuracy',
