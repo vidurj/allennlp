@@ -187,9 +187,9 @@ class SimpleSeq2SeqPredictorBeamCopy(Predictor):
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
         if 'stem_tokens' in model_input:
-            output = self._model.beam_search(model_input['source_tokens'], stem_tokens=model_input['stem_tokens'], bestk=20)
+            output = self._model.beam_search(model_input['source_tokens'], stem_tokens=model_input['stem_tokens'], bestk=3)
         else:
-            output = self._model.beam_search(model_input['source_tokens'], bestk=20)
+            output = self._model.beam_search(model_input['source_tokens'], bestk=3)
 
         input_tokens = inputs['source'].split()
         print('num input tokens', len(input_tokens))
