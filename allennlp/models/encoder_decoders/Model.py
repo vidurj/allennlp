@@ -151,7 +151,7 @@ class SimpleCopy(Model):
            target tokens are also represented as a ``TextField``.
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
-
+        print('-' * 100)
         valid_variables = {'var' + str(i) for i in range(20)}
         valid_variables.add('(')
         valid_variables.add('?')
@@ -293,7 +293,7 @@ class SimpleCopy(Model):
         decoder_context = Variable(encoder_outputs.data.new()
                                    .resize_(batch_size, self._decoder_output_dim).fill_(0))
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
-        output_embeddings = torch.cat([basic_actions, encoder_outputs], dim=1)
+        output_embeddings = torch.cat([basic_actions, encoder_outputs[:, 1:-1, :]], dim=1)
         return decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size
 
     @overrides
