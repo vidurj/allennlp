@@ -207,9 +207,6 @@ class SimpleCopy(Model):
                 output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
                 class_log_probabilities = \
                     F.log_softmax(output_logits, dim=-1).data.cpu().numpy()[0]
-                assert self.vocab.get_vocab_size(self._target_namespace) == len(
-                    class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
-                                               class_log_probabilities.shape[0])
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
                                                       action_list[-1],
