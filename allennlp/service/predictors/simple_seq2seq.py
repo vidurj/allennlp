@@ -134,19 +134,12 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
-        output = self._model.beam_search(model_input['source_tokens'], bestk=200)
+        output = self._model.beam_search(model_input['source_tokens'], model_input['stem_tokens'], bestk=200)
         return output
 
     @overrides
     def predict_batch_json(self, inputs: List[JsonDict], cuda_device: int = -1) -> List[JsonDict]:
-        instances, return_dicts = zip(*self._batch_json_to_instances(inputs))
-        output_string = ''
-        for instance in instances:
-            instance_output = self._model.beam_search(instance.fields['source_tokens'].as_tensor(),
-                                                      bestk=200)
-            output_string += instance_output
-        return output_string
-
+        raise Exception('Unimplemented')
 
 def instance_to_source_string(instance, token_to_number_str):
     tokens = [token.text for token in instance.fields['source_tokens'].tokens]
