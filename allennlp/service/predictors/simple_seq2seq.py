@@ -145,8 +145,9 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
                     if token.startswith('index'):
                         index = int(token[5:])
                         if len(input_tokens) <= index:
-                            raise Exception('{} {}'.format(index, input_tokens))
-                        token = input_tokens[index]
+                            token = 'PADDING_TOKEN'
+                        else:
+                            token = input_tokens[index]
                     new_tokens.append(token)
                 new_line = ' '.join(new_tokens)
                 new_lines.append(new_line)
