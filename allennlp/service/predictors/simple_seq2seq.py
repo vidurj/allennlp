@@ -137,6 +137,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         if 'stem_tokens' in model_input:
             output = self._model.beam_search(model_input['source_tokens'], stem_tokens=model_input['stem_tokens'], bestk=20)
             input_tokens = inputs['source'].split()
+            print('num input tokens', len(input_tokens))
             lines = output.splitlines()
             new_lines = []
             for line in lines:
@@ -144,10 +145,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
                 for token in line.split():
                     if token.startswith('index'):
                         index = int(token[5:])
-                        if len(input_tokens) <= index:
-                            token = 'PADDING_TOKEN'
-                        else:
-                            token = str(is_num(input_tokens[index]))
+                        token = str(is_num(input_tokens[index]))
                     new_tokens.append(token)
                 new_line = ' '.join(new_tokens)
                 new_lines.append(new_line)
