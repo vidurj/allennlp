@@ -164,7 +164,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
 
 
 
-@Predictor.register('simple_seq2seq_beam')
+@Predictor.register('simple_seq2seq_beam_copy')
 class SimpleSeq2SeqPredictorBeamCopy(Predictor):
     bestk = 20
     """
