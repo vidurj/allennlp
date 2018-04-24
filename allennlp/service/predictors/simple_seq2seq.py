@@ -136,6 +136,21 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
         if 'stem_tokens' in model_input:
             output = self._model.beam_search(model_input['source_tokens'], stem_tokens=model_input['stem_tokens'], bestk=20)
+            input_tokens = inputs['source'].split()
+            lines = output.splitlines()
+            new_lines = []
+            for line in lines:
+                new_tokens = []
+                for token in line.split():
+                    if token.startswith('index'):
+                        index = int(token[5:])
+                        if len(input_tokens) <= index:
+                            raise Exception('{} {}'.format(index, input_tokens))
+                        token = input_tokens[index]
+                    new_tokens.append(token)
+                new_line = ' '.join(new_tokens)
+                new_lines.append(new_line)
+            output = '\n'.join(new_lines)
         else:
             output = self._model.beam_search(model_input['source_tokens'], bestk=20)
         return output

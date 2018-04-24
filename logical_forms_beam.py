@@ -16,7 +16,9 @@ for _line, tokens in zip(lines, question_tokens):
         processed_tokens = []
         for token in program.split():
             if token.startswith('index'):
-                token = token[5:]
+                token = int(token[5:])
+                if len(tokens) <= token:
+                    print(token, tokens)
                 token = tokens[int(token)]
             processed_tokens.append(token)
         preds.append(' '.join(processed_tokens))
