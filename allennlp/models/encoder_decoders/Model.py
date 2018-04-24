@@ -167,6 +167,7 @@ class SimpleCopy(Model):
 
         print('output embeddings shape is', output_embeddings.size())
         print('num timesteps is', num_timesteps)
+        print('source mask size', source_mask.size())
 
         assert batch_size == 1, batch_size
 
@@ -287,7 +288,8 @@ class SimpleCopy(Model):
                                                              stem_tokens['tokens'])
         embedded_input = torch.cat([embedded_input, random_embeddings], dim=2)
         source_mask = get_text_field_mask(source_tokens)
-        encoder_outputs = self._encoder(embedded_input, source_mask)
+        encoder_outputs = self._encoder(embedded_input, source_mask) * source_mask
+        print(encoder_outputs.data.cpu())
         decoder_hidden = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         decoder_context = Variable(encoder_outputs.data.new()
                                    .resize_(batch_size, self._decoder_output_dim).fill_(0))
