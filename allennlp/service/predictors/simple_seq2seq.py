@@ -145,6 +145,8 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
                 for token in line.split():
                     if token.startswith('index'):
                         index = int(token[5:])
+                        if len(input_tokens) <= index:
+                            print(index, len(input_tokens))
                         token = str(is_num(input_tokens[index]))
                     new_tokens.append(token)
                 new_line = ' '.join(new_tokens)
