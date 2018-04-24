@@ -15,7 +15,8 @@ for _line, tokens in zip(lines, question_tokens):
     for program in programs:
         processed_tokens = []
         for token in program.split():
-            if token.isdigit():
+            if token.startswith('index'):
+                token = token[5:]
                 token = tokens[int(token)]
             processed_tokens.append(token)
         preds.append(' '.join(processed_tokens))
