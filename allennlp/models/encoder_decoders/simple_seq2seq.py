@@ -229,7 +229,9 @@ class SimpleSeq2Seq(Model):
                     }
                     new_models.append(new_model)
             new_models.sort(key=lambda x: - x['cur_log_probability'])
+            print(len(new_models))
             models = new_models[:bestk]
+
 
         print('before', len(models))
         complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
