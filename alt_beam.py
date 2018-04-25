@@ -12,7 +12,8 @@ for paragraph in lines:
         if len(parts) > 0:
             token, number = parts
             map[token] = number
-    maps.append(map)
+    if len(map) > 0:
+        maps.append(map)
 
 with open(sys.argv[1], 'r') as f:
     lines = f.read().splitlines()
