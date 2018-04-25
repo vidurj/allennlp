@@ -284,7 +284,6 @@ class SimpleSeq2Seq(Model):
             if self.training or target_tokens:
                 input_choices = targets[:, timestep]
             else:
-                raise Exception('Should not be here')
                 if timestep == 0:
                     # For the first timestep, when we do not have targets, we input start symbols.
                     # (batch_size,)
