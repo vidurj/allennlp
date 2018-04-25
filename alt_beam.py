@@ -6,9 +6,11 @@ with open(sys.argv[2], 'r') as f:
 
 maps = []
 for paragraph in lines:
-    lines = paragraph.strip().split('\n')
-    print(lines)
-    map = dict([(x, y) for line in lines for x, y in line.strip().split()])
+    map = {}
+    for line in paragraph.strip().split('\n'):
+        print(line)
+        token, number = line.split()
+        map[token] = number
     maps.append(map)
 
 with open(sys.argv[1], 'r') as f:
