@@ -208,6 +208,7 @@ class SimpleSeq2Seq(Model):
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
+                        print(action, valid_actions)
                         continue
                     # if action.startswith('var'):
                     #     seen = action in action_list
