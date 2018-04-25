@@ -134,28 +134,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
-        if 'stem_tokens' in model_input:
-            output = self._model.beam_search(model_input['source_tokens'], stem_tokens=model_input['stem_tokens'], bestk=20)
-            input_tokens = inputs['source'].split()
-            print('num input tokens', len(input_tokens))
-            lines = output.splitlines()
-            new_lines = []
-            for line in lines:
-                new_tokens = []
-                for token in line.split():
-                    if token.startswith('index'):
-                        index = int(token[5:])
-                        if len(input_tokens) <= index:
-                            print(index, len(input_tokens))
-                        possible_number = is_num(input_tokens[index])
-                        if possible_number is not None:
-                            token = str(possible_number)
-                    new_tokens.append(token)
-                new_line = ' '.join(new_tokens)
-                new_lines.append(new_line)
-            output = '\n'.join(new_lines)
-        else:
-            output = self._model.beam_search(model_input['source_tokens'], bestk=20)
+        output = self._model.beam_search(model_input['source_tokens'], bestk=20)
         return output
 
     @overrides
