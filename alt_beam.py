@@ -26,6 +26,7 @@ for _line, map in zip(lines, maps):
         for token in program.split():
             if token in map:
                 token = map[token]
+            assert not token.startswith('num'), (token, map)
             processed_tokens.append(token)
         preds.append(' '.join(processed_tokens))
     preds.append('***')
