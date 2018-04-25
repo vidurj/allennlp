@@ -8,8 +8,9 @@ maps = []
 for paragraph in lines:
     map = {}
     for line in paragraph.strip().split('\n'):
-        if len(line) > 1:
-            token, number = line.split()
+        parts = line.split()
+        if len(parts) > 0:
+            token, number = parts
             map[token] = number
     maps.append(map)
 
