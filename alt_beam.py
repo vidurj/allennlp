@@ -8,9 +8,9 @@ maps = []
 for paragraph in lines:
     map = {}
     for line in paragraph.strip().split('\n'):
-        print(line)
-        token, number = line.split()
-        map[token] = number
+        if len(line) > 1:
+            token, number = line.split()
+            map[token] = number
     maps.append(map)
 
 with open(sys.argv[1], 'r') as f:
