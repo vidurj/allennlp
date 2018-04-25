@@ -102,6 +102,7 @@ class SimpleSeq2Seq(Model):
         # end symbol as a way to indicate the end of the decoded sequence.
         self._start_index = self.vocab.get_token_index(START_SYMBOL, self._target_namespace)
         self._end_index = self.vocab.get_token_index(END_SYMBOL, self._target_namespace)
+        assert self._start_index != self._end_index
         num_classes = self.vocab.get_vocab_size(self._target_namespace)
         self.num_classes = num_classes
         # Decoder output dim needs to be the same as the encoder output dim since we initialize the
@@ -228,19 +229,14 @@ class SimpleSeq2Seq(Model):
                         'arg_numbers': arg_numbers
                     }
                     new_models.append(new_model)
-
+            assert len(new_models) > 0
             new_models.sort(key=lambda x: - x['cur_log_probability'])
-            if len(new_models) == 0:
-                print(valid_actions)
-            print(len(new_models))
             models = new_models[:bestk]
 
 
-        print('before', len(models))
         complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         complete_models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
-        print('here!', len(complete_models))
         output = '\n'.join([' '.join(model['action_list'][1:-1]) for model in complete_models])
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
