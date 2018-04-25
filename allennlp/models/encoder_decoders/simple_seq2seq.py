@@ -231,6 +231,8 @@ class SimpleSeq2Seq(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
+        print('before', len(models))
+        complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         complete_models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
         print('here!', len(complete_models))
