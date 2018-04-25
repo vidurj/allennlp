@@ -318,6 +318,7 @@ class SimpleSeq2Seq(Model):
             target_mask = get_text_field_mask(target_tokens)
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
+            print('loss', loss)
             # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
             # TODO: Define metrics
             # if random.random() < 0.01:
