@@ -25,7 +25,7 @@ for _line, map in zip(lines, maps):
         processed_tokens = []
         for token in program.split():
             if token in map:
-                token = map(token)
+                token = map[token]
             processed_tokens.append(token)
         preds.append(' '.join(processed_tokens))
     preds.append('***')
