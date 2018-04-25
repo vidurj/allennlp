@@ -209,7 +209,6 @@ class SimpleSeq2Seq(Model):
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
                         continue
-                    print('herered!')
                     # if action.startswith('var'):
                     #     seen = action in action_list
                     #     # If a variable is new, we do not distinguish between which variable it is
@@ -232,7 +231,6 @@ class SimpleSeq2Seq(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-        complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         complete_models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
         print('here!', len(complete_models))
