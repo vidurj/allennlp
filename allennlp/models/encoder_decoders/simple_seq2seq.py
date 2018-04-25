@@ -228,7 +228,10 @@ class SimpleSeq2Seq(Model):
                         'arg_numbers': arg_numbers
                     }
                     new_models.append(new_model)
+
             new_models.sort(key=lambda x: - x['cur_log_probability'])
+            if len(new_models) == 0:
+                print(valid_actions)
             print(len(new_models))
             models = new_models[:bestk]
 
