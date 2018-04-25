@@ -209,6 +209,7 @@ class SimpleSeq2Seq(Model):
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
                         continue
+                    print('herered!')
                     # if action.startswith('var'):
                     #     seen = action in action_list
                     #     # If a variable is new, we do not distinguish between which variable it is
