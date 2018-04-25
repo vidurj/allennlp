@@ -6,8 +6,9 @@ with open(sys.argv[2], 'r') as f:
 
 maps = []
 for paragraph in lines:
-    lines = paragraph.split('\n')
-    map = dict([(x, y) for line in lines for x, y in line.split()])
+    lines = paragraph.strip().split('\n')
+    print(lines)
+    map = dict([(x, y) for line in lines for x, y in line.strip().split()])
     maps.append(map)
 
 with open(sys.argv[1], 'r') as f:
