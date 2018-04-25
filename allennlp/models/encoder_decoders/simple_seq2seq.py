@@ -20,6 +20,7 @@ from allennlp.modules.similarity_functions import SimilarityFunction
 from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
 from allennlp.type_checking import valid_next_characters, update_state
+from allennlp.training.metrics.categorical_accuracy import CategoricalAccuracy
 
 """
 And (bool, ...) : bool
@@ -283,6 +284,7 @@ class SimpleSeq2Seq(Model):
             if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
                 input_choices = targets[:, timestep]
             else:
+                raise Exception('Should not be here')
                 if timestep == 0:
                     # For the first timestep, when we do not have targets, we input start symbols.
                     # (batch_size,)
@@ -317,6 +319,7 @@ class SimpleSeq2Seq(Model):
             target_mask = get_text_field_mask(target_tokens)
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
+            # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
             # TODO: Define metrics
             # if random.random() < 0.01:
             #     print('\naccuracy',
