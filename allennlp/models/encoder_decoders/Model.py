@@ -257,6 +257,7 @@ class SimpleCopy(Model):
                     }
                     new_models.append(new_model)
             assert len(new_models) > 0, valid_actions
+            print('num strings', len(new_models))
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
