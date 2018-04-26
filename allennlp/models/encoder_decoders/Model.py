@@ -137,8 +137,7 @@ class SimpleCopy(Model):
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
                     stem_tokens: Dict[str, torch.LongTensor] = None,
-                    bestk: int = 10,
-                    softmax_temperature = 0.1) -> Dict[str, torch.Tensor]:
+                    bestk: int = 10) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
         Decoder logic for producing the entire target sequence.
@@ -164,7 +163,7 @@ class SimpleCopy(Model):
         target_vocab_size = self.vocab.get_vocab_size(self._target_namespace)
         print('target vocab size is', target_vocab_size)
 
-        decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size = \
+        _decoder_hidden, _decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size = \
             self._prepare_decoder_start_state(source_tokens, stem_tokens)
 
         print('output embeddings shape is', output_embeddings.size())
@@ -177,8 +176,8 @@ class SimpleCopy(Model):
 
         model = {
             'last_prediction': self._start_index,
-            'decoder_hidden': decoder_hidden,
-            'decoder_context': decoder_context,
+            'decoder_hidden': _decoder_hidden,
+            'decoder_context': _decoder_context,
             'cur_log_probability': 0,
             'action_list': [START_SYMBOL],
             'arg_numbers': [0],
@@ -197,23 +196,21 @@ class SimpleCopy(Model):
                     new_models.append(model)
                     continue
                 assert len(action_list) == cur_length + 1, (len(action_list), cur_length + 1)
-                decoder_hidden = model['decoder_hidden']
-                decoder_context = model['decoder_context']
                 cur_log_probability = model['cur_log_probability']
 
                 decoder_input = self._prepare_decode_step_input(
                     Variable(state.fill_(last_prediction)),
                     output_embeddings,
-                    decoder_hidden,
+                    model['decoder_hidden'],
                     encoder_outputs,
                     source_mask
                 )
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
-                                                                     (decoder_hidden,
-                                                                      decoder_context))
+                                                                     (model['decoder_hidden'],
+                                                                      model['decoder_context']))
                 output_logits = (output_embeddings * decoder_hidden.unsqueeze(1)).sum(dim=-1)
                 class_log_probabilities = \
-                    F.log_softmax(softmax_temperature * output_logits, dim=-1).data.cpu().numpy()[0]
+                    F.log_softmax(output_logits, dim=-1).data.cpu().numpy()[0]
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
                                                       action_list[-1],
