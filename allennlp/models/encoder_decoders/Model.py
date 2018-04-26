@@ -370,7 +370,7 @@ class SimpleCopy(Model):
             step_probabilities.append(class_probabilities.unsqueeze(1))
             step_predictions.append(predicted_classes.unsqueeze(1))
 
-        print((total_log_probs / (batch_size * num_decoding_steps)).cpu())
+        print('loss', (total_log_probs / (batch_size * num_decoding_steps)).cpu())
         # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
         # This is (batch_size, num_decoding_steps, num_classes)
         logits = torch.cat(step_logits, 1)
@@ -388,9 +388,6 @@ class SimpleCopy(Model):
             # if random.random() < 0.01:
             #     print('\naccuracy',
             #           self._get_accuracy(all_predictions.cpu(), targets.cpu(), target_mask.cpu()))
-        else:
-            loss = self._get_loss(logits, all_predictions)
-            print('probabilities', loss)
         return output_dict
 
     def _prepare_decode_step_input(self,
