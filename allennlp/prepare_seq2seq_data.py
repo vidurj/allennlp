@@ -259,6 +259,7 @@ def write_data(data, file_name, num_iters, randomize, silent=True):
                 original_units.extend(type_assignments.keys())
                 lines.append(source + '\t' + target)
                 number_to_tokens.append(number_to_token)
+                question_numbers.append(str(question_number))
             except:
                 if not silent:
                     print(question)
@@ -359,9 +360,8 @@ if __name__ == '__main__':
 
     with open('allennlp/additional_annotations.json', 'r') as f:
         additional_data = json.load(f)
-
     # all_train_subsets = create_sentence_aligned_data(data[:-100])
-    write_data(data[:-100], 'train.txt', randomize=True, num_iters=50)
+    write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
     write_data(data[-100:], 'dev.txt', randomize=False, num_iters=1, silent=True)
     write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
