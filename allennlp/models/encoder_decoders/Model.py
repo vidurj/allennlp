@@ -383,6 +383,9 @@ class SimpleCopy(Model):
             # if random.random() < 0.01:
             #     print('\naccuracy',
             #           self._get_accuracy(all_predictions.cpu(), targets.cpu(), target_mask.cpu()))
+        else:
+            loss = self._get_loss(logits, all_predictions)
+            print('probabilities', loss)
         return output_dict
 
     def _prepare_decode_step_input(self,
