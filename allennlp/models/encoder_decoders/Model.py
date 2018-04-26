@@ -334,7 +334,7 @@ class SimpleCopy(Model):
 
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
         for timestep in range(num_decoding_steps):
-            if self.training:
+            if self.training or target_tokens:
                 input_choices = targets[:, timestep]
             else:
                 if timestep == 0:
