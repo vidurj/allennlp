@@ -193,7 +193,7 @@ class SimpleSeq2Seq(Model):
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
                                                                       decoder_context))
-                output_projections = self._output_projection_layer(decoder_hidden)
+                output_projections = 0.7 * self._output_projection_layer(decoder_hidden)
                 class_log_probabilities = \
                 F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
