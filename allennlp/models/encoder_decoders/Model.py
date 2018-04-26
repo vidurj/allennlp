@@ -220,7 +220,7 @@ class SimpleCopy(Model):
 
                 seen_new_var = False
                 seen_new_unit = False
-                seen_indices = set(action_list)
+                seen_actions = set(action_list)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     if action_index < target_vocab_size:
                         action = self.vocab.get_token_from_index(action_index, self._target_namespace)
@@ -229,17 +229,17 @@ class SimpleCopy(Model):
                     if action not in valid_actions:
                         continue
 
-                    # if action.startswith('var') and action_index not in seen_indices:
-                    #     if seen_new_var:
-                    #         continue
-                    #     else:
-                    #         seen_new_var = True
-                    #
-                    # if action.startswith('unit') and action_index not in seen_indices:
-                    #     if seen_new_unit:
-                    #         continue
-                    #     else:
-                    #         seen_new_unit = True
+                    if action.startswith('var') and action not in seen_actions:
+                        if seen_new_var:
+                            continue
+                        else:
+                            seen_new_var = True
+
+                    if action.startswith('unit') and action_index not in seen_actions:
+                        if seen_new_unit:
+                            continue
+                        else:
+                            seen_new_unit = True
 
                     function_calls, arg_numbers = update_state(model['function_calls'],
                                                                model['arg_numbers'], action)
