@@ -338,6 +338,7 @@ class SimpleCopy(Model):
             self._prepare_decoder_start_state(source_tokens, stem_tokens)
 
         # output_embeddings should have shape (batch size, num actions + num time steps, embedding dim)
+        total_log_probs = 0
         for timestep in range(num_decoding_steps):
             if self.training or target_tokens:
                 input_choices = targets[:, timestep]
@@ -363,9 +364,13 @@ class SimpleCopy(Model):
             class_probabilities = torch.nn.functional.softmax(output_logits, dim=-1)
             step_logits.append(output_logits.unsqueeze(1))
             _, predicted_classes = torch.max(class_probabilities, 1)
+            log_probs, _ = torch.max(output_logits, 1)
+            total_log_probs += torch.sum(log_probs)
             last_predictions = predicted_classes
             step_probabilities.append(class_probabilities.unsqueeze(1))
             step_predictions.append(predicted_classes.unsqueeze(1))
+
+        print((total_log_probs / (batch_size * num_decoding_steps)).cpu())
         # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
         # This is (batch_size, num_decoding_steps, num_classes)
         logits = torch.cat(step_logits, 1)
