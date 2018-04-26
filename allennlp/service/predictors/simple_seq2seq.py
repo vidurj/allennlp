@@ -167,9 +167,9 @@ class SimpleSeq2SeqPredictorBeamCopy(Predictor):
         if 'stem_tokens' in model_input:
             output = self._model.beam_search(model_input['source_tokens'],
                                              stem_tokens=model_input['stem_tokens'],
-                                             bestk=100)
+                                             bestk=1)
         else:
-            output = self._model.beam_search(model_input['source_tokens'], bestk=100)
+            output = self._model.beam_search(model_input['source_tokens'], bestk=1)
 
         input_tokens = inputs['source'].split()
         print('num input tokens', len(input_tokens))
