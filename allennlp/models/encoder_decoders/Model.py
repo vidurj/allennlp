@@ -128,7 +128,8 @@ class SimpleCopy(Model):
             torch.randn(num_classes, target_embedding_dim) / 10)
         self._random_embedding_size = 50
         self._special_tokens = torch.nn.Parameter(torch.randn(3, self._random_embedding_size) / 10)
-        self._stem_scale = torch.nn.Parameter(torch.randn(1, 1) / 10)
+        self._token_embedding_scale = torch.nn.Parameter(torch.randn(1, 1) / 10)
+        self._input_embedding_scale = torch.nn.Parameter(torch.randn(1, 1) / 10)
         # self._stem_embedding = torch.nn.Parameter(torch.randn(251, self._random_embedding_size))
         # self._permutable_indices = list(range(3, 251))
 
@@ -293,7 +294,9 @@ class SimpleCopy(Model):
         decoder_context = Variable(encoder_outputs.data.new()
                                    .resize_(batch_size, self._decoder_output_dim).fill_(0))
         basic_actions = self._output_embeddings.unsqueeze(0).expand((batch_size, -1, -1))
-        output_embeddings = torch.cat([basic_actions, encoder_outputs[:, 1:-1, :]], dim=1)
+        output_embeddings = torch.cat([self._token_embedding_scale * basic_actions,
+                                       self._input_embedding_scale * encoder_outputs[:, 1:-1, :]],
+                                      dim=1)
         return decoder_hidden, decoder_context, output_embeddings, source_mask, encoder_outputs, batch_size
 
     @overrides
