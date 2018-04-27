@@ -2,18 +2,16 @@ import json
 import sys
 
 with open(sys.argv[2], 'r') as f:
-    lines = f.read().split('***')
+    lines = f.read().strip("***").split('***')
 
 maps = []
 for paragraph in lines:
     map = {}
     for line in paragraph.strip().split('\n'):
-        parts = line.split()
-        if len(parts) > 0:
-            token, number = parts
-            map[token] = number
-    if len(map) > 0:
-        maps.append(map)
+        parts = line.strip().split()
+        token, number = parts
+        map[token] = number
+    maps.append(map)
 
 with open(sys.argv[1], 'r') as f:
     lines = f.read().splitlines()
