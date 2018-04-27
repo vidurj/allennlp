@@ -2,7 +2,7 @@ import json
 import sys
 
 with open(sys.argv[2], 'r') as f:
-    lines = f.read().strip("***").split('***')
+    lines = f.read().strip().strip("***").split('***')
 
 print(lines)
 
