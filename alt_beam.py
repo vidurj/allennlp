@@ -7,10 +7,11 @@ with open(sys.argv[2], 'r') as f:
 maps = []
 for paragraph in lines:
     map = {}
-    for line in paragraph.strip().split('\n'):
-        parts = line.strip().split()
-        token, number = parts
-        map[token] = number
+    paragraph = paragraph.strip()
+    if len(paragraph) > 0:
+        for line in paragraph.split('\n'):
+            token, number = line.strip().split()
+            map[token] = number
     maps.append(map)
 
 with open(sys.argv[1], 'r') as f:
