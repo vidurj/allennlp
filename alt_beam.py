@@ -4,6 +4,8 @@ import sys
 with open(sys.argv[2], 'r') as f:
     lines = f.read().strip("***").split('***')
 
+print(lines)
+
 maps = []
 for paragraph in lines:
     map = {}
