@@ -21,6 +21,7 @@ from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
 from allennlp.type_checking import valid_next_characters, update_state
 from allennlp.training.metrics.categorical_accuracy import CategoricalAccuracy
+from collections import defaultdict
 
 """
 And (bool, ...) : bool
@@ -94,7 +95,14 @@ class SimpleSeq2Seq(Model):
                  scheduled_sampling_ratio: float = 0.0) -> None:
         super(SimpleSeq2Seq, self).__init__(vocab)
         self._source_embedder = source_embedder
-        self._encoder = encoder
+        self._encoder_output_dim = 250
+        self._encoder_num_layers = 2
+        self._encoder = torch.nn.LSTM(source_embedder.get_output_dim(),
+                                      self._encoder_output_dim,
+                                      self._encoder_num_layers,
+                                      dropout=0.2,
+                                      batch_first=True,
+                                      bidirectional=True)  # encoder
         self._max_decoding_steps = max_decoding_steps
         self._target_namespace = target_namespace
         self._attention_function = attention_function
@@ -109,14 +117,14 @@ class SimpleSeq2Seq(Model):
         # Decoder output dim needs to be the same as the encoder output dim since we initialize the
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
         # we're using attention with ``DotProductSimilarity``, this is needed.
-        self._decoder_output_dim = self._encoder.get_output_dim()
+        self._decoder_output_dim = self._encoder_output_dim
         target_embedding_dim = target_embedding_dim or self._source_embedder.get_output_dim()
         self._target_embedder = Embedding(num_classes, target_embedding_dim)
         if self._attention_function:
             self._decoder_attention = Attention(self._attention_function)
             # The output of attention, a weighted average over encoder outputs, will be
             # concatenated to the input vector of the decoder at each time step.
-            self._decoder_input_dim = self._encoder.get_output_dim() + target_embedding_dim
+            self._decoder_input_dim = self._encoder_output_dim + target_embedding_dim
         else:
             self._decoder_input_dim = target_embedding_dim
         # TODO (pradeep): Do not hardcode decoder cell type.
@@ -165,7 +173,8 @@ class SimpleSeq2Seq(Model):
         valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
-        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
+        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in
+                         source_indices[0]}
         valid_numbers = {x for x in valid_numbers if x.startswith('num')}
         # print(valid_numbers)
         valid_numbers.add('(')
@@ -195,18 +204,18 @@ class SimpleSeq2Seq(Model):
                                                                       decoder_context))
                 output_projections = 0.7 * self._output_projection_layer(decoder_hidden)
                 class_log_probabilities = \
-                F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
+                    F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
                     class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
                                                class_log_probabilities.shape[0])
                 decoded_new_variable = False
                 decoded_new_unit = False
                 valid_actions = valid_next_characters(model['function_calls'],
-                                      model['arg_numbers'],
-                                      action_list[-1],
-                                      valid_numbers,
-                                      valid_variables,
-                                      valid_units)
+                                                      model['arg_numbers'],
+                                                      action_list[-1],
+                                                      valid_numbers,
+                                                      valid_variables,
+                                                      valid_units)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
@@ -219,7 +228,8 @@ class SimpleSeq2Seq(Model):
                     #     elif not seen:
                     #         decoded_new_variable = True
 
-                    function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
+                    function_calls, arg_numbers = update_state(model['function_calls'],
+                                                               model['arg_numbers'], action)
                     new_model = {
                         'action_list': action_list + [action],
                         'last_prediction': action_index,
@@ -234,7 +244,6 @@ class SimpleSeq2Seq(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-
         # complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
@@ -243,9 +252,7 @@ class SimpleSeq2Seq(Model):
         return output
 
     @overrides
-    def forward(self,  # type: ignore
-                source_tokens: Dict[str, torch.LongTensor],
-                target_tokens: Dict[str, torch.LongTensor] = None) -> Dict[str, torch.Tensor]:
+    def forward(self, **kwargs) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
         Decoder logic for producing the entire target sequence.
@@ -260,70 +267,95 @@ class SimpleSeq2Seq(Model):
            target tokens are also represented as a ``TextField``.
         """
         # (batch_size, input_sequence_length, encoder_output_dim)
-        embedded_input = self._source_embedder(source_tokens)
-        batch_size, _, _ = embedded_input.size()
-        source_mask = get_text_field_mask(source_tokens)
-        encoder_outputs = self._encoder(embedded_input, source_mask)
-        final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
-        if target_tokens:
-            targets = target_tokens["tokens"]
-            target_sequence_length = targets.size()[1]
-            # The last input from the target is either padding or the end symbol. Either way, we
-            # don't have to process it.
-            num_decoding_steps = target_sequence_length - 1
-        else:
-            num_decoding_steps = self._max_decoding_steps
-        decoder_hidden = final_encoder_output
-        decoder_context = Variable(encoder_outputs.data.new()
-                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
-        last_predictions = None
-        step_logits = []
-        step_probabilities = []
-        step_predictions = []
-        for timestep in range(num_decoding_steps):
-            if self.training or target_tokens:
-                input_choices = targets[:, timestep]
-            else:
-                if timestep == 0:
-                    # For the first timestep, when we do not have targets, we input start symbols.
-                    # (batch_size,)
-                    input_choices = Variable(source_mask.data.new()
-                                             .resize_(batch_size).fill_(self._start_index))
-                else:
-                    input_choices = last_predictions
+        sentence_number_to_text_field = defaultdict(dict)
+        for key, value in kwargs.items():
+            tokens = key.split('_')
+            index = int(tokens[0])
+            remaining_key = ' '.join(tokens[1:])
+            sentence_number_to_text_field[index][remaining_key] = value
 
-            decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
-                                                            encoder_outputs, source_mask)
-            decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
-                                                                 (decoder_hidden, decoder_context))
-            # (batch_size, num_classes)
-            output_projections = self._output_projection_layer(decoder_hidden)
-            # list of (batch_size, 1, num_classes)
-            step_logits.append(output_projections.unsqueeze(1))
-            class_probabilities = F.softmax(output_projections, dim=-1)
-            _, predicted_classes = torch.max(class_probabilities, 1)
-            step_probabilities.append(class_probabilities.unsqueeze(1))
-            last_predictions = predicted_classes
-            # (batch_size, 1)
-            step_predictions.append(last_predictions.unsqueeze(1))
-        # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
-        # This is (batch_size, num_decoding_steps, num_classes)
-        logits = torch.cat(step_logits, 1)
-        class_probabilities = torch.cat(step_probabilities, 1)
-        all_predictions = torch.cat(step_predictions, 1)
-        output_dict = {"logits": logits,
-                       "class_probabilities": class_probabilities,
-                       "predictions": all_predictions}
-        if target_tokens:
-            target_mask = get_text_field_mask(target_tokens)
-            loss = self._get_loss(logits, targets, target_mask)
-            output_dict["loss"] = loss
-            print('loss', loss)
-            # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
-            # TODO: Define metrics
-            # if random.random() < 0.01:
-            #     print('\naccuracy',
-            #           self._get_accuracy(all_predictions.cpu(), targets.cpu(), target_mask.cpu()))
+        has_targets = 'target_tokens' in sentence_number_to_text_field[0]
+
+        all_logits = []
+        all_probabilities = []
+        all_predictions = []
+        batch_size = 1
+        final_decoder_hidden = Variable(torch.zeros(batch_size,
+                                                    self._encoder_output_dim * self._encoder_num_layers))
+        final_decoder_context = Variable(torch.zeros(batch_size,
+                                                    self._encoder_output_dim * self._encoder_num_layers))
+        total_loss = torch.zeros(1)
+        for sentence_number in range(len(sentence_number_to_text_field)):
+            relevant_text_fields = sentence_number_to_text_field[sentence_number]
+            source_tokens = relevant_text_fields['source_tokens']
+            print('sentence length', len(source_tokens.values()[0]))
+            source_mask = get_text_field_mask(source_tokens)
+            embedded_input = self._source_embedder(source_tokens)
+            batch_size, _, _ = embedded_input.size()
+            encoder_outputs, (final_encoder_hidden, final_encoder_context) = self._encoder(embedded_input, (final_decoder_hidden, final_decoder_context))
+            if has_targets:
+                target_tokens = relevant_text_fields['target_tokens']
+                targets = target_tokens["tokens"]
+                target_sequence_length = targets.size()[1]
+                # The last input from the target is either padding or the end symbol. Either way, we
+                # don't have to process it.
+                num_decoding_steps = target_sequence_length - 1
+            else:
+                num_decoding_steps = self._max_decoding_steps
+
+            decoder_hidden = final_encoder_hidden
+            decoder_context = final_encoder_context
+            last_predictions = None
+            step_logits = []
+            step_probabilities = []
+            step_predictions = []
+
+            for timestep in range(num_decoding_steps):
+                if self.training or 'target_tokens' in relevant_text_fields:
+                    input_choices = targets[:, timestep]
+                else:
+                    if timestep == 0:
+                        # For the first timestep, when we do not have targets, we input start symbols.
+                        # (batch_size,)
+                        input_choices = Variable(source_mask.data.new()
+                                                 .resize_(batch_size).fill_(self._start_index))
+                    else:
+                        input_choices = last_predictions
+
+                decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
+                                                                encoder_outputs, source_mask)
+                decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
+                                                                     (decoder_hidden,
+                                                                      decoder_context))
+                # (batch_size, num_classes)
+                output_projections = self._output_projection_layer(decoder_hidden)
+                # list of (batch_size, 1, num_classes)
+                step_logits.append(output_projections.unsqueeze(1))
+                class_probabilities = F.softmax(output_projections, dim=-1)
+                _, predicted_classes = torch.max(class_probabilities, 1)
+                step_probabilities.append(class_probabilities.unsqueeze(1))
+                last_predictions = predicted_classes
+                # (batch_size, 1)
+                step_predictions.append(last_predictions.unsqueeze(1))
+            final_decoder_hidden = decoder_hidden
+            final_decoder_context = decoder_context
+            # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
+            # This is (batch_size, num_decoding_steps, num_classes)
+            logits = torch.cat(step_logits, 1)
+            all_logits.extend(step_logits)
+            all_predictions.extend(step_probabilities)
+            all_probabilities.extend(step_predictions)
+            if has_targets:
+                target_mask = get_text_field_mask(target_tokens)
+                total_loss += self._get_loss(logits, targets, target_mask)
+
+        logits = torch.cat(all_logits, 1)
+        class_probabilities = torch.cat(all_probabilities, 1)
+        all_predictions = torch.cat(all_predictions, 1)
+
+        output_dict = {"logits": logits, "class_probabilities": class_probabilities,
+                       "predictions": all_predictions, "loss": total_loss}
+
         return output_dict
 
     def _prepare_decode_step_input(self,
