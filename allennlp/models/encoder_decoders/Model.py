@@ -229,17 +229,17 @@ class SimpleCopy(Model):
                     if action not in valid_actions:
                         continue
 
-                    # if action.startswith('var') and action not in seen_actions:
-                    #     if seen_new_var:
-                    #         continue
-                    #     else:
-                    #         seen_new_var = True
-                    #
-                    # if action.startswith('unit') and action_index not in seen_actions:
-                    #     if seen_new_unit:
-                    #         continue
-                    #     else:
-                    #         seen_new_unit = True
+                    if action.startswith('var') and action not in seen_actions:
+                        if seen_new_var:
+                            continue
+                        else:
+                            seen_new_var = True
+
+                    if action.startswith('unit') and action_index not in seen_actions:
+                        if seen_new_unit:
+                            continue
+                        else:
+                            seen_new_unit = True
 
                     function_calls, arg_numbers = update_state(model['function_calls'],
                                                                model['arg_numbers'], action)
