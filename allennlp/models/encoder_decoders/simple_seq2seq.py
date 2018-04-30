@@ -292,7 +292,7 @@ class SimpleSeq2Seq(Model):
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
-            print(type(embedded_input), type(final_decoder_hidden), type(final_encoder_context))
+            print(type(embedded_input), type(final_decoder_hidden), type(final_decoder_context))
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = self._encoder(embedded_input, (final_decoder_hidden, final_decoder_context))
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
