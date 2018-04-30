@@ -350,6 +350,7 @@ class SimpleSeq2Seq(Model):
             all_probabilities.extend(step_predictions)
             if has_targets:
                 target_mask = get_text_field_mask(target_tokens)
+                print(type(logits), type(targets), type(target_mask))
                 total_loss += self._get_loss(logits, targets, target_mask)
 
         logits = torch.cat(all_logits, 1)
