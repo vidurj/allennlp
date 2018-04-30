@@ -87,6 +87,7 @@ def is_num(string):
 
 
 def standardize_question(text, copy_mechanism):
+    assert not copy_mechanism
     number_tokens = ['num' + str(i) for i in range(10)]
     random.shuffle(number_tokens)
     source = text.replace('-', ' ')
@@ -107,18 +108,20 @@ def standardize_question(text, copy_mechanism):
                     number_to_tokens[number] = number_tokens.pop()
                 token = number_to_tokens[number]
         source_tokenized.append(token)
-    return ' '.join(source_tokenized), number_to_tokens
+    return ' '.join(source_tokenized).replace('< sentence_end >', '<sentence_end>'), number_to_tokens
 
 
-def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
+def standardize_logical_form_with_validation(text, number_to_tokens, randomize, var_assignments={}, type_assignments={}):
     remaining_variable_names = ['var' + str(i) for i in range(10)]
+    assigned_vars = set(var_assignments.values())
+    remaining_variable_names = [x for x in remaining_variable_names if x not in assigned_vars]
     remaining_units = ['unit' + str(i) for i in range(2)]
+    assigned_units = set(type_assignments.values())
+    remaining_units = [x for x in remaining_units if x not in assigned_units]
     if randomize:
         random.shuffle(remaining_variable_names)
         random.shuffle(remaining_units)
     target_tokens = text.replace('?', ' ? ').replace('(', ' ( ').replace(')', ' ) ').split()
-    var_assignments = {}
-    type_assignments = {}
     standardized_tokens = []
     num_open_parens = 0
     num_close_parens = 0
@@ -140,12 +143,13 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
         elif is_strict_num(token):
             assert 'NUMBER' in valid_tokens
             number = is_num(token)
-            if number in number_to_tokens:
+            assert number in number_to_tokens, \
+                'Number {} not in number_to_token {} in {}.'.format(number, number_to_tokens, text)
+            if isinstance(number_to_tokens[number], str):
+                token = number_to_tokens[number]
+            else:
                 tokens = number_to_tokens[number]
                 token = random.choice(tokens)
-            else:
-                raise RuntimeError(
-                    'Number {} not in number_to_token {}.'.format(number, number_to_tokens))
         elif token == '?':
             pass
         elif 'TYPE' in valid_tokens:
@@ -167,7 +171,7 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
             token = var_assignments[token]
 
         assert token.startswith('var') or token.startswith('unit') or token.startswith(
-            'num') or token in valid_tokens, (token, valid_tokens, text)
+            'num') or token in valid_tokens, (token, valid_tokens, text, number_to_tokens)
         standardized_tokens.append(token)
         function_calls, arg_numbers = update_state(function_calls, arg_numbers, token)
         last_token = token
@@ -177,7 +181,7 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
                                          valid_numbers={'NUMBER'},
                                          valid_variables={'VARIABLE'},
                                          valid_types={'TYPE'})
-    assert valid_tokens == {END_SYMBOL}, (valid_tokens, standardized_tokens, text)
+    assert END_SYMBOL in valid_tokens, (valid_tokens, standardized_tokens, text, number_to_tokens)
     return ' '.join(standardized_tokens), (var_assignments, type_assignments)
 
 
@@ -388,7 +392,8 @@ def create_sentence_split_data(questions, file_name):
             indices.sort()
             final_logical_form = ' <sentence_end> '.join([' '.join(logical_form_pieces[index]) for index in indices])
             final_input = ' <sentence_end> '.join([key_to_sentence[(int(q['iIndex']), index)] for index in indices])
-            data_points.append((final_input, final_logical_form))
+            if len(logical_form_pieces) > 0:
+                data_points.append((final_input, final_logical_form))
 
     with open(file_name, 'w') as f:
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
@@ -407,6 +412,7 @@ if __name__ == '__main__':
     # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
     create_sentence_split_data(data[:-100], 'train.txt')
     create_sentence_split_data(data[-100:], 'dev.txt')
+    create_sentence_split_data(data[-100:], 'test.txt')
 
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 

@@ -16,6 +16,8 @@ from allennlp.prepare_seq2seq_data import is_strict_num
 from allennlp.data.tokenizers.word_stemmer import PorterStemmer
 import random
 from allennlp.prepare_seq2seq_data import standardize_question, standardize_logical_form_with_validation
+import sys
+
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
@@ -85,24 +87,29 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
                 source_sequence, target_sequence = line_parts
                 try:
                     yield self.text_to_instance(source_sequence, target_sequence)
-                except:
+                except AssertionError as e:
+                    # print(e)
+                    # print(sys.exc_info()[0])
                     pass
-
     @overrides
-    def text_to_instance(self, _source_string: str,
+    def text_to_instance(self, raw_source_string: str,
                          _target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
 
-        sentences = _source_string.split('<sentence_end>')
+        source_string, num_to_token = standardize_question(raw_source_string, copy_mechanism=False)
+        sentences = source_string.split('<sentence_end>')
         if _target_string is not None:
             targets = _target_string.split('<sentence_end>')
             assert len(sentences) == len(targets), (sentences, targets)
         else:
             targets = [None for _ in sentences]
         tag_to_field = {}
-        for sentence_number, (raw_source_string, raw_target_string) in enumerate(zip(sentences, targets)):
-            source_string, num_to_token = standardize_question(raw_source_string, copy_mechanism=False)
-            tokenized_source = self._source_tokenizer.tokenize(source_string)
+        var_assignments = {}
+        type_assignments = {}
+        print('raw source string:', raw_source_string)
+        for sentence_number, (sentence, raw_target_string) in enumerate(zip(sentences, targets)):
+            print('sentence:', sentence)
+            tokenized_source = self._source_tokenizer.tokenize(sentence)
             assert self._source_add_start_token
 
             if self._source_add_start_token:
@@ -111,12 +118,19 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
             source_field = TextField(tokenized_source, self._source_token_indexers)
             tag_to_field[str(sentence_number) + '_source_tokens'] = source_field
             if _target_string is not None:
-                target_string = standardize_logical_form_with_validation(raw_target_string, num_to_token, randomize=True)
+                target_string, _ = standardize_logical_form_with_validation(raw_target_string,
+                                                                            num_to_token,
+                                                                            randomize=True,
+                                                                            var_assignments=var_assignments,
+                                                                            type_assignments=type_assignments)
+                print('raw target string:', raw_target_string)
+                print('target string:', target_string)
                 tokenized_target = self._target_tokenizer.tokenize(target_string)
                 tokenized_target.insert(0, Token(START_SYMBOL))
                 tokenized_target.append(Token(END_SYMBOL))
                 target_field = TextField(tokenized_target, self._target_token_indexers)
                 tag_to_field[str(sentence_number) + '_target_tokens'] = target_field
+        print('-' * 70)
         return Instance(tag_to_field)
 
     @classmethod
