@@ -302,7 +302,7 @@ class SimpleSeq2Seq(Model):
             else:
                 num_decoding_steps = self._max_decoding_steps
 
-            decoder_hidden = final_encoder_hidden
+            decoder_hidden = encoder_outputs[:, -1]
             decoder_context = final_encoder_context
             last_predictions = None
             step_logits = []
@@ -321,6 +321,7 @@ class SimpleSeq2Seq(Model):
                     else:
                         input_choices = last_predictions
 
+                print(input_choices.size(), decoder_hidden.size(), encoder_outputs.size(), source_mask.size())
                 decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                                 encoder_outputs, source_mask)
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
