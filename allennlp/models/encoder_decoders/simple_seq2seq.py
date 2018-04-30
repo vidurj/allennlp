@@ -282,7 +282,7 @@ class SimpleSeq2Seq(Model):
         batch_size = 1
         final_decoder_hidden = Variable(torch.cuda.FloatTensor(self._encoder_num_layers * 2, batch_size, self._encoder_hidden_dim).fill_(0))
         final_decoder_context = Variable(torch.cuda.FloatTensor(self._encoder_num_layers * 2, batch_size, self._encoder_hidden_dim).fill_(0))
-        total_loss = Variable(torch.zeros(1))
+        total_loss = Variable(torch.cuda.FloatTensor(1).fill_(0))
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
