@@ -303,7 +303,8 @@ class SimpleSeq2Seq(Model):
                 num_decoding_steps = self._max_decoding_steps
 
             decoder_hidden = encoder_outputs[:, -1]
-            decoder_context = final_encoder_context
+            decoder_context = decoder_context = Variable(encoder_outputs.data.new()
+                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))#final_encoder_context
             last_predictions = None
             step_logits = []
             step_probabilities = []
@@ -324,6 +325,7 @@ class SimpleSeq2Seq(Model):
                 print(input_choices.size(), decoder_hidden.size(), encoder_outputs.size(), source_mask.size())
                 decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                                 encoder_outputs, source_mask)
+                print(decoder_input.size(), decoder_hidden.size(), decoder_context.size())
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
                                                                       decoder_context))
@@ -339,6 +341,7 @@ class SimpleSeq2Seq(Model):
                 step_predictions.append(last_predictions.unsqueeze(1))
             final_decoder_hidden = decoder_hidden
             final_decoder_context = decoder_context
+            print('sizes', final_decoder_hidden.size(), final_decoder_context.size())
             # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
             # This is (batch_size, num_decoding_steps, num_classes)
             logits = torch.cat(step_logits, 1)
