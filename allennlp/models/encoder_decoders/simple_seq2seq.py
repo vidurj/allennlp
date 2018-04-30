@@ -95,10 +95,10 @@ class SimpleSeq2Seq(Model):
                  scheduled_sampling_ratio: float = 0.0) -> None:
         super(SimpleSeq2Seq, self).__init__(vocab)
         self._source_embedder = source_embedder
-        self._encoder_output_dim = 250
+        self._encoder_hidden_dim = 250
         self._encoder_num_layers = 2
         self._encoder = torch.nn.LSTM(source_embedder.get_output_dim(),
-                                      self._encoder_output_dim,
+                                      self._encoder_hidden_dim,
                                       self._encoder_num_layers,
                                       dropout=0.2,
                                       batch_first=True,
@@ -117,14 +117,14 @@ class SimpleSeq2Seq(Model):
         # Decoder output dim needs to be the same as the encoder output dim since we initialize the
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
         # we're using attention with ``DotProductSimilarity``, this is needed.
-        self._decoder_output_dim = 2 * self._encoder_output_dim
+        self._decoder_output_dim = 2 * self._encoder_hidden_dim
         target_embedding_dim = target_embedding_dim or self._source_embedder.get_output_dim()
         self._target_embedder = Embedding(num_classes, target_embedding_dim)
         if self._attention_function:
             self._decoder_attention = Attention(self._attention_function)
             # The output of attention, a weighted average over encoder outputs, will be
             # concatenated to the input vector of the decoder at each time step.
-            self._decoder_input_dim = self._encoder_output_dim + target_embedding_dim
+            self._decoder_input_dim = 2 * self._encoder_hidden_dim + target_embedding_dim
         else:
             self._decoder_input_dim = target_embedding_dim
         # TODO (pradeep): Do not hardcode decoder cell type.
@@ -280,8 +280,8 @@ class SimpleSeq2Seq(Model):
         all_probabilities = []
         all_predictions = []
         batch_size = 1
-        final_decoder_hidden = Variable(torch.cuda.FloatTensor(self._encoder_num_layers * 2, batch_size, self._encoder_output_dim).fill_(0))
-        final_decoder_context = Variable(torch.cuda.FloatTensor(self._encoder_num_layers * 2, batch_size, self._encoder_output_dim).fill_(0))
+        final_decoder_hidden = Variable(torch.cuda.FloatTensor(self._encoder_num_layers * 2, batch_size, self._encoder_hidden_dim).fill_(0))
+        final_decoder_context = Variable(torch.cuda.FloatTensor(self._encoder_num_layers * 2, batch_size, self._encoder_hidden_dim).fill_(0))
         total_loss = torch.zeros(1)
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
