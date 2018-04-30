@@ -291,10 +291,8 @@ class SimpleSeq2Seq(Model):
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
             print(type(embedded_input), type(final_decoder_hidden), type(final_decoder_context))
-            final_decoder_context = final_decoder_context.data
-            final_decoder_context.resize_((2, 1, 250))
-            final_decoder_hidden = final_decoder_hidden.data
-            final_decoder_hidden.resize_((2, 1, 250))
+            final_decoder_context = final_decoder_context.view((2, 1, 250))
+            final_decoder_hidden = final_decoder_hidden.view((2, 1, 250))
             encoder_state = torch.cat([final_decoder_hidden, final_decoder_context], dim=0)
             encoder_outputs, _ = self._encoder(embedded_input, (Variable(encoder_state), Variable(encoder_state)))
             if has_targets:
