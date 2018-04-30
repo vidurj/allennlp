@@ -294,7 +294,7 @@ class SimpleSeq2Seq(Model):
             final_decoder_context = final_decoder_context.view((2, 1, 250))
             final_decoder_hidden = final_decoder_hidden.view((2, 1, 250))
             encoder_state = torch.cat([final_decoder_hidden, final_decoder_context], dim=0)
-            encoder_outputs, _ = self._encoder(embedded_input, (Variable(encoder_state), Variable(encoder_state)))
+            encoder_outputs, _ = self._encoder(embedded_input, (encoder_state, encoder_state))
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
