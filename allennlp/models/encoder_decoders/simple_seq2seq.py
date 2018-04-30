@@ -117,7 +117,7 @@ class SimpleSeq2Seq(Model):
         # Decoder output dim needs to be the same as the encoder output dim since we initialize the
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
         # we're using attention with ``DotProductSimilarity``, this is needed.
-        self._decoder_output_dim = self._encoder_output_dim
+        self._decoder_output_dim = 2 * self._encoder_output_dim
         target_embedding_dim = target_embedding_dim or self._source_embedder.get_output_dim()
         self._target_embedder = Embedding(num_classes, target_embedding_dim)
         if self._attention_function:
@@ -303,7 +303,7 @@ class SimpleSeq2Seq(Model):
                 num_decoding_steps = self._max_decoding_steps
 
             decoder_hidden = encoder_outputs[:, -1]
-            decoder_context = decoder_context = Variable(encoder_outputs.data.new()
+            decoder_context = Variable(encoder_outputs.data.new()
                                    .resize_(batch_size, self._decoder_output_dim).fill_(0))#final_encoder_context
             last_predictions = None
             step_logits = []
