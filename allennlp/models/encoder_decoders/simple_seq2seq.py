@@ -286,15 +286,16 @@ class SimpleSeq2Seq(Model):
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
-            print('sentence length', len(list(source_tokens.values())[0]))
+            eg = list(source_tokens.values())[0]
+            print('sentence length', len(eg), type(eg))
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
-            print(type(embedded_input), type(final_decoder_hidden), type(final_decoder_context))
             final_decoder_context = final_decoder_context.view((2, 1, 250))
             final_decoder_hidden = final_decoder_hidden.view((2, 1, 250))
             encoder_state = torch.cat([final_decoder_hidden, final_decoder_context], dim=0)
             encoder_outputs, _ = self._encoder(embedded_input, (encoder_state, encoder_state))
+            print('encoder outputs shape', encoder_outputs.size())
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
@@ -304,7 +305,6 @@ class SimpleSeq2Seq(Model):
                 num_decoding_steps = target_sequence_length - 1
             else:
                 num_decoding_steps = self._max_decoding_steps
-            print('encoder outputs shape', encoder_outputs.size())
             decoder_hidden = encoder_outputs[:, -1]
             decoder_context = encoder_outputs[:, -1]
             last_predictions = None
@@ -324,10 +324,8 @@ class SimpleSeq2Seq(Model):
                     else:
                         input_choices = last_predictions
 
-                print(input_choices.size(), decoder_hidden.size(), encoder_outputs.size(), source_mask.size())
                 decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                                 encoder_outputs, source_mask)
-                print(decoder_input.size(), decoder_hidden.size(), decoder_context.size())
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
                                                                       decoder_context))
@@ -343,7 +341,6 @@ class SimpleSeq2Seq(Model):
                 step_predictions.append(last_predictions.unsqueeze(1))
             final_decoder_hidden = decoder_hidden
             final_decoder_context = decoder_context
-            print('sizes', final_decoder_hidden.size(), final_decoder_context.size())
             # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
             # This is (batch_size, num_decoding_steps, num_classes)
             logits = torch.cat(step_logits, 1)
@@ -352,7 +349,6 @@ class SimpleSeq2Seq(Model):
             all_probabilities.extend(step_predictions)
             if has_targets:
                 target_mask = get_text_field_mask(target_tokens)
-                print(type(logits), type(targets), type(target_mask))
                 total_loss += self._get_loss(logits, targets, target_mask)
 
         logits = torch.cat(all_logits, 1)
