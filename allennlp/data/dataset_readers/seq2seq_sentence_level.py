@@ -21,8 +21,8 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 
-@DatasetReader.register("seq2seq")
-class Seq2SeqDatasetReader(DatasetReader):
+@DatasetReader.register("seq2seq_sentence_level")
+class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
     """
     Read a tsv file containing paired sequences, and create a dataset suitable for a
     ``SimpleSeq2Seq`` model, or any model with a matching API.
@@ -120,7 +120,7 @@ class Seq2SeqDatasetReader(DatasetReader):
         return Instance(tag_to_field)
 
     @classmethod
-    def from_params(cls, params: Params) -> 'Seq2SeqDatasetReader':
+    def from_params(cls, params: Params) -> 'Seq2SeqSentenceLevelDatasetReader':
         source_tokenizer_type = params.pop('source_tokenizer', None)
         source_tokenizer = None if source_tokenizer_type is None else Tokenizer.from_params(
             source_tokenizer_type)
