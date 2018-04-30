@@ -140,7 +140,7 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
             target_token_indexers = TokenIndexer.dict_from_params(target_indexers_type)
         lazy = params.pop('lazy', False)
         params.assert_empty(cls.__name__)
-        return Seq2SeqDatasetReader(source_tokenizer=source_tokenizer,
+        return Seq2SeqSentenceLevelDatasetReader(source_tokenizer=source_tokenizer,
                                     target_tokenizer=target_tokenizer,
                                     source_token_indexers=source_token_indexers,
                                     target_token_indexers=target_token_indexers,
