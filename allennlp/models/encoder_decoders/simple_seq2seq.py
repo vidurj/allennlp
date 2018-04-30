@@ -271,7 +271,7 @@ class SimpleSeq2Seq(Model):
         for key, value in kwargs.items():
             tokens = key.split('_')
             index = int(tokens[0])
-            remaining_key = ' '.join(tokens[1:])
+            remaining_key = '_'.join(tokens[1:])
             sentence_number_to_text_field[index][remaining_key] = value
 
         has_targets = 'target_tokens' in sentence_number_to_text_field[0]
