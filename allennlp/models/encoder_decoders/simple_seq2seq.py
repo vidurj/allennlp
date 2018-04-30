@@ -280,8 +280,8 @@ class SimpleSeq2Seq(Model):
         all_probabilities = []
         all_predictions = []
         batch_size = 1
-        final_decoder_hidden = torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0)
-        final_decoder_context = torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0)
+        final_decoder_hidden = Variable(torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0))
+        final_decoder_context = Variable(torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0))
         total_loss = Variable(torch.cuda.FloatTensor(1).fill_(0))
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
@@ -291,7 +291,9 @@ class SimpleSeq2Seq(Model):
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
             print(type(embedded_input), type(final_decoder_hidden), type(final_decoder_context))
+            final_decoder_context = final_decoder_context.data
             final_decoder_context.resize_((2, 1, 250))
+            final_decoder_hidden = final_decoder_hidden.data
             final_decoder_hidden.resize_((2, 1, 250))
             encoder_state = torch.cat([final_decoder_hidden, final_decoder_context], dim=0)
             encoder_outputs, _ = self._encoder(embedded_input, (Variable(encoder_state), Variable(encoder_state)))
