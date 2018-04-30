@@ -280,10 +280,10 @@ class SimpleSeq2Seq(Model):
         all_probabilities = []
         all_predictions = []
         batch_size = 1
-        final_decoder_hidden = torch.zeros(self._encoder_num_layers * 2, batch_size,
-                                                    self._encoder_output_dim)
-        final_decoder_context = torch.zeros(self._encoder_num_layers * 2, batch_size,
-                                                    self._encoder_output_dim)
+        final_decoder_hidden = Variable(torch.zeros(self._encoder_num_layers * 2, batch_size,
+                                                    self._encoder_output_dim))
+        final_decoder_context = Variable(torch.zeros(self._encoder_num_layers * 2, batch_size,
+                                                    self._encoder_output_dim))
         total_loss = torch.zeros(1)
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
@@ -292,6 +292,7 @@ class SimpleSeq2Seq(Model):
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
+            print(type(embedded_input), type(final_decoder_hidden), type(final_encoder_context))
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = self._encoder(embedded_input, (final_decoder_hidden, final_decoder_context))
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
