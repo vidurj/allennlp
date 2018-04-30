@@ -287,7 +287,6 @@ class SimpleSeq2Seq(Model):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
             eg = list(source_tokens.values())[0]
-            print('sentence length', len(eg), type(eg))
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
@@ -295,7 +294,6 @@ class SimpleSeq2Seq(Model):
             final_decoder_hidden = final_decoder_hidden.view((2, 1, 250))
             encoder_state = torch.cat([final_decoder_hidden, final_decoder_context], dim=0)
             encoder_outputs, _ = self._encoder(embedded_input, (encoder_state, encoder_state))
-            print('encoder outputs shape', encoder_outputs.size())
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
