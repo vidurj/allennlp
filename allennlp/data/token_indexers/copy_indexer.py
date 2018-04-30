@@ -58,8 +58,8 @@ class CopyTokenIndexer(TokenIndexer[int]):
             if self.lowercase_tokens:
                 text = text.lower()
 
-            if text.startswith('num'):
-                index = is_int(text[3:])
+            if text.startswith('index'):
+                index = is_int(text[5:])
                 if index is not None:
                     assert token not in vocabulary._token_to_index[self.namespace]
                     return index + vocabulary.get_vocab_size(self.namespace)

@@ -86,17 +86,27 @@ def is_num(string):
         return None
 
 
-def standardize_question(text):
+def standardize_question(text, copy_mechanism):
+    number_tokens = ['num' + str(i) for i in range(10)]
+    random.shuffle(number_tokens)
     source = text.replace('-', ' ')
-    source_tokenized = [token.text for token in nlp(source)]
+    _source_tokenized = [token.text for token in nlp(source)]
     number_to_tokens = defaultdict(list)
-    for index, token in enumerate(source_tokenized):
+    source_tokenized = []
+    for index, token in enumerate(_source_tokenized):
         number = is_num(token)
-        if number is not None and (source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent'):
+        if number is not None and (
+                _source_tokenized[index + 1] == '%' or _source_tokenized[index + 1] == 'percent'):
             number /= 100
-            number = round(number, PRECISION)
         if number is not None:
-            number_to_tokens[number].append('num' + str(index))
+            number = round(number, PRECISION)
+            if copy_mechanism:
+                number_to_tokens[number].append('index' + str(index))
+            else:
+                if number not in number_to_tokens:
+                    number_to_tokens[number] = number_tokens.pop()
+                token = number_to_tokens[number]
+        source_tokenized.append(token)
     return ' '.join(source_tokenized), number_to_tokens
 
 
@@ -352,6 +362,38 @@ def create_sentence_aligned_data(alignments):
     return problems
 
 
+def create_sentence_split_data(questions, file_name):
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/kushman_annotated.json',
+              'r') as f:
+        data = json.load(f)
+
+    key_to_sentence = {}
+    for q in data:
+        for sentence_number, sentence in enumerate(q['nlp']['sentences']):
+            key = (q['iIndex'], sentence_number)
+            assert key not in key_to_sentence
+            key_to_sentence[key] = sentence['text']['content']
+
+    data_points = []
+    for q in questions:
+        if 'lAlignments' in q:
+            lines = q['lAlignments']
+            logical_form_pieces = defaultdict(list)
+            for substring in lines:
+                sentence_number, semantics = substring.split(' -> ')
+                sentence_number = int(sentence_number)
+                if sentence_number >= 0:
+                    logical_form_pieces[sentence_number].append(semantics)
+            indices = list(logical_form_pieces.keys())
+            indices.sort()
+            final_logical_form = ' <sentence_end> '.join([' '.join(logical_form_pieces[index]) for index in indices])
+            final_input = ' <sentence_end> '.join([key_to_sentence[(int(q['iIndex']), index)] for index in indices])
+            data_points.append((final_input, final_logical_form))
+
+    with open(file_name, 'w') as f:
+        f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
+
+
 if __name__ == '__main__':
     # prepare_synthetic_data()
     with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
@@ -360,9 +402,12 @@ if __name__ == '__main__':
 
     with open('allennlp/additional_annotations.json', 'r') as f:
         additional_data = json.load(f)
-    all_train_subsets = create_sentence_aligned_data(data[:-100])
+
+
     # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    write_data(create_sentence_aligned_data(data[-100:]), 'sentence_level_dev.txt', randomize=False, num_iters=1, silent=True)
+    create_sentence_split_data(data[:-100], 'train.txt')
+    create_sentence_split_data(data[-100:], 'dev.txt')
+
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
     # write_data(data[:3], 'train.txt', randomize=True, num_iters=500)
