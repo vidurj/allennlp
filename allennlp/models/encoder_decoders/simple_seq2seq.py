@@ -342,8 +342,8 @@ class SimpleSeq2Seq(Model):
                 # (batch_size, 1)
                 step_predictions.append(last_predictions.unsqueeze(1))
             # TODO uncomment this
-            # final_decoder_hidden = decoder_hidden
-            # final_decoder_context = decoder_context
+            final_decoder_hidden = decoder_hidden
+            final_decoder_context = decoder_context
             # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
             # This is (batch_size, num_decoding_steps, num_classes)
             logits = torch.cat(step_logits, 1)
