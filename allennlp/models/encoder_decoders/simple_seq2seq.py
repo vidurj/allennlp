@@ -295,6 +295,7 @@ class SimpleSeq2Seq(Model):
             start_encoder_hidden = torch.cat([final_decoder_hidden, final_decoder_hidden], dim=0)
             final_decoder_context = final_decoder_context.view((2, 1, self._encoder_hidden_dim))
             start_encoder_context = torch.cat([final_decoder_context, final_decoder_context], dim=0)
+            # TODO undo change below
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
@@ -340,8 +341,9 @@ class SimpleSeq2Seq(Model):
                 last_predictions = predicted_classes
                 # (batch_size, 1)
                 step_predictions.append(last_predictions.unsqueeze(1))
-            final_decoder_hidden = decoder_hidden
-            final_decoder_context = decoder_context
+            # TODO uncomment this
+            # final_decoder_hidden = decoder_hidden
+            # final_decoder_context = decoder_context
             # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
             # This is (batch_size, num_decoding_steps, num_classes)
             logits = torch.cat(step_logits, 1)
