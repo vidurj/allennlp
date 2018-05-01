@@ -299,7 +299,7 @@ class SimpleSeq2Seq(Model):
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
-                print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()]))
+                print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()[0]]))
                 target_sequence_length = targets.size()[1]
                 # The last input from the target is either padding or the end symbol. Either way, we
                 # don't have to process it.
