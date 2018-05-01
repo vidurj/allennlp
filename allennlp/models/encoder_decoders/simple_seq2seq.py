@@ -207,17 +207,25 @@ class SimpleSeq2Seq(Model):
                                       valid_numbers,
                                       valid_variables,
                                       valid_units)
+                seen_new_var = False
+                seen_new_unit = False
+                seen_actions = set(action_list)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
                         continue
-                    # if action.startswith('var'):
-                    #     seen = action in action_list
-                    #     # If a variable is new, we do not distinguish between which variable it is
-                    #     if not seen and decoded_new_variable:
-                    #         continue
-                    #     elif not seen:
-                    #         decoded_new_variable = True
+
+                    if action.startswith('var') and action not in seen_actions:
+                        if seen_new_var:
+                            continue
+                        else:
+                            seen_new_var = True
+
+                    if action.startswith('unit') and action_index not in seen_actions:
+                        if seen_new_unit:
+                            continue
+                        else:
+                            seen_new_unit = True
 
                     function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
                     new_model = {
