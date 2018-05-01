@@ -199,8 +199,7 @@ class SimpleSeq2Seq(Model):
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
                     class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
                                                class_log_probabilities.shape[0])
-                decoded_new_variable = False
-                decoded_new_unit = False
+
                 valid_actions = valid_next_characters(model['function_calls'],
                                       model['arg_numbers'],
                                       action_list[-1],
@@ -226,6 +225,9 @@ class SimpleSeq2Seq(Model):
                             continue
                         else:
                             seen_new_unit = True
+
+                    if action_list[-1] == '?' and action in seen_actions:
+                        continue
 
                     function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
                     new_model = {
