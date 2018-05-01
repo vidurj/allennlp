@@ -286,7 +286,8 @@ class SimpleSeq2Seq(Model):
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
-            print(' '.join([self.vocab._index_to_token(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu()]))
+            print('!' * 30, self.vocab._non_padded_namespaces)
+            print(' '.join([self.vocab._index_to_token(index, 'tokens') for index in source_tokens['tokens'].data.cpu()]))
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
