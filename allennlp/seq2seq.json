@@ -55,7 +55,8 @@
     "iterator": {
       "type": "bucket",
       "sorting_keys": [["0_source_tokens", "num_tokens"], ["0_target_tokens", "num_tokens"]],
-      "batch_size" : 1
+      "batch_size" : 1,
+      "padding_noise": 1.0
     },
     "trainer": {
       "num_serialized_models_to_keep": 2,

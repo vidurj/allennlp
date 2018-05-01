@@ -86,10 +86,11 @@ def is_num(string):
         return None
 
 
-def standardize_question(text, copy_mechanism):
+def standardize_question(text, copy_mechanism, randomize):
     assert not copy_mechanism
     number_tokens = ['num' + str(i) for i in range(10)]
-    random.shuffle(number_tokens)
+    if randomize:
+        random.shuffle(number_tokens)
     source = text.replace('-', ' ')
     _source_tokenized = [token.text for token in nlp(source)]
     number_to_tokens = defaultdict(list)
