@@ -161,7 +161,7 @@ class SimpleSeq2Seq(Model):
             'arg_numbers': [0],
             'function_calls': []
         }
-        valid_variables = {'var' + str(i) for i in range(20)}
+        valid_variables = {'var' + str(i) for i in range(10)}
         valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
