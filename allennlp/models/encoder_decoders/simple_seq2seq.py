@@ -221,7 +221,7 @@ class SimpleSeq2Seq(Model):
                         else:
                             seen_new_var = True
 
-                    if action.startswith('unit') and action_index not in seen_actions:
+                    if action.startswith('unit') and action not in seen_actions:
                         if seen_new_unit:
                             continue
                         else:
