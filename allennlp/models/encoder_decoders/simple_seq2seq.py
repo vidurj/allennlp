@@ -286,7 +286,7 @@ class SimpleSeq2Seq(Model):
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
-            print(' '.join([self.vocab.get_token_from_index(index, 'tokens') for index in source_tokens['tokens'].data.cpu()]))
+            print(' '.join([self.vocab.get_token_from_index(index, 'tokens') for index in source_tokens['tokens'].data.cpu().numpy()]))
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
@@ -298,7 +298,7 @@ class SimpleSeq2Seq(Model):
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
-                print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu()]))
+                print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()]))
                 target_sequence_length = targets.size()[1]
                 # The last input from the target is either padding or the end symbol. Either way, we
                 # don't have to process it.
