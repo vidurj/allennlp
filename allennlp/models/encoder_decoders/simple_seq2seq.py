@@ -226,6 +226,9 @@ class SimpleSeq2Seq(Model):
                         else:
                             seen_new_unit = True
 
+                    if action.startswith('num') and action in seen_actions:
+                        continue
+
                     if action_list[-1] == '?' and action in seen_actions:
                         continue
 
