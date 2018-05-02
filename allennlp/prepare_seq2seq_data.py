@@ -107,6 +107,8 @@ def standardize_question(text, copy_mechanism, randomize):
             else:
                 if number not in number_to_tokens:
                     number_to_tokens[number] = number_tokens.pop()
+                else:
+                    print('Already saw number')
                 token = number_to_tokens[number]
         source_tokenized.append(token)
     return ' '.join(source_tokenized).replace('< sentence_end >', '<sentence_end>'), number_to_tokens
@@ -400,20 +402,35 @@ def create_sentence_split_data(questions, file_name):
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
 
 
+def synthetic_multisentence_data(num_samples, file_name):
+    data_points = []
+    start_to_token = {'a': 'EQUALS', 'the': 'PLUS', 'cat': 'MINUS', 'crow': 'TIMES', 'hat': 'DIV'}
+    start_to_token = list(start_to_token.items())
+    for _ in range(num_samples):
+        (start, token) = random.choice(start_to_token)
+        sentences = ' <sentence_end> '.join([start, 'it', 'it', 'it'])
+        logical_form = ' <sentence_end> '.join([token, token, token, token])
+        data_points.append((sentences, logical_form))
+
+    with open(file_name, 'w') as f:
+        f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
+
 if __name__ == '__main__':
+    synthetic_multisentence_data(2000, 'synthetic_train.txt')
+    synthetic_multisentence_data(20, 'synthetic_test.txt')
     # prepare_synthetic_data()
-    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
-              'r') as f:
-        data = json.load(f)
-
-    with open('allennlp/additional_annotations.json', 'r') as f:
-        additional_data = json.load(f)
-
-
-    # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    create_sentence_split_data(data[:-100], 'train.txt')
-    create_sentence_split_data(data[-100:], 'dev.txt')
-    create_sentence_split_data(data[-100:], 'test.txt')
+    # with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+    #           'r') as f:
+    #     data = json.load(f)
+    #
+    # with open('allennlp/additional_annotations.json', 'r') as f:
+    #     additional_data = json.load(f)
+    #
+    #
+    # # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
+    # create_sentence_split_data(data[:-100], 'train.txt')
+    # create_sentence_split_data(data[-100:], 'dev.txt')
+    # create_sentence_split_data(data[-100:], 'test.txt')
 
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
