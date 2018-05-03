@@ -290,21 +290,25 @@ class SimpleSeq2Seq(Model):
             torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0))
         total_loss = Variable(torch.cuda.FloatTensor(1).fill_(0))
         # print('')
+        foo = torch.cuda.FloatTensor(4, 1, self._decoder_output_dim).fill_(0)
+        bar = torch.cuda.FloatTensor(4, 1, self._decoder_output_dim).fill_(0)
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
-            # print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
+            print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
-            final_decoder_hidden = final_decoder_hidden.view((2, 1, self._encoder_hidden_dim))
             start_encoder_hidden = torch.cat([start_decoder_hidden.view(2, 1, self._encoder_hidden_dim),
-                                              final_decoder_hidden], dim=0)
-            final_decoder_context = final_decoder_context.view((2, 1, self._encoder_hidden_dim))
+                                              final_decoder_hidden.view((2, 1, self._encoder_hidden_dim))], dim=0)
             start_encoder_context = torch.cat([start_decoder_context.view(2, 1, self._encoder_hidden_dim),
-                                               final_decoder_context], dim=0)
+                                               final_decoder_context.view((2, 1, self._encoder_hidden_dim))], dim=0)
             # TODO undo change below
-            encoder_outputs, (final_encoder_hidden, final_encoder_context) = self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
+            encoder_outputs, (final_encoder_hidden, final_encoder_context) = \
+                self._encoder(embedded_input, (foo, bar))
+            # TODO undo
+            foo = final_encoder_hidden
+            bar = final_encoder_context
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
