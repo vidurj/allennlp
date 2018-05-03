@@ -319,10 +319,10 @@ class SimpleSeq2Seq(Model):
                 num_decoding_steps = target_sequence_length - 1
             else:
                 num_decoding_steps = self._max_decoding_steps
-            start_decoder_hidden = encoder_outputs[-1]#final_encoder_hidden[2:, :, :].view(1, self._decoder_output_dim)
+            start_decoder_hidden = encoder_outputs[:, -1]#final_encoder_hidden[2:, :, :].view(1, self._decoder_output_dim)
             # decoder_context = Variable(encoder_outputs.data.new()
             #                            .resize_(batch_size, self._decoder_output_dim).fill_(0))
-            start_decoder_context = encoder_outputs[-1]#final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
+            start_decoder_context = encoder_outputs[:, -1]#final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
             last_predictions = None
             step_logits = []
             step_probabilities = []
