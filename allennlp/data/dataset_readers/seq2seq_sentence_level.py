@@ -95,8 +95,8 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
     def text_to_instance(self, raw_source_string: str,
                          _target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
-        print('here!')
-        source_string, num_to_token = standardize_question(raw_source_string, copy_mechanism=False, randomize=True)
+        # TODO uncomment
+        source_string, num_to_token = standardize_question(raw_source_string, copy_mechanism=False, randomize=False)
         sentences = source_string.split('<sentence_end>')
         if _target_string is not None:
             targets = _target_string.split('<sentence_end>')
