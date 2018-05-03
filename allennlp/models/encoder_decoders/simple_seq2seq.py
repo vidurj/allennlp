@@ -303,6 +303,7 @@ class SimpleSeq2Seq(Model):
             final_decoder_context = final_decoder_context.view((2, 1, self._encoder_hidden_dim))
             start_encoder_context = torch.cat([start_decoder_context.view(2, 1, self._encoder_hidden_dim),
                                                final_decoder_context], dim=0)
+            print(start_decoder_hidden.data.cpu())
             # TODO undo change below
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
             if has_targets:
