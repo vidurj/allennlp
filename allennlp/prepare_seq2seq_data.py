@@ -404,16 +404,16 @@ def create_sentence_split_data(questions, file_name):
 
 def synthetic_multisentence_data(num_samples, file_name):
     data_points = []
-    start_to_token = {'a': 'a',
-                      'the': 'the',
-                      'cat': 'cat',
-                      'crow': 'crow',
-                      'hat': 'hat'}
+    start_to_token = {'a': '(Equals var1 num1)',
+                      'the': '(Equals var1 (Plus var1 num1))',
+                      'cat': '(Equals var1 (Minus var1 num1))',
+                      'crow': '(Equals var1 (Times var1 num1))',
+                      'hat': '(Equals var1 (Div var1 num1))'}
     start_to_token = list(start_to_token.items())
     for _ in range(num_samples):
         for (start, token) in start_to_token:
-            sentences = ' '.join([start, 'it', 'it'])
-            logical_form = ' '.join([token, token, token])
+            sentences = ' <sentence_end> '.join([start, 'it', 'it', 'it'])
+            logical_form = ' <sentence_end> '.join([token, token, token, token])
             data_points.append((sentences, logical_form))
 
     with open(file_name, 'w') as f:
