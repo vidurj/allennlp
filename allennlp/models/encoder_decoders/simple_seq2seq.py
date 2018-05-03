@@ -95,7 +95,7 @@ class SimpleSeq2Seq(Model):
                  scheduled_sampling_ratio: float = 0.0) -> None:
         super(SimpleSeq2Seq, self).__init__(vocab)
         self._source_embedder = source_embedder
-        self._encoder_hidden_dim = 250
+        self._encoder_hidden_dim = 1024
         self._encoder_num_layers = 2
         self._encoder = torch.nn.LSTM(source_embedder.get_output_dim(),
                                       self._encoder_hidden_dim,
