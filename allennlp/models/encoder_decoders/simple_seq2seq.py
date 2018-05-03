@@ -210,6 +210,7 @@ class SimpleSeq2Seq(Model):
                 seen_new_unit = False
                 seen_actions = set(action_list)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
+                    penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
                         continue
@@ -226,8 +227,8 @@ class SimpleSeq2Seq(Model):
                         else:
                             seen_new_unit = True
 
-                    # if action.startswith('num') and action in seen_actions:
-                    #     continue
+                    if action.startswith('num') and action in seen_actions:
+                        penalty += 10
 
                     if action_list[-1] == '?' and action in seen_actions:
                         continue
@@ -238,7 +239,7 @@ class SimpleSeq2Seq(Model):
                         'last_prediction': action_index,
                         'decoder_hidden': decoder_hidden,
                         'decoder_context': decoder_context,
-                        'cur_log_probability': action_log_probability + cur_log_probability,
+                        'cur_log_probability': action_log_probability + cur_log_probability - penalty,
                         'function_calls': function_calls,
                         'arg_numbers': arg_numbers
                     }

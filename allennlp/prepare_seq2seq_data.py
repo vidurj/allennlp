@@ -86,11 +86,12 @@ def is_num(string):
         return None
 
 
-def standardize_question(text, is_copy=False):
+def standardize_question(text, shuffle=True, is_copy=False):
     source = text.replace('-', ' ')
     source_tokenized = [token.text for token in nlp(source)]
     number_tokens = ['num' + str(i) for i in range(10)]
-    random.shuffle(number_tokens)
+    if shuffle:
+        random.shuffle(number_tokens)
     number_to_tokens = defaultdict(list)
     for index, token in enumerate(source_tokenized):
         number = is_num(token)
@@ -286,7 +287,7 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
                 continue
             # if question['iIndex'] != '6226':
             #     continue
-            source, number_to_token = standardize_question(question['sQuestion'])
+            source, number_to_token = standardize_question(question['sQuestion'], shuffle=not is_dev)
             try:
                 if not is_dev:
                     target, (_, type_assignments) = standardize_logical_form_with_validation(
@@ -325,6 +326,15 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
 
     with open(file_name[:-4] + '.question_numbers', 'w') as f:
         f.write('\n'.join(question_numbers))
+
+    result_str = ''
+    for number_to_token in number_to_tokens:
+        for number, token in number_to_token.items():
+            result_str += token + ' ' + str(number) + '\n'
+        result_str += '***\n'
+
+    with open(file_name[:-4] + '.mapping', 'w') as f:
+        f.write(result_str)
 
 
 def json_from_text_file(input_path='../euclid/data/private/rate_facts.txt',
