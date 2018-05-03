@@ -295,7 +295,7 @@ class SimpleSeq2Seq(Model):
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
-            print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
+            # print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
