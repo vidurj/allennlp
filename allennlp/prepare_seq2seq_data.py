@@ -86,18 +86,54 @@ def is_num(string):
         return None
 
 
-def standardize_question(text):
+def standardize_question(text, is_copy=False):
     source = text.replace('-', ' ')
     source_tokenized = [token.text for token in nlp(source)]
+    number_tokens = ['num' + str(i) for i in range(10)]
+    random.shuffle(number_tokens)
     number_to_tokens = defaultdict(list)
     for index, token in enumerate(source_tokenized):
         number = is_num(token)
-        if number is not None and (source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent'):
+        if number is not None and (
+                        source_tokenized[index + 1] == '%' or source_tokenized[
+                        index + 1] == 'percent'):
             number /= 100
             number = round(number, PRECISION)
         if number is not None:
-            number_to_tokens[number].append('num' + str(index))
+            if is_copy:
+                number_to_tokens[number].append('num' + str(index))
+            else:
+                if number not in number_to_tokens:
+                    number_to_tokens[number] = number_tokens.pop()
+                source_tokenized[index] = number_to_tokens[number]
     return ' '.join(source_tokenized), number_to_tokens
+
+
+def retrieve_important_numbers(text):
+    source = text.replace('-', ' ')
+    source_tokenized = [(token.text, token.tag_) for token in nlp(source)]
+    # pos_tags = [token.tag_ for token in nlp(source)]
+    print(source_tokenized)
+    source_tokenized, pos_tags = zip(*source_tokenized)
+    # print(pos_tags)
+    important_numbers = []
+    post = {'dollar', 'ticket', 'cent', 'times', 'is'}
+
+    for index, token in enumerate(source_tokenized):
+        number = is_num(token)
+        if number is None:
+            continue
+        elif (source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent'):
+            number /= 100
+            number = round(number, PRECISION)
+            important_numbers.append(number)
+        elif source_tokenized[index + 1].lower() in post:
+            important_numbers.append(number)
+        elif int(number) != number:
+            important_numbers.append(number)
+        elif number != 1 and number != 2 and pos_tags[index + 1] == 'NNS':
+            important_numbers.append(number)
+    return important_numbers
 
 
 def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
@@ -239,32 +275,35 @@ def prepare_synthetic_data():
         f.write('\n'.join(answers))
 
 
-def write_data(data, file_name, num_iters, randomize, silent=True):
+def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True):
     lines = []
     number_to_tokens = []
     question_numbers = []
     original_units = []
     for _ in range(num_iters):
         for question_number, question in enumerate(data):
-            if question['lSemantics'] == '':
+            if not is_dev and question['lSemantics'] == '':
                 continue
             # if question['iIndex'] != '6226':
             #     continue
             source, number_to_token = standardize_question(question['sQuestion'])
             try:
-                target, (_, type_assignments) = standardize_logical_form_with_validation(
-                    question['lSemantics'],
-                    number_to_token,
-                    randomize=randomize)
-                original_units.extend(type_assignments.keys())
+                if not is_dev:
+                    target, (_, type_assignments) = standardize_logical_form_with_validation(
+                        question['lSemantics'],
+                        number_to_token,
+                        randomize=randomize)
+                    original_units.extend(type_assignments.keys())
+                else:
+                    target = 'NONE Is Dev'
                 lines.append(source + '\t' + target)
                 number_to_tokens.append(number_to_token)
                 question_numbers.append(str(question_number))
             except:
-                if not silent:
+                if is_dev or not silent:
                     print(question)
                     traceback.print_exc()
-                continue
+                    assert not is_dev
 
     assert len(number_to_tokens) == len(lines), (len(number_to_tokens), len(lines))
     # counts = list(Counter(original_units).items())
@@ -272,6 +311,8 @@ def write_data(data, file_name, num_iters, randomize, silent=True):
     # for k, v in counts:
     #     print(k, v)
     print('num data points', len(lines))
+    if is_dev:
+        assert len(lines) == 100
     print('-' * 70)
     with open(file_name, 'w') as f:
         f.write('\n'.join(lines))
@@ -360,9 +401,21 @@ if __name__ == '__main__':
 
     with open('allennlp/additional_annotations.json', 'r') as f:
         additional_data = json.load(f)
-    all_train_subsets = create_sentence_aligned_data(data[:-100])
+
+    # results = []
+    # for question in data[-100:]:
+    #     important_numbers = retrieve_important_numbers(question['sQuestion'])
+    #     if len(important_numbers) == 0:
+    #         results.append('*')
+    #     else:
+    #         results.append(' '.join([str(x) for x in set(important_numbers)]))
+
+    # with open('/Users/vidurj/euclid/data/private/important_numbers.txt', 'w') as f:
+    #     f.write('\n'.join(results))
+    # all_train_subsets = create_sentence_aligned_data(data[:-100])
     # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    write_data(create_sentence_aligned_data(data[-100:]), 'sentence_level_dev.txt', randomize=False, num_iters=1, silent=True)
+    write_data(data[-100:], 'dev_num.txt', is_dev=True,
+               randomize=False, num_iters=1, silent=True)
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
     # write_data(data[:3], 'train.txt', randomize=True, num_iters=500)
