@@ -408,20 +408,21 @@ def synthetic_multisentence_data(num_samples, file_name):
                       # 'the': '(Equals var1 (Plus var1 num1))',
                       # 'cat': '(Equals var1 (Minus var1 num1))',
                       # 'crow': '(Equals var1 (Times var1 num1))',
-                      'hat': '(Equals var1 (Div var1 num1))'}
+                      'b': '(Equals var1 (Div var1 num1))'}
     start_to_token = list(start_to_token.items())
     for _ in range(num_samples):
         for (start, token) in start_to_token:
-            sentences = ' <sentence_end> '.join([start, 'it', 'it', 'it'])
-            logical_form = ' <sentence_end> '.join([token, token, token, token])
+            input = ['a' if random.random() < 0.5 else 'b' for _ in range(5)]
+            sentences = ' <sentence_end> '.join(input)
+            logical_form = ' <sentence_end> '.join([start_to_token[0][1] if x == 'a' else start_to_token[1][1] for x in input])
             data_points.append((sentences, logical_form))
 
     with open(file_name, 'w') as f:
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
 
 if __name__ == '__main__':
-    synthetic_multisentence_data(100, 'synthetic_train.txt')
-    synthetic_multisentence_data(5, 'synthetic_dev.txt')
+    synthetic_multisentence_data(100, 'simple_synthetic_train.txt')
+    synthetic_multisentence_data(5, 'simple_synthetic_dev.txt')
     # prepare_synthetic_data()
     # with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
     #           'r') as f:
