@@ -1,10 +1,25 @@
-a <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1)
-hat <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1))
-a <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1)
-hat <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1))
-a <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1)
-hat <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1))
-a <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1)
-hat <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1))
-a <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1) <sentence_end> (Equals var1 num1)
-hat <sentence_end> it <sentence_end> it <sentence_end> it	(Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1)) <sentence_end> (Equals var1 (Div var1 num1))
+a it it	a a a
+the it it	the the the
+cat it it	cat cat cat
+crow it it	crow crow crow
+hat it it	hat hat hat
+a it it	a a a
+the it it	the the the
+cat it it	cat cat cat
+crow it it	crow crow crow
+hat it it	hat hat hat
+a it it	a a a
+the it it	the the the
+cat it it	cat cat cat
+crow it it	crow crow crow
+hat it it	hat hat hat
+a it it	a a a
+the it it	the the the
+cat it it	cat cat cat
+crow it it	crow crow crow
+hat it it	hat hat hat
+a it it	a a a
+the it it	the the the
+cat it it	cat cat cat
+crow it it	crow crow crow
+hat it it	hat hat hat

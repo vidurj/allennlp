@@ -117,13 +117,13 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
             tokenized_source.append(Token(END_SYMBOL))
             source_field = TextField(tokenized_source, self._source_token_indexers)
             tag_to_field[str(sentence_number) + '_source_tokens'] = source_field
-            if _target_string is not None:
+            if target_string is not None:
                 # TODO set randomize to True
-                target_string, _ = standardize_logical_form_with_validation(raw_target_string,
-                                                                            num_to_token,
-                                                                            randomize=False,
-                                                                            var_assignments=var_assignments,
-                                                                            type_assignments=type_assignments)
+                # target_string, _ = standardize_logical_form_with_validation(raw_target_string,
+                #                                                             num_to_token,
+                #                                                             randomize=False,
+                #                                                             var_assignments=var_assignments,
+                #                                                             type_assignments=type_assignments)
                 print('raw target string:', raw_target_string)
                 print('target string:', target_string)
                 tokenized_target = self._target_tokenizer.tokenize(target_string)
