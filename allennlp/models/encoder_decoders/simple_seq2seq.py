@@ -290,8 +290,8 @@ class SimpleSeq2Seq(Model):
             torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0))
         total_loss = Variable(torch.cuda.FloatTensor(1).fill_(0))
         # print('')
-        foo = torch.cuda.FloatTensor(4, 1, self._encoder_hidden_dim).fill_(0)
-        bar = torch.cuda.FloatTensor(4, 1, self._encoder_hidden_dim).fill_(0)
+        foo = Variable(torch.cuda.FloatTensor(4, 1, self._encoder_hidden_dim).fill_(0))
+        bar = Variable(torch.cuda.FloatTensor(4, 1, self._encoder_hidden_dim).fill_(0))
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
