@@ -100,7 +100,7 @@ class SimpleSeq2Seq(Model):
         self._encoder = torch.nn.LSTM(source_embedder.get_output_dim(),
                                       self._encoder_hidden_dim,
                                       self._encoder_num_layers,
-                                      dropout=0.2,
+                                      # dropout=0.2,
                                       batch_first=True,
                                       bidirectional=True)  # encoder
         self._max_decoding_steps = max_decoding_steps
