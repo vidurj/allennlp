@@ -404,7 +404,11 @@ def create_sentence_split_data(questions, file_name):
 
 def synthetic_multisentence_data(num_samples, file_name):
     data_points = []
-    start_to_token = {'a': 'EQUALS', 'the': 'PLUS', 'cat': 'MINUS', 'crow': 'TIMES', 'hat': 'DIV'}
+    start_to_token = {'a': '(EQUALS v1 num1)',
+                      'the': '(PLUS v1 num1)',
+                      'cat': '(MINUS v1 num1)',
+                      'crow': '(TIMES v1 num1)',
+                      'hat': '(DIV v1 num1)'}
     start_to_token = list(start_to_token.items())
     for _ in range(num_samples):
         (start, token) = random.choice(start_to_token)
