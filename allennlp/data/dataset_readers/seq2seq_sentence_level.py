@@ -95,7 +95,7 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
     def text_to_instance(self, raw_source_string: str,
                          _target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
-        # TODO uncomment
+        # TODO set randomize to True
         source_string, num_to_token = standardize_question(raw_source_string, copy_mechanism=False, randomize=False)
         sentences = source_string.split('<sentence_end>')
         if _target_string is not None:
@@ -118,9 +118,10 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
             source_field = TextField(tokenized_source, self._source_token_indexers)
             tag_to_field[str(sentence_number) + '_source_tokens'] = source_field
             if _target_string is not None:
+                # TODO set randomize to True
                 target_string, _ = standardize_logical_form_with_validation(raw_target_string,
                                                                             num_to_token,
-                                                                            randomize=True,
+                                                                            randomize=False,
                                                                             var_assignments=var_assignments,
                                                                             type_assignments=type_assignments)
                 print('raw target string:', raw_target_string)
