@@ -88,8 +88,8 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
                 try:
                     yield self.text_to_instance(source_sequence, target_sequence)
                 except AssertionError as e:
-                    # print(e)
-                    # print(sys.exc_info()[0])
+                    print(e)
+                    print(sys.exc_info()[0])
                     pass
     @overrides
     def text_to_instance(self, raw_source_string: str,
