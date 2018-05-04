@@ -302,7 +302,7 @@ class SimpleSeq2Seq(Model):
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
-            print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
+            # print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
             source_mask = get_text_field_mask(source_tokens)
             # print('source mask', source_mask.cpu())
             embedded_input = self._source_embedder(source_tokens)
@@ -313,14 +313,14 @@ class SimpleSeq2Seq(Model):
                                                final_decoder_context.view((2, 1, self._encoder_hidden_dim))], dim=0)
             # TODO undo change below
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = \
-                self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
+                self._encoder(embedded_input, (foo, bar))
             # TODO undo
-            # foo = final_encoder_hidden
-            # bar = final_encoder_context
+            foo = final_encoder_hidden
+            bar = final_encoder_context
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
-                print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()[0]]))
+                # print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()[0]]))
                 target_sequence_length = targets.size()[1]
                 # The last input from the target is either padding or the end symbol. Either way, we
                 # don't have to process it.
@@ -331,7 +331,8 @@ class SimpleSeq2Seq(Model):
             # decoder_context = Variable(encoder_outputs.data.new()
             #                            .resize_(batch_size, self._decoder_output_dim).fill_(0))
             start_decoder_context = final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
-            last_predictions = None
+            last_predictions = Variable(source_mask.data.new()
+                                                 .resize_(batch_size).fill_(self._start_index))
             step_logits = []
             step_probabilities = []
             step_predictions = []
@@ -340,16 +341,7 @@ class SimpleSeq2Seq(Model):
                 if self.training or 'target_tokens' in relevant_text_fields:
                     input_choices = targets[:, timestep]
                 else:
-                    if timestep == 0:
-                        # For the first timestep, when we do not have targets, we input start symbols.
-                        # (batch_size,)
-                        input_choices = Variable(source_mask.data.new()
-                                                 .resize_(batch_size).fill_(self._start_index))
-                    else:
-                        # Need to stop once the end token is predicted
-                        # Should I impose type constraints?
-                        input_choices = last_predictions
-                # print('input choices', input_choices.cpu())#, self.vocab.get_token_from_index(targets.cpu()[0, timestep], 'target_tokens'))
+                    input_choices = last_predictions
                 decoder_input = self._prepare_decode_step_input(input_choices, start_decoder_hidden,
                                                                 encoder_outputs, source_mask)
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
@@ -381,12 +373,13 @@ class SimpleSeq2Seq(Model):
             all_probabilities.extend(step_probabilities)
             if has_targets:
                 # (batch size, num time steps, num classes)
-                log_probabilities = F.log_softmax(torch.cat(step_logits, 1), dim=2)
+                logits = torch.cat(step_logits, 1)
                 # print(logits.size(), targets.size(), target_mask.size())
-                temp = batched_index_select(log_probabilities, targets[:, 1:])
+                # temp = batched_index_select(log_probabilities, targets[:, 1:])
                 # print('temp size', temp.size())
                 # print('temp', temp.cpu())
-                total_loss -= torch.sum(temp)
+                target_mask = get_text_field_mask(target_tokens)
+                total_loss += sequence_cross_entropy_with_logits(logits, targets, target_mask, batch_average=False, label_smoothing=False)#torch.sum(temp)
 
         logits = torch.cat(all_logits, 1)
         class_probabilities = torch.cat(all_probabilities, 1)
