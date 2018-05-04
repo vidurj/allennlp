@@ -404,11 +404,11 @@ def create_sentence_split_data(questions, file_name):
 
 def synthetic_multisentence_data(num_samples, file_name):
     data_points = []
-    start_to_token = {'a': '(Equals var1 num1)',
-                      'the': '(Equals var1 (Plus var1 num1))',
-                      'cat': '(Equals var1 (Minus var1 num1))',
-                      'crow': '(Equals var1 (Times var1 num1))',
-                      'hat': '(Equals var1 (Div var1 num1))'}
+    start_to_token = {'a': '( Equals var1 num1 )',
+                      'the': '( Equals var1 ( Plus var1 num1 ) )',
+                      'cat': '( Equals var1 ( Minus var1 num1 ) )',
+                      'crow': '( Equals var1 ( Times var1 num1 ) )',
+                      'hat': '( Equals var1 ( Div var1 num1 ) )'}
     start_to_token = list(start_to_token.items())
     for _ in range(num_samples):
         for (start, token) in start_to_token:
