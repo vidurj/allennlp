@@ -257,7 +257,7 @@ class SimpleSeq2Seq(Model):
         return output
 
 
-    def _decode(self, decoder_hidden, decoder_context, max_decoding_steps, encoder_outputs, source_mask, targets=None):
+    def _decode(self, decoder_hidden, decoder_context, max_decoding_steps, encoder_outputs, source_mask, targets):
         batch_size = 1
         step_logits = []
         step_probabilities = []
@@ -295,7 +295,7 @@ class SimpleSeq2Seq(Model):
         if targets is not None:
             log_probabilities = F.log_softmax(torch.cat(step_logits, 1), dim=2)
             temp = batched_index_select(log_probabilities, targets[:, 1:])
-            loss = torch.sum(temp)
+            loss = - torch.sum(temp)
         else:
             loss = None
         return (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities, step_predictions)
@@ -363,7 +363,7 @@ class SimpleSeq2Seq(Model):
             start_decoder_context = final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
 
             (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities,
-             step_predictions) = self._decode(start_decoder_hidden, start_decoder_context, max_decoding_steps, source_mask, targets)
+             step_predictions) = self._decode(start_decoder_hidden, start_decoder_context, max_decoding_steps, encoder_outputs, source_mask, targets)
             all_logits.extend(step_logits)
             all_predictions.extend(step_predictions)
             all_probabilities.extend(step_probabilities)

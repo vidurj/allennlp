@@ -413,7 +413,7 @@ def synthetic_multisentence_data(num_samples, file_name):
     for _ in range(num_samples):
         for (start, token) in start_to_token:
             sentences = ' <sentence_end> '.join([start, 'it', 'it', 'it'])
-            logical_form = ' <sentence_end> '.join([start, start, start, start])
+            logical_form = ' <sentence_end> '.join([token, token, token, token])
             data_points.append((sentences, logical_form))
 
     with open(file_name, 'w') as f:
