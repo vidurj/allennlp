@@ -105,7 +105,7 @@ class SimpleSeq2Seq(Model):
         self._encoder = torch.nn.LSTM(source_embedder.get_output_dim(),
                                       self._encoder_hidden_dim,
                                       self._encoder_num_layers,
-                                      # dropout=0.2,
+                                      dropout=0.2,
                                       batch_first=True,
                                       bidirectional=True)  # encoder
         self._max_decoding_steps = max_decoding_steps
@@ -256,6 +256,50 @@ class SimpleSeq2Seq(Model):
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
 
+
+    def _decode(self, decoder_hidden, decoder_context, max_decoding_steps, encoder_outputs, source_mask, targets=None):
+        batch_size = 1
+        step_logits = []
+        step_probabilities = []
+        step_predictions = []
+        flag = False
+        last_predictions = Variable(source_mask.data.new()
+                                    .resize_(batch_size).fill_(self._start_index))
+        for timestep in range(max_decoding_steps):
+            if targets is not None:
+                input_choices = targets[:, timestep]
+            else:
+                input_choices = last_predictions
+            decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
+                                                            encoder_outputs, source_mask)
+            decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
+                                                                 (decoder_hidden,
+                                                                  decoder_context))
+            if input_choices.data.cpu()[0] == self._end_index:
+                final_decoder_hidden = decoder_hidden
+                final_decoder_context = decoder_context
+                flag = True
+                break
+            else:
+                # (batch_size, num_classes)
+                output_projections = self._output_projection_layer(decoder_hidden)
+                # list of (batch_size, 1, num_classes)
+                step_logits.append(output_projections.unsqueeze(1))
+                class_probabilities = F.softmax(output_projections, dim=-1)
+                _, predicted_classes = torch.max(class_probabilities, 1)
+                step_probabilities.append(class_probabilities.unsqueeze(1))
+                last_predictions = predicted_classes
+                # (batch_size, 1)
+                step_predictions.append(last_predictions.unsqueeze(1))
+        assert flag
+        if targets is not None:
+            log_probabilities = F.log_softmax(torch.cat(step_logits, 1), dim=2)
+            temp = batched_index_select(log_probabilities, targets[:, 1:])
+            loss = torch.sum(temp)
+        else:
+            loss = None
+        return (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities, step_predictions)
+
     @overrides
     def forward(self, **kwargs) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
@@ -308,57 +352,22 @@ class SimpleSeq2Seq(Model):
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = \
                 self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
             if has_targets:
-                target_tokens = relevant_text_fields['target_tokens']
-                targets = target_tokens["tokens"]
+                targets = relevant_text_fields['target_tokens']["tokens"]
                 # print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()[0]]))
-                target_sequence_length = targets.size()[1]
-                num_decoding_steps = target_sequence_length
+                max_decoding_steps = targets.size()[1] + self._max_decoding_steps
             else:
-                num_decoding_steps = self._max_decoding_steps
+                targets = None
+                max_decoding_steps = self._max_decoding_steps
+
             start_decoder_hidden = final_encoder_hidden[2:, :, :].view(1, self._decoder_output_dim)
             start_decoder_context = final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
-            last_predictions = Variable(source_mask.data.new()
-                                                 .resize_(batch_size).fill_(self._start_index))
-            step_logits = []
-            step_probabilities = []
-            step_predictions = []
-            flag = False
-            decoder_hidden = start_decoder_hidden
-            decoder_context = start_decoder_context
-            for timestep in range(num_decoding_steps):
-                if self.training or 'target_tokens' in relevant_text_fields:
-                    input_choices = targets[:, timestep]
-                else:
-                    input_choices = last_predictions
-                decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
-                                                                encoder_outputs, source_mask)
-                decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
-                                                                     (decoder_hidden,
-                                                                      decoder_context))
-                if input_choices.data.cpu()[0] == self._end_index:
-                    final_decoder_hidden = decoder_hidden
-                    final_decoder_context = decoder_context
-                    flag = True
-                    break
-                else:
-                    # (batch_size, num_classes)
-                    output_projections = self._output_projection_layer(decoder_hidden)
-                    # list of (batch_size, 1, num_classes)
-                    step_logits.append(output_projections.unsqueeze(1))
-                    class_probabilities = F.softmax(output_projections, dim=-1)
-                    _, predicted_classes = torch.max(class_probabilities, 1)
-                    step_probabilities.append(class_probabilities.unsqueeze(1))
-                    last_predictions = predicted_classes
-                    # (batch_size, 1)
-                    step_predictions.append(last_predictions.unsqueeze(1))
-            assert flag
+
+            (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities,
+             step_predictions) = self._decode(start_decoder_hidden, start_decoder_context, max_decoding_steps, source_mask, targets)
             all_logits.extend(step_logits)
             all_predictions.extend(step_predictions)
             all_probabilities.extend(step_probabilities)
-            if has_targets:
-                log_probabilities = F.log_softmax(torch.cat(step_logits, 1), dim=2)
-                temp = batched_index_select(log_probabilities, targets[:, 1:])
-                total_loss -= torch.sum(temp)
+            total_loss += loss
 
         logits = torch.cat(all_logits, 1)
         class_probabilities = torch.cat(all_probabilities, 1)
