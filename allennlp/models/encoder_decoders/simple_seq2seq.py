@@ -36,11 +36,9 @@ Plus   (num, num) : num
 """
 
 def batched_index_select(input_tensor, index_tensor):
-    dummy = index_tensor.unsqueeze(2).expand(index_tensor.size(0),
-                                             index_tensor.size(1),
-                                             input_tensor.size(2))
+    dummy = index_tensor.unsqueeze(2)
     out = input_tensor.gather(2, dummy)  # b x e x f
-    return out[:, :, 0]
+    return out.squeeze(2)
 
 
 @Model.register("simple_seq2seq")
@@ -296,40 +294,28 @@ class SimpleSeq2Seq(Model):
         start_decoder_context = Variable(
             torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0))
         total_loss = Variable(torch.cuda.FloatTensor(1).fill_(0))
-        # print('')
-        foo = Variable(torch.cuda.FloatTensor(4, 1, self._encoder_hidden_dim).fill_(0))
-        bar = Variable(torch.cuda.FloatTensor(4, 1, self._encoder_hidden_dim).fill_(0))
         for sentence_number in range(len(sentence_number_to_text_field)):
             relevant_text_fields = sentence_number_to_text_field[sentence_number]
             source_tokens = relevant_text_fields['source_tokens']
             # print(' '.join([self.vocab.get_token_from_index(index, 'source_tokens') for index in source_tokens['tokens'].data.cpu().numpy()[0]]))
             source_mask = get_text_field_mask(source_tokens)
-            # print('source mask', source_mask.cpu())
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
             start_encoder_hidden = torch.cat([start_decoder_hidden.view(2, 1, self._encoder_hidden_dim),
                                               final_decoder_hidden.view((2, 1, self._encoder_hidden_dim))], dim=0)
             start_encoder_context = torch.cat([start_decoder_context.view(2, 1, self._encoder_hidden_dim),
                                                final_decoder_context.view((2, 1, self._encoder_hidden_dim))], dim=0)
-            # TODO undo change below
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = \
-                self._encoder(embedded_input, (foo, bar))
-            # TODO undo
-            foo = final_encoder_hidden
-            bar = final_encoder_context
+                self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
             if has_targets:
                 target_tokens = relevant_text_fields['target_tokens']
                 targets = target_tokens["tokens"]
                 # print(' '.join([self.vocab.get_token_from_index(index, 'target_tokens') for index in targets.data.cpu().numpy()[0]]))
                 target_sequence_length = targets.size()[1]
-                # The last input from the target is either padding or the end symbol. Either way, we
-                # don't have to process it.
                 num_decoding_steps = target_sequence_length
             else:
                 num_decoding_steps = self._max_decoding_steps
             start_decoder_hidden = final_encoder_hidden[2:, :, :].view(1, self._decoder_output_dim)
-            # decoder_context = Variable(encoder_outputs.data.new()
-            #                            .resize_(batch_size, self._decoder_output_dim).fill_(0))
             start_decoder_context = final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
             last_predictions = Variable(source_mask.data.new()
                                                  .resize_(batch_size).fill_(self._start_index))
@@ -337,16 +323,18 @@ class SimpleSeq2Seq(Model):
             step_probabilities = []
             step_predictions = []
             flag = False
+            decoder_hidden = start_decoder_hidden
+            decoder_context = start_decoder_context
             for timestep in range(num_decoding_steps):
                 if self.training or 'target_tokens' in relevant_text_fields:
                     input_choices = targets[:, timestep]
                 else:
                     input_choices = last_predictions
-                decoder_input = self._prepare_decode_step_input(input_choices, start_decoder_hidden,
+                decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                                 encoder_outputs, source_mask)
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
-                                                                     (start_decoder_hidden,
-                                                                      start_decoder_context))
+                                                                     (decoder_hidden,
+                                                                      decoder_context))
                 if input_choices.data.cpu()[0] == self._end_index:
                     final_decoder_hidden = decoder_hidden
                     final_decoder_context = decoder_context
@@ -358,28 +346,19 @@ class SimpleSeq2Seq(Model):
                     # list of (batch_size, 1, num_classes)
                     step_logits.append(output_projections.unsqueeze(1))
                     class_probabilities = F.softmax(output_projections, dim=-1)
-                    # print('correct class prob', class_probabilities.cpu())
                     _, predicted_classes = torch.max(class_probabilities, 1)
                     step_probabilities.append(class_probabilities.unsqueeze(1))
                     last_predictions = predicted_classes
                     # (batch_size, 1)
                     step_predictions.append(last_predictions.unsqueeze(1))
             assert flag
-            # Gotta be careful about conditioning on the end token before moving on to the next sentence at test time
-            # step_logits is a list containing tensors of shape (batch_size, 1, num_classes)
-            # This is (batch_size, num_decoding_steps, num_classes)
             all_logits.extend(step_logits)
             all_predictions.extend(step_predictions)
             all_probabilities.extend(step_probabilities)
             if has_targets:
-                # (batch size, num time steps, num classes)
-                logits = torch.cat(step_logits, 1)
-                # print(logits.size(), targets.size(), target_mask.size())
-                # temp = batched_index_select(log_probabilities, targets[:, 1:])
-                # print('temp size', temp.size())
-                # print('temp', temp.cpu())
-                target_mask = get_text_field_mask(target_tokens)
-                total_loss += sequence_cross_entropy_with_logits(logits, targets, target_mask, batch_average=False, label_smoothing=False)#torch.sum(temp)
+                log_probabilities = F.log_softmax(torch.cat(step_logits, 1), dim=2)
+                temp = batched_index_select(log_probabilities, targets[:, 1:])
+                total_loss -= torch.sum(temp)
 
         logits = torch.cat(all_logits, 1)
         class_probabilities = torch.cat(all_probabilities, 1)

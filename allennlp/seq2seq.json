@@ -53,10 +53,8 @@
     "target_namespace": "target_tokens"
     },
     "iterator": {
-      "type": "bucket",
-      "sorting_keys": [["0_source_tokens", "num_tokens"], ["0_target_tokens", "num_tokens"]],
-      "batch_size" : 1,
-      "padding_noise": 1.0
+      "type": "basic",
+      "batch_size" : 1
     },
     "trainer": {
       "num_serialized_models_to_keep": 2,
@@ -67,7 +65,7 @@
       "cuda_device": 0,
       "optimizer": {
         "type": "adadelta",
-        "lr": 1.0,
+        "lr": 0.1,
         "rho": 0.95
       }
     }
