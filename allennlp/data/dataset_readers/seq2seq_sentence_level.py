@@ -95,9 +95,7 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
     def text_to_instance(self, raw_source_string: str,
                          _target_string: str = None) -> Instance:  # type: ignore
         # pylint: disable=arguments-differ
-
-        source_string, num_to_token = standardize_question(raw_source_string, copy_mechanism=False, randomize=True)
-        sentences = source_string.split('<sentence_end>')
+        sentences = raw_source_string.split('<sentence_end>')
         if _target_string is not None:
             targets = _target_string.split('<sentence_end>')
             assert len(sentences) == len(targets), (sentences, targets)
@@ -107,9 +105,13 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
         var_assignments = {}
         type_assignments = {}
         print('raw source string:', raw_source_string)
-        for sentence_number, (sentence, raw_target_string) in enumerate(zip(sentences, targets)):
-            print('sentence:', sentence)
-            tokenized_source = self._source_tokenizer.tokenize(sentence)
+        for sentence_number, (raw_sentence, raw_target_string) in enumerate(zip(sentences, targets)):
+            source_string, num_to_token = standardize_question(raw_sentence,
+                                                               copy_mechanism=False,
+                                                               randomize=True)
+            print('raw sentence:', raw_sentence)
+            print('sentence:', source_string)
+            tokenized_source = self._source_tokenizer.tokenize(source_string)
             assert self._source_add_start_token
 
             if self._source_add_start_token:

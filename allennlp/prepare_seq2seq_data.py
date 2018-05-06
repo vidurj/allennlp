@@ -32,13 +32,16 @@ meaningful_units = {
     # 'Animal'
 }
 
+TIMES_WORDS = {
+    'twice': ['two', 'times'],
+    'thrice': ['three', 'times'],
+    'double': ['two', 'times'],
+    'triple': ['three', 'times'],
+    'quadruple': ['four', 'times'],
+    'quituple': ['five', 'times']
+}
+
 NUMBER_WORDS = {
-    'twice': 2,
-    'thrice': 3,
-    'double': 2,
-    'triple': 3,
-    'quadruple': 4,
-    'quituple': 5,
     'zero': 0,
     'one': 1,
     'two': 2,
@@ -50,16 +53,6 @@ NUMBER_WORDS = {
     'eight': 8,
     'nine': 9,
     'ten': 10,
-    'first': 1,
-    'second': 2,
-    'third': 3,
-    'fourth': 4,
-    'fifth': 5,
-    'sixth': 6,
-    'seventh': 7,
-    'eighth': 8,
-    'ninth': 9,
-    'tenth': 10,
     'hundred': 100,
     'thousand': 1000,
     'million': 1000000
@@ -88,17 +81,21 @@ def is_num(string):
 
 def standardize_question(text, copy_mechanism, randomize):
     assert not copy_mechanism
-    number_tokens = ['num' + str(i) for i in range(10)]
+    number_tokens = [str(i) for i in range(10, 20)]
     if randomize:
         random.shuffle(number_tokens)
     source = text.replace('-', ' ')
-    _source_tokenized = [token.text for token in nlp(source)]
+    temp = [token.text for token in nlp(source)]
+    _source_tokenized = []
+    for token in temp:
+        _source_tokenized.extend(TIMES_WORDS.get(token, [token]))
     number_to_tokens = defaultdict(list)
     source_tokenized = []
     for index, token in enumerate(_source_tokenized):
         number = is_num(token)
         if number is not None and (
-                _source_tokenized[index + 1] == '%' or _source_tokenized[index + 1] == 'percent'):
+                        _source_tokenized[index + 1] == '%' or _source_tokenized[
+                        index + 1] == 'percent'):
             number /= 100
         if number is not None:
             number = round(number, PRECISION)
@@ -111,10 +108,12 @@ def standardize_question(text, copy_mechanism, randomize):
                     print('Already saw number')
                 token = number_to_tokens[number]
         source_tokenized.append(token)
-    return ' '.join(source_tokenized).replace('< sentence_end >', '<sentence_end>'), number_to_tokens
+    return ' '.join(source_tokenized).replace('< sentence_end >',
+                                              '<sentence_end>'), number_to_tokens
 
 
-def standardize_logical_form_with_validation(text, number_to_tokens, randomize, var_assignments={}, type_assignments={}):
+def standardize_logical_form_with_validation(text, number_to_tokens, randomize, var_assignments={},
+                                             type_assignments={}):
     remaining_variable_names = ['var' + str(i) for i in range(10)]
     assigned_vars = set(var_assignments.values())
     remaining_variable_names = [x for x in remaining_variable_names if x not in assigned_vars]
@@ -393,13 +392,19 @@ def create_sentence_split_data(questions, file_name):
                     logical_form_pieces[sentence_number].append(semantics)
             indices = list(logical_form_pieces.keys())
             indices.sort()
-            final_logical_form = ' <sentence_end> '.join([' '.join(logical_form_pieces[index]) for index in indices])
-            final_input = ' <sentence_end> '.join([key_to_sentence[(int(q['iIndex']), index)] for index in indices])
+            final_logical_form = ' <sentence_end> '.join(
+                [' '.join(logical_form_pieces[index]) for index in indices])
+            final_input = ' <sentence_end> '.join(
+                [key_to_sentence[(int(q['iIndex']), index)] for index in indices])
             if len(logical_form_pieces) > 0:
                 data_points.append((final_input, final_logical_form))
 
     with open(file_name, 'w') as f:
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
+
+
+    with open(file_name[:-4] + '.json', 'w') as f:
+        f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]))
 
 
 def synthetic_multisentence_data(num_samples, file_name):
@@ -419,22 +424,23 @@ def synthetic_multisentence_data(num_samples, file_name):
     with open(file_name, 'w') as f:
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
 
+
 if __name__ == '__main__':
-    synthetic_multisentence_data(100, 'synthetic_train.txt')
-    synthetic_multisentence_data(5, 'synthetic_dev.txt')
+    # synthetic_multisentence_data(100, 'synthetic_train.txt')
+    # synthetic_multisentence_data(5, 'synthetic_dev.txt')
     # prepare_synthetic_data()
-    # with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
-    #           'r') as f:
-    #     data = json.load(f)
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+              'r') as f:
+        data = json.load(f)
     #
     # with open('allennlp/additional_annotations.json', 'r') as f:
     #     additional_data = json.load(f)
     #
     #
     # # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    # create_sentence_split_data(data[:-100], 'train.txt')
-    # create_sentence_split_data(data[-100:], 'dev.txt')
-    # create_sentence_split_data(data[-100:], 'test.txt')
+    create_sentence_split_data(data[:-100], 'train.txt')
+    create_sentence_split_data(data[-100:], 'dev.txt')
+    create_sentence_split_data(data[-100:], 'test.txt')
 
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 

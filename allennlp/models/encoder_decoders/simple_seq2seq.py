@@ -363,11 +363,17 @@ class SimpleSeq2Seq(Model):
             start_decoder_context = final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
 
             (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities,
-             step_predictions) = self._decode(start_decoder_hidden, start_decoder_context, max_decoding_steps, encoder_outputs, source_mask, targets)
+             step_predictions) = self._decode(start_decoder_hidden,
+                                              start_decoder_context,
+                                              max_decoding_steps,
+                                              encoder_outputs,
+                                              source_mask,
+                                              targets)
             all_logits.extend(step_logits)
             all_predictions.extend(step_predictions)
             all_probabilities.extend(step_probabilities)
-            total_loss += loss
+            if loss is not None:
+                total_loss += loss
 
         logits = torch.cat(all_logits, 1)
         class_probabilities = torch.cat(all_probabilities, 1)
@@ -482,13 +488,7 @@ class SimpleSeq2Seq(Model):
             predicted_indices = predicted_indices.data.cpu().numpy()
         all_predicted_tokens = []
         for indices in predicted_indices:
-            indices = list(indices)
-            # Collect indices till the first end_symbol
-
-            if self._end_index in indices:
-                indices = indices[:indices.index(self._end_index)]
-            else:
-                print(indices, self._end_index)
+            indices = [x for x in list(indices) if x != self._end_index]
             predicted_tokens = [
                 self.vocab.get_token_from_index(x, namespace=self._target_namespace)
                 for x in indices]
