@@ -473,28 +473,27 @@ class SimpleSeq2Seq(Model):
         total = np.sum((targets == predictions) * target_mask)
         return total / np.sum(target_mask)
 
-    # @overrides
-    # def decode(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
-    #     """
-    #     This method overrides ``Model.decode``, which gets called after ``Model.forward``, at test
-    #     time, to finalize predictions. The logic for the decoder part of the encoder-decoder lives
-    #     within the ``forward`` method.
-    #
-    #     This method trims the output predictions to the first end symbol, replaces indices with
-    #     corresponding tokens, and adds a field called ``predicted_tokens`` to the ``output_dict``.
-    #     """
-    #     predicted_indices = output_dict["predictions"]
-    #     if not isinstance(predicted_indices, numpy.ndarray):
-    #         predicted_indices = predicted_indices.data.cpu().numpy()
-    #     all_predicted_tokens = []
-    #     for indices in predicted_indices:
-    #         indices = [x for x in list(indices) if x != self._end_index]
-    #         predicted_tokens = [
-    #             self.vocab.get_token_from_index(x, namespace=self._target_namespace)
-    #             for x in indices]
-    #         all_predicted_tokens.append(predicted_tokens)
-    #     output_dict["predicted_tokens"] = all_predicted_tokens
-    #     return output_dict
+    @overrides
+    def decode(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        """
+        This method overrides ``Model.decode``, which gets called after ``Model.forward``, at test
+        time, to finalize predictions. The logic for the decoder part of the encoder-decoder lives
+        within the ``forward`` method.
+
+        This method trims the output predictions to the first end symbol, replaces indices with
+        corresponding tokens, and adds a field called ``predicted_tokens`` to the ``output_dict``.
+        """
+        predicted_indices = output_dict["predictions"]
+        if not isinstance(predicted_indices, numpy.ndarray):
+            predicted_indices = predicted_indices.data.cpu().numpy()
+        all_predicted_tokens = []
+        for indices in predicted_indices:
+            predicted_tokens = [
+                self.vocab.get_token_from_index(x, namespace=self._target_namespace)
+                for x in indices]
+            all_predicted_tokens.append(predicted_tokens)
+        output_dict["predicted_tokens"] = all_predicted_tokens
+        return output_dict
 
     @classmethod
     def from_params(cls, vocab, params: Params) -> 'SimpleSeq2Seq':
