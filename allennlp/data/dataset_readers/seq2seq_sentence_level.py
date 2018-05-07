@@ -139,7 +139,6 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
                 tokenized_target.append(Token(END_SYMBOL))
                 target_field = TextField(tokenized_target, self._target_token_indexers)
                 tag_to_field[str(sentence_number) + '_target_tokens'] = target_field
-        print('-' * 70)
         return Instance(tag_to_field)
 
     @classmethod

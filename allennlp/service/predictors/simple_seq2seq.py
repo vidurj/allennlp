@@ -421,5 +421,6 @@ class SimpleSeq2SeqPredictor(Predictor):
             new_sentences.append(new_sentence)
         text = '\n'.join(new_sentences)
         print(text)
+        print('-' * 30)
         return {'predicted_tokens': text}
 
