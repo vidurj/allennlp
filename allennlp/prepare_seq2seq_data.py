@@ -108,8 +108,7 @@ def standardize_question(text, copy_mechanism, randomize):
                     print('Already saw number')
                 token = number_to_tokens[number]
         source_tokenized.append(token)
-    return ' '.join(source_tokenized).replace('< sentence_end >',
-                                              '<sentence_end>'), number_to_tokens
+    return ' '.join(source_tokenized), number_to_tokens
 
 
 def standardize_logical_form_with_validation(text, number_to_tokens, randomize, var_assignments={},
@@ -368,7 +367,7 @@ def create_sentence_aligned_data(alignments):
     return problems
 
 
-def create_sentence_split_data(questions, file_name):
+def create_sentence_split_data(questions, file_name, is_dev):
     with open('/Users/vidurj/euclid/data/private/third_party/alg514/kushman_annotated.json',
               'r') as f:
         data = json.load(f)
@@ -404,13 +403,14 @@ def create_sentence_split_data(questions, file_name):
         else:
             final_logical_form = 'N/A'
 
-        data_points.append((final_input, final_logical_form))
+        if final_logical_form != 'N/A' or is_dev:
+            data_points.append((final_input, final_logical_form))
 
     with open(file_name, 'w') as f:
-        f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
+        f.write('\n'.join([q + '\t' + lf for q, lf in data_points]) + '\n')
 
     with open(file_name[:-4] + '.json', 'w') as f:
-        f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]))
+        f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]) + '\n')
 
 
 def synthetic_multisentence_data(num_samples, file_name):
@@ -428,7 +428,7 @@ def synthetic_multisentence_data(num_samples, file_name):
             data_points.append((sentences, logical_form))
 
     with open(file_name, 'w') as f:
-        f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
+        f.write('\n'.join([q + '\t' + lf for q, lf in data_points]) + '\n')
 
 
 if __name__ == '__main__':
@@ -444,9 +444,9 @@ if __name__ == '__main__':
     #
     #
     # # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    create_sentence_split_data(data[:-100], 'train.txt')
-    create_sentence_split_data(data[-100:], 'dev.txt')
-    create_sentence_split_data(data[-100:], 'test.txt')
+    create_sentence_split_data(data[:-100], 'train.txt', is_dev=False)
+    create_sentence_split_data(data[-100:], 'dev.txt', is_dev=True)
+    create_sentence_split_data(data[-100:], 'test.txt', is_dev=True)
 
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
