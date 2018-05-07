@@ -422,5 +422,5 @@ class SimpleSeq2SeqPredictor(Predictor):
         text = '\n'.join(new_sentences)
         print(text)
         print('-' * 30)
-        return {'predicted_tokens': text}
+        return {'predicted_tokens': text.split()}
 
