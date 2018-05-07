@@ -408,7 +408,7 @@ class SimpleSeq2SeqPredictor(Predictor):
 
         instance, return_dict = self._json_to_instance(inputs)
         outputs = self._model.forward_on_instance(instance, cuda_device)
-        print(outputs['predicted_tokens'])
+        print(outputs)
         output_string = ' '.join(outputs['predicted_tokens'])
         sentences = output_string.split(END_SYMBOL)
         new_sentences = []
