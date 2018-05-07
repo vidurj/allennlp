@@ -81,7 +81,7 @@ def is_num(string):
 
 def standardize_question(text, copy_mechanism, randomize):
     assert not copy_mechanism
-    number_tokens = [str(i) for i in range(10, 20)]
+    number_tokens = ['num' + str(i) for i in range(10)]
     if randomize:
         random.shuffle(number_tokens)
     source = text.replace('-', ' ')
