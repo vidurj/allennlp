@@ -117,6 +117,13 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
             if self._source_add_start_token:
                 tokenized_source.insert(0, Token(START_SYMBOL))
             tokenized_source.append(Token(END_SYMBOL))
+
+            tokenized_mapping = []
+            for key, value in num_to_token.items():
+                tokenized_mapping.append(Token(str(key)))
+                tokenized_mapping.append(Token(str(value)))
+            tag_to_field[str(sentence_number) + '_mapping'] = TextField(tokenized_mapping,
+                                                                        {"mapping_tokens": SingleIdTokenIndexer()})
             source_field = TextField(tokenized_source, self._source_token_indexers)
             tag_to_field[str(sentence_number) + '_source_tokens'] = source_field
             if _target_string is not None:
