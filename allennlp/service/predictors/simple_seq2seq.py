@@ -412,6 +412,7 @@ class SimpleSeq2SeqPredictor(Predictor):
         output_string = ' '.join(outputs['predicted_tokens'])
         sentences = output_string.split(END_SYMBOL)
         new_sentences = []
+        print(instance.fields.keys())
         for sentence_number, sentence in enumerate(sentences):
             text_field = instance.fields[str(sentence_number) + '_mapping']
             text = [token.text for token in text_field.tokens]
