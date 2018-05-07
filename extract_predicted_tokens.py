@@ -13,8 +13,6 @@ preds = []
 for line, tokens in zip(lines, question_tokens):
     processed_tokens = []
     for token in json.loads(line)['predicted_tokens']:
-        if token.isdigit():
-            token = tokens[int(token)]
         processed_tokens.append(token)
     preds.append(' '.join(processed_tokens))
 
