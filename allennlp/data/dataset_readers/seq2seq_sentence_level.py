@@ -118,7 +118,7 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
                 tokenized_source.insert(0, Token(START_SYMBOL))
             tokenized_source.append(Token(END_SYMBOL))
 
-            tokenized_mapping = []
+            tokenized_mapping = [Token('null'), Token('null')]
             for key, value in num_to_token.items():
                 tokenized_mapping.append(Token(str(key)))
                 tokenized_mapping.append(Token(str(value)))
