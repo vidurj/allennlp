@@ -131,7 +131,7 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
             source_field = TextField(tokenized_source, self._source_token_indexers)
             tag_to_field[str(sentence_number) + '_source_tokens'] = source_field
             if _target_string is not None:
-                if _target_string.strip() == '':
+                if raw_target_string.strip() == '':
                     target_string = ''
                 else:
                     target_string, _ = standardize_logical_form_with_validation(raw_target_string,
