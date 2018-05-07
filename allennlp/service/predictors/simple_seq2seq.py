@@ -421,5 +421,5 @@ class SimpleSeq2SeqPredictor(Predictor):
             new_sentences.append(new_sentence)
         text = '\n'.join(new_sentences)
         print(text)
-        return outputs
+        return {'predicted_tokens': text}
 
