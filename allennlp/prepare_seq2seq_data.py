@@ -374,34 +374,40 @@ def create_sentence_split_data(questions, file_name):
         data = json.load(f)
 
     key_to_sentence = {}
+    index_to_num_sentences = defaultdict(int)
     for q in data:
         for sentence_number, sentence in enumerate(q['nlp']['sentences']):
+            index_to_num_sentences[q['iIndex']] = max(sentence_number + 1,
+                                                      index_to_num_sentences[q['iIndex']])
             key = (q['iIndex'], sentence_number)
             assert key not in key_to_sentence
             key_to_sentence[key] = sentence['text']['content']
 
     data_points = []
     for q in questions:
-        if 'lAlignments' in q:
+        num_sentences = index_to_num_sentences[int(q['iIndex'])]
+        assert num_sentences > 0
+        sentences = [key_to_sentence[(int(q['iIndex']), index)] for index in range(num_sentences)]
+        sentences.append('<additional_facts>')
+        final_input = ' <sentence_end> '.join(sentences)
+
+        if 'lAlignments' in q and len(q['lAlignments']) > 0:
+            logical_form_pieces = [[] for _ in range(num_sentences + 1)]
             lines = q['lAlignments']
-            logical_form_pieces = defaultdict(list)
             for substring in lines:
                 sentence_number, semantics = substring.split(' -> ')
                 sentence_number = int(sentence_number)
-                if sentence_number >= 0:
-                    logical_form_pieces[sentence_number].append(semantics)
-            indices = list(logical_form_pieces.keys())
-            indices.sort()
+                assert sentence_number >= -1, sentence_number
+                logical_form_pieces[sentence_number].append(semantics)
             final_logical_form = ' <sentence_end> '.join(
-                [' '.join(logical_form_pieces[index]) for index in indices])
-            final_input = ' <sentence_end> '.join(
-                [key_to_sentence[(int(q['iIndex']), index)] for index in indices])
-            if len(logical_form_pieces) > 0:
-                data_points.append((final_input, final_logical_form))
+                [' '.join(subset) for subset in logical_form_pieces])
+        else:
+            final_logical_form = 'N/A'
+
+        data_points.append((final_input, final_logical_form))
 
     with open(file_name, 'w') as f:
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]))
-
 
     with open(file_name[:-4] + '.json', 'w') as f:
         f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]))

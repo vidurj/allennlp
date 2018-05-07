@@ -389,7 +389,7 @@ class SimpleSeq2SeqPredictor(Predictor):
 
 
 @Predictor.register('simple_seq2seq_sentence_level')
-class SimpleSeq2SeqPredictor(Predictor):
+class SimpleSeq2SeqPredictorSentenceLevel(Predictor):
     """
     Wrapper for the :class:`~allennlp.models.encoder_decoder.simple_seq2seq` model.
     """
