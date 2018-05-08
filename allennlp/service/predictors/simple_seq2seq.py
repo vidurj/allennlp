@@ -449,6 +449,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
         output = self._model.beam_search(model_input, bestk=3)
+        print(output)
         predictions = output.splitlines()
         cleaned_predictions = []
         for prediction in predictions:
@@ -462,7 +463,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
                     token_to_num[text[i + 1]] = text[i]
                 new_sentence = ' '.join([token_to_num.get(token, token) for token in sentence.split()])
                 new_sentences.append(new_sentence)
-            text = '\n'.join(new_sentences)
+            text = ' '.join(new_sentences)
             cleaned_predictions.append(text)
         return '\n'.join(cleaned_predictions)
 
