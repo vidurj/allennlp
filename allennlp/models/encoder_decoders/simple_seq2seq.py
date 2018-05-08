@@ -208,7 +208,6 @@ class SimpleSeq2Seq(Model):
             decoder_zeros,
             sentence_number=0)
         model = {
-            'last_prediction': self._start_index,
             'start_decoder_hidden': start_decoder_hidden,
             'start_decoder_context': start_decoder_context,
             'decoder_hidden': start_decoder_hidden,
@@ -243,7 +242,6 @@ class SimpleSeq2Seq(Model):
                     model['arg_numbers'] = [0]
                     model['function_calls'] = []
                     model['action_list'].append(START_SYMBOL)
-                    model['last_prediction'] = self._start_index
                 if model['sentence_number'] == len(sentence_number_to_text_field):
                     continue
                 decoder_hidden = model['decoder_hidden']
@@ -251,8 +249,9 @@ class SimpleSeq2Seq(Model):
                 cur_log_probability = model['cur_log_probability']
                 source_mask = source_masks[model['sentence_number']]
                 valid_numbers = sentence_to_valid_numbers[model['sentence_number']]
+                last_prediction_index = self.vocab.get_token_index(model['action_list'][-1], self._target_namespace)
                 decoder_input = self._prepare_decode_step_input(
-                    Variable(torch.cuda.LongTensor(1).fill_(model['last_prediction'])),
+                    Variable(torch.cuda.LongTensor(1).fill_(last_prediction_index)),
                     decoder_hidden,
                     model['encoder_outputs'],
                     source_mask)
@@ -304,7 +303,6 @@ class SimpleSeq2Seq(Model):
                                                                model['arg_numbers'], action)
                     new_model = {
                         'action_list': model['action_list'] + [action],
-                        'last_prediction': action_index,
                         'start_decoder_hidden': model['start_decoder_hidden'],
                         'start_decoder_context': model['start_decoder_context'],
                         'decoder_hidden': decoder_hidden,
