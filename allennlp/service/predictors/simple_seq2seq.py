@@ -452,6 +452,8 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         action_lists = self._model.beam_search(model_input, bestk=3)
         cleaned_predictions = []
         for action_list in action_lists:
+            if action_list[-1] == END_SYMBOL:
+                action_list.pop()
             sentences = ' '.join(action_list).split(END_SYMBOL)[:-1]
             new_sentences = []
             for sentence_number, sentence in enumerate(sentences):
