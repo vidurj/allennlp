@@ -387,7 +387,7 @@ def create_sentence_split_data(questions, file_name, is_dev):
         num_sentences = index_to_num_sentences[int(q['iIndex'])]
         assert num_sentences > 0
         sentences = [key_to_sentence[(int(q['iIndex']), index)] for index in range(num_sentences)]
-        sentences.append('additional_facts')
+        sentences.append('<additional_facts>')
         final_input = ' <sentence_end> '.join(sentences)
 
         if 'lAlignments' in q and len(q['lAlignments']) > 0:
