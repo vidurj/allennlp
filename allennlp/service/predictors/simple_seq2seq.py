@@ -464,8 +464,8 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
                 token_to_num = {}
                 for i in range(0, len(text), 2):
                     token_to_num[text[i + 1]] = text[i]
-                sentence = action_list[sentence_number]
-                new_sentence = ' '.join([token_to_num.get(token, token) for token in sentence.split()])
+                actions = action_list[sentence_number]
+                new_sentence = ' '.join([token_to_num.get(token, token) for token in actions])
                 new_sentences.append(new_sentence)
             text = ' '.join(new_sentences)
             print('\n'.join(new_sentences))
