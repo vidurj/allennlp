@@ -138,8 +138,8 @@ class SimpleSeq2Seq(Model):
         self._output_projection_layer = Linear(self._decoder_output_dim, num_classes)
 
     def beam_search(self,  # type: ignore
-                    source_tokens: Dict[str, torch.LongTensor],
-                    bestk: int) -> Dict[str, torch.Tensor]:
+                    source_tokens,
+                    bestk) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
         Decoder logic for producing the entire target sequence.

@@ -424,3 +424,45 @@ class SimpleSeq2SeqPredictorSentenceLevel(Predictor):
         print('-' * 30)
         return {'predicted_tokens': text.split()}
 
+
+@Predictor.register('simple_seq2seq_sentence_level_beam')
+class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
+    """
+    Wrapper for the :class:`~allennlp.models.encoder_decoder.simple_seq2seq` model.
+    """
+
+    @overrides
+    def _json_to_instance(self, json_dict: JsonDict) -> Tuple[Instance, JsonDict]:
+        """
+        Expects JSON that looks like ``{"source": "..."}``.
+        """
+        source = json_dict["source"]
+        print(source)
+        return self._dataset_reader.text_to_instance(source), {}
+
+    @overrides
+    def predict_json(self, inputs: JsonDict, cuda_device: int = -1) -> JsonDict:
+
+        instance, return_dict = self._json_to_instance(inputs)
+
+        dataset = Batch([instance])
+        dataset.index_instances(self._model.vocab)
+        model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
+        output = self._model.beam_search(model_input, bestk=3)
+        predictions = output.splitlines()
+        cleaned_predictions = []
+        for prediction in predictions:
+            sentences = prediction.strip(END_SYMBOL).split(END_SYMBOL)
+            new_sentences = []
+            for sentence_number, sentence in enumerate(sentences):
+                text_field = instance.fields[str(sentence_number) + '_mapping']
+                text = [token.text for token in text_field.tokens]
+                token_to_num = {}
+                for i in range(0, len(text), 2):
+                    token_to_num[text[i + 1]] = text[i]
+                new_sentence = ' '.join([token_to_num.get(token, token) for token in sentence.split()])
+                new_sentences.append(new_sentence)
+            text = '\n'.join(new_sentences)
+            cleaned_predictions.append(text)
+        return '\n'.join(cleaned_predictions)
+
