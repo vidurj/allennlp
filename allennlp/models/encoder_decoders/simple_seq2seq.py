@@ -310,7 +310,8 @@ class SimpleSeq2Seq(Model):
                         'cur_log_probability': action_log_probability + cur_log_probability - penalty,
                         'function_calls': function_calls,
                         'arg_numbers': arg_numbers,
-                        'sentence_number': model['sentence_number']
+                        'sentence_number': model['sentence_number'],
+                        'encoder_outputs': model['encoder_outputs']
                     }
                     new_models.append(new_model)
             assert len(new_models) > 0
