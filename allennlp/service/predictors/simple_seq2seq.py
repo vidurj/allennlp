@@ -446,7 +446,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
 
         instance, return_dict = self._json_to_instance(inputs)
 
-        for sentence_number in range(instance.fields):
+        for sentence_number in range(len(instance.fields)):
             if str(sentence_number) + '_mapping' not in instance.fields:
                 num_sentences = sentence_number
                 break
