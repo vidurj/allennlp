@@ -457,11 +457,13 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
             sentences = ' '.join(action_list).split(END_SYMBOL)[:-1]
             new_sentences = []
             for sentence_number, sentence in enumerate(sentences):
-                text_field = instance.fields[str(sentence_number) + '_mapping']
-                text = [token.text for token in text_field.tokens]
-                token_to_num = {}
-                for i in range(0, len(text), 2):
-                    token_to_num[text[i + 1]] = text[i]
+                key = str(sentence_number) + '_mapping'
+                if key in instance.fields:
+                    text_field = instance.fields[key]
+                    text = [token.text for token in text_field.tokens]
+                    token_to_num = {}
+                    for i in range(0, len(text), 2):
+                        token_to_num[text[i + 1]] = text[i]
                 new_sentence = ' '.join([token_to_num.get(token, token) for token in sentence.split()])
                 new_sentences.append(new_sentence)
             text = ' '.join(new_sentences)
