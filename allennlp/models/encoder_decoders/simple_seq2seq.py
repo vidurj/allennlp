@@ -318,13 +318,13 @@ class SimpleSeq2Seq(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-        models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
+        models = [model for model in models if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] == len(sentence_number_to_text_field)]
         models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
 
-        output = '\n'.join([' '.join([token for token in model['action_list'] if token != START_SYMBOL and token != END_SYMBOL]) for model in models])
+        # output = '\n'.join([' '.join([token for token in model['action_list'] if token != START_SYMBOL and token != END_SYMBOL]) for model in models])
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
-        return output
+        return [model['action_list'] for model in models]
 
     def _decode(self, decoder_hidden, decoder_context, max_decoding_steps, encoder_outputs,
                 source_mask, targets):

@@ -449,12 +449,10 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
-        output = self._model.beam_search(model_input, bestk=3)
-        print(output)
-        predictions = output.splitlines()
+        action_lists = self._model.beam_search(model_input, bestk=3)
         cleaned_predictions = []
-        for prediction in predictions:
-            sentences = prediction.strip(END_SYMBOL).split(END_SYMBOL)
+        for action_list in action_lists:
+            sentences = ' '.join(action_list).split(END_SYMBOL)[:-1]
             new_sentences = []
             for sentence_number, sentence in enumerate(sentences):
                 text_field = instance.fields[str(sentence_number) + '_mapping']
