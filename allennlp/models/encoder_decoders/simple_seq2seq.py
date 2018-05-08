@@ -229,7 +229,6 @@ class SimpleSeq2Seq(Model):
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
-                last_prediction = model['last_prediction']
                 action_list = model['action_list']
                 if model['sentence_number'] == len(sentence_number_to_text_field):
                     continue
@@ -251,10 +250,11 @@ class SimpleSeq2Seq(Model):
                 cur_log_probability = model['cur_log_probability']
                 source_mask = source_masks[model['sentence_number']]
                 valid_numbers = sentence_to_valid_numbers[model['sentence_number']]
-                last_predictions = Variable(source_mask.data.new()
-                                            .resize_(batch_size).fill_(self._start_index))
-                decoder_input = self._prepare_decode_step_input(last_predictions, decoder_hidden,
-                                                                encoder_outputs, source_mask)
+                decoder_input = self._prepare_decode_step_input(
+                    Variable(torch.cuda.LongTensor(1).fill_(model['last_prediction'])),
+                    decoder_hidden,
+                    encoder_outputs,
+                    source_mask)
 
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
