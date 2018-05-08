@@ -454,7 +454,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
-        action_lists = self._model.beam_search(model_input, bestk=3)
+        action_lists = self._model.beam_search(model_input, bestk=100)
         cleaned_predictions = []
         for action_list in action_lists:
             new_sentences = []
@@ -467,9 +467,8 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
                 actions = action_list[sentence_number]
                 new_sentence = ' '.join([token_to_num.get(token, token) for token in actions])
                 new_sentences.append(new_sentence)
-            text = ' '.join(new_sentences)
             print('\n'.join(new_sentences))
             print("*")
-            cleaned_predictions.append(text)
+            cleaned_predictions.append(' '.join(new_sentences))
         return '\n'.join(cleaned_predictions)
 

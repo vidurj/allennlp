@@ -229,23 +229,25 @@ class SimpleSeq2Seq(Model):
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
-                if model['action_list'][-1][-1] == END_SYMBOL and model['sentence_number'] < len(sentence_number_to_text_field) - 1:
-                    model['sentence_number'] += 1
-                    (new_encoder_outputs, start_decoder_hidden, start_decoder_context) = \
-                        encode_sentence(model['start_decoder_hidden'],
-                                        model['decoder_hidden'],
-                                        model['start_decoder_context'],
-                                        model['decoder_context'],
-                                        sentence_number=model['sentence_number'])
-                    model['decoder_hidden'] = model['start_decoder_hidden'] = start_decoder_hidden
-                    model['decoder_context'] = model['start_decoder_context'] = start_decoder_context
-                    model['encoder_outputs'] = new_encoder_outputs
-                    model['arg_numbers'] = [0]
-                    model['function_calls'] = []
-                    model['action_list'].append([START_SYMBOL])
-                elif model['action_list'][-1][-1] == END_SYMBOL and model['sentence_number'] == len(sentence_number_to_text_field) - 1:
-                    new_models.append(model)
-                    continue
+                if model['action_list'][-1][-1] == END_SYMBOL:
+                    if model['sentence_number'] < len(sentence_number_to_text_field) - 1:
+                        model['sentence_number'] += 1
+                        (new_encoder_outputs, start_decoder_hidden, start_decoder_context) = \
+                            encode_sentence(model['start_decoder_hidden'],
+                                            model['decoder_hidden'],
+                                            model['start_decoder_context'],
+                                            model['decoder_context'],
+                                            sentence_number=model['sentence_number'])
+                        model['decoder_hidden'] = model['start_decoder_hidden'] = start_decoder_hidden
+                        model['decoder_context'] = model['start_decoder_context'] = start_decoder_context
+                        model['encoder_outputs'] = new_encoder_outputs
+                        model['arg_numbers'] = [0]
+                        model['function_calls'] = []
+                        model['action_list'].append([START_SYMBOL])
+                    else:
+                        assert model['sentence_number'] == len(sentence_number_to_text_field) - 1
+                        new_models.append(model)
+                        continue
 
                 assert len(model['action_list']) == model['sentence_number'] + 1, (len(model['action_list']), model['sentence_number'] + 1)
                 assert model['sentence_number'] < len(sentence_number_to_text_field)
