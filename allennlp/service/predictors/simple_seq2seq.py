@@ -409,7 +409,7 @@ class SimpleSeq2SeqPredictorSentenceLevel(Predictor):
         instance, return_dict = self._json_to_instance(inputs)
         outputs = self._model.forward_on_instance(instance, cuda_device)
         output_string = ' '.join(outputs['predicted_tokens'])
-        sentences = output_string.strip(END_SYMBOL).split(END_SYMBOL)
+        sentences = output_string.split(END_SYMBOL)[:-1]
         new_sentences = []
         for sentence_number, sentence in enumerate(sentences):
             text_field = instance.fields[str(sentence_number) + '_mapping']
