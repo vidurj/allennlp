@@ -244,6 +244,7 @@ class SimpleSeq2Seq(Model):
                     model['function_calls'] = []
                     model['action_list'].append([START_SYMBOL])
                 elif model['action_list'][-1][-1] == END_SYMBOL and model['sentence_number'] == len(sentence_number_to_text_field) - 1:
+                    new_models.append(model)
                     continue
 
                 assert len(model['action_list']) == model['sentence_number'] + 1, (len(model['action_list']), model['sentence_number'] + 1)
