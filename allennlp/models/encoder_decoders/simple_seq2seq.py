@@ -338,6 +338,9 @@ class SimpleSeq2Seq(Model):
         for timestep in range(max_decoding_steps):
             if targets is not None:
                 input_choices = targets[:, timestep]
+            elif timestep == max_decoding_steps - 1:
+                input_choices = Variable(source_mask.data.new()
+                                    .resize_(batch_size).fill_(self._end_index))
             else:
                 input_choices = last_predictions
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,

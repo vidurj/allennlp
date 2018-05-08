@@ -419,6 +419,7 @@ class SimpleSeq2SeqPredictorSentenceLevel(Predictor):
                 token_to_num[text[i + 1]] = text[i]
             new_sentence = ' '.join([token_to_num.get(token, token) for token in sentence.split()])
             new_sentences.append(new_sentence)
+        assert str(sentence_number + 1) + '_mapping' not in instance.fields
         text = '\n'.join(new_sentences)
         print(text)
         print('-' * 30)
