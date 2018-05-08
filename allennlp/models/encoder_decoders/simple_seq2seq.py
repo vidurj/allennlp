@@ -22,6 +22,7 @@ from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_lo
 from allennlp.type_checking import valid_next_characters, update_state
 from allennlp.training.metrics.categorical_accuracy import CategoricalAccuracy
 from collections import defaultdict
+from copy import deepcopy
 
 """
 And (bool, ...) : bool
@@ -215,7 +216,7 @@ class SimpleSeq2Seq(Model):
             'encoder_outputs': start_encoder_outputs,
             'sentence_number': 0,
             'cur_log_probability': 0,
-            'action_list': [START_SYMBOL],
+            'action_list': [[START_SYMBOL]],
             'arg_numbers': [0],
             'function_calls': []
         }
@@ -228,7 +229,7 @@ class SimpleSeq2Seq(Model):
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
-                if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] < len(sentence_number_to_text_field) - 1:
+                if model['action_list'][-1][-1] == END_SYMBOL and model['sentence_number'] < len(sentence_number_to_text_field) - 1:
                     model['sentence_number'] += 1
                     (new_encoder_outputs, start_decoder_hidden, start_decoder_context) = \
                         encode_sentence(model['start_decoder_hidden'],
@@ -241,15 +242,18 @@ class SimpleSeq2Seq(Model):
                     model['encoder_outputs'] = new_encoder_outputs
                     model['arg_numbers'] = [0]
                     model['function_calls'] = []
-                    model['action_list'].append(START_SYMBOL)
+                    model['action_list'].append([START_SYMBOL])
                 if model['sentence_number'] == len(sentence_number_to_text_field):
                     continue
+
+                assert len(model['action_list']) == model['sentence_number'] + 1, (len(model['action_list']), model['sentence_number'] + 1)
+                assert model['sentence_number'] < len(sentence_number_to_text_field)
                 decoder_hidden = model['decoder_hidden']
                 decoder_context = model['decoder_context']
                 cur_log_probability = model['cur_log_probability']
                 source_mask = source_masks[model['sentence_number']]
                 valid_numbers = sentence_to_valid_numbers[model['sentence_number']]
-                last_prediction_index = self.vocab.get_token_index(model['action_list'][-1], self._target_namespace)
+                last_prediction_index = self.vocab.get_token_index(model['action_list'][-1][-1], self._target_namespace)
                 decoder_input = self._prepare_decode_step_input(
                     Variable(torch.cuda.LongTensor(1).fill_(last_prediction_index)),
                     decoder_hidden,
@@ -268,13 +272,13 @@ class SimpleSeq2Seq(Model):
                                                class_log_probabilities.shape[0])
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
-                                                      model['action_list'][-1],
+                                                      model['action_list'][-1][-1],
                                                       valid_numbers,
                                                       valid_variables,
                                                       valid_units)
                 seen_new_var = False
                 seen_new_unit = False
-                seen_actions = set(model['action_list'])
+                seen_actions = set([x for sequence in model['action_list'] for x in sequence])
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
@@ -296,13 +300,15 @@ class SimpleSeq2Seq(Model):
                     if action.startswith('num') and action in seen_actions:
                         penalty += 10
 
-                    if model['action_list'][-1] == '?' and action in seen_actions:
+                    if model['action_list'][-1][-1] == '?' and action in seen_actions:
                         continue
 
                     function_calls, arg_numbers = update_state(model['function_calls'],
                                                                model['arg_numbers'], action)
+                    action_list = deepcopy(model['action_list'])
+                    action_list[-1].append(action)
                     new_model = {
-                        'action_list': model['action_list'] + [action],
+                        'action_list': action_list,
                         'start_decoder_hidden': model['start_decoder_hidden'],
                         'start_decoder_context': model['start_decoder_context'],
                         'decoder_hidden': decoder_hidden,
