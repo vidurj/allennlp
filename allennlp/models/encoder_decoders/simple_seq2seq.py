@@ -243,7 +243,7 @@ class SimpleSeq2Seq(Model):
                     model['arg_numbers'] = [0]
                     model['function_calls'] = []
                     model['action_list'].append([START_SYMBOL])
-                if model['sentence_number'] == len(sentence_number_to_text_field):
+                elif model['action_list'][-1][-1] == END_SYMBOL and model['sentence_number'] == len(sentence_number_to_text_field) - 1:
                     continue
 
                 assert len(model['action_list']) == model['sentence_number'] + 1, (len(model['action_list']), model['sentence_number'] + 1)
@@ -320,7 +320,7 @@ class SimpleSeq2Seq(Model):
                         'encoder_outputs': model['encoder_outputs']
                     }
                     new_models.append(new_model)
-            assert len(new_models) > 0
+            assert len(new_models) > 0, valid_actions
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
