@@ -229,22 +229,20 @@ class SimpleSeq2Seq(Model):
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
-                action_list = model['action_list']
-                if model['sentence_number'] == len(sentence_number_to_text_field):
-                    continue
-                elif action_list[-1] == END_SYMBOL:
+                if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] < len(sentence_number_to_text_field) - 1:
                     model['sentence_number'] += 1
-                    (encoder_outputs, start_decoder_hidden,
-                     start_decoder_context) = encode_sentence(model['start_decoder_hidden'],
-                                                              model['decoder_hidden'],
-                                                              model['start_decoder_context'],
-                                                              model['decoder_context'],
-                                                              sentence_number=model[
-                                                                  'sentence_number'])
+                    (encoder_outputs, start_decoder_hidden, start_decoder_context) = \
+                        encode_sentence(model['start_decoder_hidden'],
+                                        model['decoder_hidden'],
+                                        model['start_decoder_context'],
+                                        model['decoder_context'],
+                                        sentence_number=model['sentence_number'])
                     model['decoder_hidden'] = model['start_decoder_hidden'] = start_decoder_hidden
                     model['decoder_context'] = model['start_decoder_context'] = start_decoder_context
-
-                assert len(action_list) == cur_length + 1, (len(action_list), cur_length + 1)
+                    model['arg_numbers'] = [0]
+                    model['function_calls'] = []
+                if model['sentence_number'] == len(sentence_number_to_text_field):
+                    continue
                 decoder_hidden = model['decoder_hidden']
                 decoder_context = model['decoder_context']
                 cur_log_probability = model['cur_log_probability']
@@ -268,13 +266,13 @@ class SimpleSeq2Seq(Model):
                                                class_log_probabilities.shape[0])
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
-                                                      action_list[-1],
+                                                      model['action_list'][-1],
                                                       valid_numbers,
                                                       valid_variables,
                                                       valid_units)
                 seen_new_var = False
                 seen_new_unit = False
-                seen_actions = set(action_list)
+                seen_actions = set(model['action_list'])
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
@@ -296,13 +294,13 @@ class SimpleSeq2Seq(Model):
                     if action.startswith('num') and action in seen_actions:
                         penalty += 10
 
-                    if action_list[-1] == '?' and action in seen_actions:
+                    if model['action_list'][-1] == '?' and action in seen_actions:
                         continue
 
                     function_calls, arg_numbers = update_state(model['function_calls'],
                                                                model['arg_numbers'], action)
                     new_model = {
-                        'action_list': action_list + [action],
+                        'action_list': model['action_list'] + [action],
                         'last_prediction': action_index,
                         'start_decoder_hidden': model['start_decoder_hidden'],
                         'start_decoder_context': model['start_decoder_context'],
