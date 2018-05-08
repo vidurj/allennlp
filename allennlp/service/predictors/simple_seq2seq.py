@@ -458,7 +458,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         cleaned_predictions = []
         for action_list in action_lists:
             new_sentences = []
-            for sentence_number in range(num_sentences):
+            for sentence_number in range(num_sentences - 1):
                 text_field = instance.fields[str(sentence_number) + '_mapping']
                 text = [token.text for token in text_field.tokens]
                 token_to_num = {}
