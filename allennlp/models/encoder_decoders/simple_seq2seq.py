@@ -35,6 +35,7 @@ Plus   (num, num) : num
 
 """
 
+
 def batched_index_select(input_tensor, index_tensor):
     dummy = index_tensor.unsqueeze(2)
     out = input_tensor.gather(2, dummy)  # b x e x f
@@ -152,112 +153,181 @@ class SimpleSeq2Seq(Model):
            Output of ``Textfield.as_array()`` applied on target ``TextField``. We assume that the
            target tokens are also represented as a ``TextField``.
         """
-        # (batch_size, input_sequence_length, encoder_output_dim)
-        source_indices = source_tokens['tokens'].data.cpu().numpy()
-        embedded_input = self._source_embedder(source_tokens)
-        batch_size, _, _ = embedded_input.size()
-        assert batch_size == 1, batch_size
-        source_mask = get_text_field_mask(source_tokens)
-        encoder_outputs = self._encoder(embedded_input, source_mask)
-        final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
-        decoder_hidden = final_encoder_output
-        decoder_context = Variable(encoder_outputs.data.new()
-                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
-        # For each action I should keep around a score, a context and a hidden state, and input choices
-        state = source_mask.data.new().resize_(batch_size)
+
+        sentence_number_to_text_field = defaultdict(dict)
+        for key, value in source_tokens.items():
+            tokens = key.split('_')
+            index = int(tokens[0])
+            remaining_key = '_'.join(tokens[1:])
+            sentence_number_to_text_field[index][remaining_key] = value
+
+        batch_size = 1
+        decoder_zeros = Variable(
+            torch.cuda.FloatTensor(batch_size, self._decoder_output_dim).fill_(0))
+
+        sentence_embeddings = []
+        source_masks = []
+        sentence_to_valid_numbers = []
+        for sentence_number in range(len(sentence_number_to_text_field)):
+            relevant_text_fields = sentence_number_to_text_field[sentence_number]
+            source_tokens = relevant_text_fields['source_tokens']
+            source_mask = get_text_field_mask(source_tokens)
+            source_masks.append(source_mask)
+            embedded_input = self._source_embedder(source_tokens)
+            sentence_embeddings.append(embedded_input)
+            source_indices = source_tokens['tokens'].data.cpu().numpy()
+            valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index
+                             in source_indices[0]}
+            valid_numbers = {x for x in valid_numbers if x.startswith('num')}
+            valid_numbers.add('(')
+            valid_numbers.add('?')
+            sentence_to_valid_numbers.append(valid_numbers)
+
+        def encode_sentence(start_decoder_hidden, final_decoder_hidden, start_decoder_context,
+                            final_decoder_context, sentence_number):
+            start_encoder_hidden = torch.cat(
+                [start_decoder_hidden.view(2, 1, self._encoder_hidden_dim),
+                 final_decoder_hidden.view((2, 1, self._encoder_hidden_dim))], dim=0)
+            start_encoder_context = torch.cat(
+                [start_decoder_context.view(2, 1, self._encoder_hidden_dim),
+                 final_decoder_context.view((2, 1, self._encoder_hidden_dim))], dim=0)
+
+            embedded_input = sentence_embeddings[sentence_number]
+            encoder_outputs, (final_encoder_hidden, final_encoder_context) = \
+                self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
+
+            start_decoder_hidden = final_encoder_hidden[2:, :, :].view(1, self._decoder_output_dim)
+            start_decoder_context = final_encoder_context[2:, :, :].view(1,
+                                                                         self._decoder_output_dim)
+            return (encoder_outputs, start_decoder_hidden, start_decoder_context)
+
+        (encoder_outputs, start_decoder_hidden, start_decoder_context) = encode_sentence(
+            decoder_zeros,
+            decoder_zeros,
+            decoder_zeros,
+            decoder_zeros,
+            sentence_number=0)
         model = {
             'last_prediction': self._start_index,
-            'decoder_hidden': decoder_hidden,
-            'decoder_context': decoder_context,
+            'start_decoder_hidden': start_decoder_hidden,
+            'start_decoder_context': start_decoder_context,
+            'decoder_hidden': start_decoder_hidden,
+            'decoder_context': start_decoder_context,
+            'encoder_outputs': encoder_outputs,
+            'sentence_number': 0,
             'cur_log_probability': 0,
             'action_list': [START_SYMBOL],
             'arg_numbers': [0],
             'function_calls': []
         }
+
         valid_variables = {'var' + str(i) for i in range(20)}
         valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
-        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in
-                         source_indices[0]}
-        valid_numbers = {x for x in valid_numbers if x.startswith('num')}
-        # print(valid_numbers)
-        valid_numbers.add('(')
-        valid_numbers.add('?')
         models = [model]
-        complete_models = []
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
                 last_prediction = model['last_prediction']
                 action_list = model['action_list']
-                if action_list[-1] == END_SYMBOL:
-                    new_models.append(model)
+                if model['sentence_number'] == len(sentence_number_to_text_field):
                     continue
+                elif action_list[-1] == END_SYMBOL:
+                    model['sentence_number'] += 1
+                    (encoder_outputs, start_decoder_hidden,
+                     start_decoder_context) = encode_sentence(model['start_decoder_hidden'],
+                                                              model['decoder_hidden'],
+                                                              model['start_decoder_context'],
+                                                              model['decoder_context'],
+                                                              sentence_number=model[
+                                                                  'sentence_number'])
+                    model['decoder_hidden'] = model['start_decoder_hidden'] = start_decoder_hidden
+                    model['decoder_context'] = model['start_decoder_context'] = start_decoder_context
+
                 assert len(action_list) == cur_length + 1, (len(action_list), cur_length + 1)
                 decoder_hidden = model['decoder_hidden']
                 decoder_context = model['decoder_context']
                 cur_log_probability = model['cur_log_probability']
-                decoder_input = self._prepare_decode_step_input(
-                    Variable(state.fill_(last_prediction)),
-                    decoder_hidden,
-                    encoder_outputs,
-                    source_mask
-                )
+                source_mask = source_masks[model['sentence_number']]
+                valid_numbers = sentence_to_valid_numbers[model['sentence_number']]
+                last_predictions = Variable(source_mask.data.new()
+                                            .resize_(batch_size).fill_(self._start_index))
+                decoder_input = self._prepare_decode_step_input(last_predictions, decoder_hidden,
+                                                                encoder_outputs, source_mask)
+
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
                                                                      (decoder_hidden,
                                                                       decoder_context))
-                output_projections = 0.7 * self._output_projection_layer(decoder_hidden)
+
+                output_projections = self._output_projection_layer(decoder_hidden)
                 class_log_probabilities = \
                     F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
                     class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
                                                class_log_probabilities.shape[0])
-                decoded_new_variable = False
-                decoded_new_unit = False
                 valid_actions = valid_next_characters(model['function_calls'],
                                                       model['arg_numbers'],
                                                       action_list[-1],
                                                       valid_numbers,
                                                       valid_variables,
                                                       valid_units)
+                seen_new_var = False
+                seen_new_unit = False
+                seen_actions = set(action_list)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
+                    penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     if action not in valid_actions:
                         continue
-                    # if action.startswith('var'):
-                    #     seen = action in action_list
-                    #     # If a variable is new, we do not distinguish between which variable it is
-                    #     if not seen and decoded_new_variable:
-                    #         continue
-                    #     elif not seen:
-                    #         decoded_new_variable = True
+
+                    if action.startswith('var') and action not in seen_actions:
+                        if seen_new_var:
+                            continue
+                        else:
+                            seen_new_var = True
+
+                    if action.startswith('unit') and action not in seen_actions:
+                        if seen_new_unit:
+                            continue
+                        else:
+                            seen_new_unit = True
+
+                    if action.startswith('num') and action in seen_actions:
+                        penalty += 10
+
+                    if action_list[-1] == '?' and action in seen_actions:
+                        continue
 
                     function_calls, arg_numbers = update_state(model['function_calls'],
                                                                model['arg_numbers'], action)
                     new_model = {
                         'action_list': action_list + [action],
                         'last_prediction': action_index,
+                        'start_decoder_hidden': model['start_decoder_hidden'],
+                        'start_decoder_context': model['start_decoder_context'],
                         'decoder_hidden': decoder_hidden,
                         'decoder_context': decoder_context,
-                        'cur_log_probability': action_log_probability + cur_log_probability,
+                        'cur_log_probability': action_log_probability + cur_log_probability - penalty,
                         'function_calls': function_calls,
-                        'arg_numbers': arg_numbers
+                        'arg_numbers': arg_numbers,
+                        'sentence_number': model['sentence_number']
                     }
                     new_models.append(new_model)
             assert len(new_models) > 0
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-        # complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
+        models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
-        output = '\n'.join([' '.join(model['action_list'][1:-1]) for model in models])
+
+        output = '\n'.join([' '.join([token for token in model['action_list'] if token != START_SYMBOL and token != END_SYMBOL]) for model in models])
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
 
-
-    def _decode(self, decoder_hidden, decoder_context, max_decoding_steps, encoder_outputs, source_mask, targets):
+    def _decode(self, decoder_hidden, decoder_context, max_decoding_steps, encoder_outputs,
+                source_mask, targets):
         batch_size = 1
         step_logits = []
         step_probabilities = []
@@ -298,7 +368,8 @@ class SimpleSeq2Seq(Model):
             loss = - torch.sum(temp)
         else:
             loss = None
-        return (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities, step_predictions)
+        return (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities,
+                step_predictions)
 
     @overrides
     def forward(self, **kwargs) -> Dict[str, torch.Tensor]:
@@ -345,10 +416,12 @@ class SimpleSeq2Seq(Model):
             source_mask = get_text_field_mask(source_tokens)
             embedded_input = self._source_embedder(source_tokens)
             batch_size, _, _ = embedded_input.size()
-            start_encoder_hidden = torch.cat([start_decoder_hidden.view(2, 1, self._encoder_hidden_dim),
-                                              final_decoder_hidden.view((2, 1, self._encoder_hidden_dim))], dim=0)
-            start_encoder_context = torch.cat([start_decoder_context.view(2, 1, self._encoder_hidden_dim),
-                                               final_decoder_context.view((2, 1, self._encoder_hidden_dim))], dim=0)
+            start_encoder_hidden = torch.cat(
+                [start_decoder_hidden.view(2, 1, self._encoder_hidden_dim),
+                 final_decoder_hidden.view((2, 1, self._encoder_hidden_dim))], dim=0)
+            start_encoder_context = torch.cat(
+                [start_decoder_context.view(2, 1, self._encoder_hidden_dim),
+                 final_decoder_context.view((2, 1, self._encoder_hidden_dim))], dim=0)
             encoder_outputs, (final_encoder_hidden, final_encoder_context) = \
                 self._encoder(embedded_input, (start_encoder_hidden, start_encoder_context))
             if has_targets:
@@ -360,7 +433,8 @@ class SimpleSeq2Seq(Model):
                 max_decoding_steps = self._max_decoding_steps
 
             start_decoder_hidden = final_encoder_hidden[2:, :, :].view(1, self._decoder_output_dim)
-            start_decoder_context = final_encoder_context[2:, :, :].view(1, self._decoder_output_dim)
+            start_decoder_context = final_encoder_context[2:, :, :].view(1,
+                                                                         self._decoder_output_dim)
 
             (final_decoder_hidden, final_decoder_context, loss, step_logits, step_probabilities,
              step_predictions) = self._decode(start_decoder_hidden,
