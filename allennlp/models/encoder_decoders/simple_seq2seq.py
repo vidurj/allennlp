@@ -230,7 +230,7 @@ class SimpleSeq2Seq(Model):
             new_models = []
             for model in models:
                 if model['action_list'][-1][-1] == END_SYMBOL:
-                    if model['sentence_number'] < len(sentence_number_to_text_field) - 1:
+                    if model['sentence_number'] < len(sentence_number_to_text_field) - 2:
                         model['sentence_number'] += 1
                         (new_encoder_outputs, start_decoder_hidden, start_decoder_context) = \
                             encode_sentence(model['start_decoder_hidden'],
@@ -245,7 +245,7 @@ class SimpleSeq2Seq(Model):
                         model['function_calls'] = []
                         model['action_list'].append([START_SYMBOL])
                     else:
-                        assert model['sentence_number'] == len(sentence_number_to_text_field) - 1
+                        assert model['sentence_number'] == len(sentence_number_to_text_field) - 2
                         new_models.append(model)
                         continue
 
