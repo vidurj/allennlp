@@ -242,6 +242,7 @@ class SimpleSeq2Seq(Model):
                     model['encoder_outputs'] = new_encoder_outputs
                     model['arg_numbers'] = [0]
                     model['function_calls'] = []
+                    model['action_list'].append(START_SYMBOL)
                 if model['sentence_number'] == len(sentence_number_to_text_field):
                     continue
                 decoder_hidden = model['decoder_hidden']
