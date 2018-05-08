@@ -106,11 +106,7 @@ class Seq2SeqSentenceLevelDatasetReader(DatasetReader):
         type_assignments = {}
         print('raw source string:', raw_source_string)
         for sentence_number, (raw_sentence, raw_target_string) in enumerate(zip(sentences, targets)):
-            if raw_sentence.strip() == '<additional_facts>':
-                source_string = raw_sentence
-                num_to_token = {}
-            else:
-                source_string, num_to_token = standardize_question(raw_sentence,
+            source_string, num_to_token = standardize_question(raw_sentence,
                                                                    copy_mechanism=False,
                                                                    randomize=True)
             print('raw sentence:', raw_sentence)

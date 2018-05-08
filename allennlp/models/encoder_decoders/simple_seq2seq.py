@@ -201,7 +201,7 @@ class SimpleSeq2Seq(Model):
                                                                          self._decoder_output_dim)
             return (encoder_outputs, start_decoder_hidden, start_decoder_context)
 
-        (encoder_outputs, start_decoder_hidden, start_decoder_context) = encode_sentence(
+        (start_encoder_outputs, start_decoder_hidden, start_decoder_context) = encode_sentence(
             decoder_zeros,
             decoder_zeros,
             decoder_zeros,
@@ -213,7 +213,7 @@ class SimpleSeq2Seq(Model):
             'start_decoder_context': start_decoder_context,
             'decoder_hidden': start_decoder_hidden,
             'decoder_context': start_decoder_context,
-            'encoder_outputs': encoder_outputs,
+            'encoder_outputs': start_encoder_outputs,
             'sentence_number': 0,
             'cur_log_probability': 0,
             'action_list': [START_SYMBOL],
@@ -231,7 +231,7 @@ class SimpleSeq2Seq(Model):
             for model in models:
                 if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] < len(sentence_number_to_text_field) - 1:
                     model['sentence_number'] += 1
-                    (encoder_outputs, start_decoder_hidden, start_decoder_context) = \
+                    (new_encoder_outputs, start_decoder_hidden, start_decoder_context) = \
                         encode_sentence(model['start_decoder_hidden'],
                                         model['decoder_hidden'],
                                         model['start_decoder_context'],
@@ -239,6 +239,7 @@ class SimpleSeq2Seq(Model):
                                         sentence_number=model['sentence_number'])
                     model['decoder_hidden'] = model['start_decoder_hidden'] = start_decoder_hidden
                     model['decoder_context'] = model['start_decoder_context'] = start_decoder_context
+                    model['encoder_outputs'] = new_encoder_outputs
                     model['arg_numbers'] = [0]
                     model['function_calls'] = []
                 if model['sentence_number'] == len(sentence_number_to_text_field):
@@ -251,7 +252,7 @@ class SimpleSeq2Seq(Model):
                 decoder_input = self._prepare_decode_step_input(
                     Variable(torch.cuda.LongTensor(1).fill_(model['last_prediction'])),
                     decoder_hidden,
-                    encoder_outputs,
+                    model['encoder_outputs'],
                     source_mask)
 
                 decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
