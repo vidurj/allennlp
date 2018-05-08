@@ -320,7 +320,7 @@ class SimpleSeq2Seq(Model):
                         'encoder_outputs': model['encoder_outputs']
                     }
                     new_models.append(new_model)
-            assert len(new_models) > 0, valid_actions
+            assert len(new_models) > 0, (valid_actions, model['action_list'][-1], seen_actions)
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
