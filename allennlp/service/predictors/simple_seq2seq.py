@@ -446,6 +446,11 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
 
         instance, return_dict = self._json_to_instance(inputs)
 
+        for sentence_number in range(instance.fields):
+            if str(sentence_number) + '_mapping' not in instance.fields:
+                num_sentences = sentence_number
+                break
+
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
@@ -456,14 +461,14 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
                 action_list.pop()
             sentences = ' '.join(action_list).split(END_SYMBOL)[:-1]
             new_sentences = []
-            for sentence_number, sentence in enumerate(sentences):
-                key = str(sentence_number) + '_mapping'
-                if key in instance.fields:
-                    text_field = instance.fields[key]
-                    text = [token.text for token in text_field.tokens]
-                    token_to_num = {}
-                    for i in range(0, len(text), 2):
-                        token_to_num[text[i + 1]] = text[i]
+            assert len(sentences) == num_sentences, (len(sentences), num_sentences)
+            for sentence_number in range(num_sentences):
+                text_field = instance.fields[str(sentence_number) + '_mapping']
+                text = [token.text for token in text_field.tokens]
+                token_to_num = {}
+                for i in range(0, len(text), 2):
+                    token_to_num[text[i + 1]] = text[i]
+                sentence = sentences[sentence_number]
                 new_sentence = ' '.join([token_to_num.get(token, token) for token in sentence.split()])
                 new_sentences.append(new_sentence)
             text = ' '.join(new_sentences)
