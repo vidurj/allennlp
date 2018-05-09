@@ -262,6 +262,7 @@ class SimpleSeq2Seq(Model):
                 source_mask = source_masks[model['sentence_number']]
                 valid_numbers = sentence_to_valid_numbers[model['sentence_number']]
                 last_prediction_index = self.vocab.get_token_index(model['action_list'][-1][-1], self._target_namespace)
+
                 decoder_input = self._prepare_decode_step_input(
                     Variable(torch.cuda.LongTensor(1).fill_(last_prediction_index)),
                     decoder_hidden,
@@ -332,7 +333,7 @@ class SimpleSeq2Seq(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-        models = [model for model in models if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] == stopping_point]
+        models = [model for model in models if model['action_list'][-1][-1] == END_SYMBOL and model['sentence_number'] == stopping_point]
         models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
 
