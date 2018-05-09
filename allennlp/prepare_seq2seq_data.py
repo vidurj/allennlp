@@ -282,6 +282,7 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
         for question_number, question in enumerate(data):
             if not is_dev and question['lSemantics'] == '':
                 continue
+            print(question['iIndex'])
             # if question['iIndex'] != '6226':
             #     continue
             source, number_to_token = standardize_question(question['sQuestion'], shuffle=not is_dev)
