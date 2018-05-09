@@ -332,7 +332,7 @@ class SimpleSeq2Seq(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-        # models = [model for model in models if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] == len(sentence_number_to_text_field)]
+        models = [model for model in models if model['action_list'][-1] == END_SYMBOL and model['sentence_number'] == stopping_point]
         models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
 
