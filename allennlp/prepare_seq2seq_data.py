@@ -55,7 +55,8 @@ NUMBER_WORDS = {
     'ten': 10,
     'hundred': 100,
     'thousand': 1000,
-    'million': 1000000
+    'million': 1000000,
+    'half': 0.5
 }
 
 
@@ -79,12 +80,12 @@ def is_num(string):
         return None
 
 
-def standardize_question(text, copy_mechanism, randomize):
+def standardize_question(source, copy_mechanism, randomize):
     assert not copy_mechanism
     number_tokens = ['num' + str(i) for i in range(10)]
     if randomize:
         random.shuffle(number_tokens)
-    source = text.replace('-', ' ')
+    # source = text.replace('-', ' ')
     temp = [token.text for token in nlp(source)]
     _source_tokenized = []
     for token in temp:
@@ -383,6 +384,7 @@ def create_sentence_split_data(questions, file_name, is_dev):
             key_to_sentence[key] = sentence['text']['content']
 
     data_points = []
+    question_indices = []
     for q in questions:
         num_sentences = index_to_num_sentences[int(q['iIndex'])]
         assert num_sentences > 0
@@ -404,6 +406,7 @@ def create_sentence_split_data(questions, file_name, is_dev):
             final_logical_form = 'N/A'
 
         if final_logical_form != 'N/A' or is_dev:
+            question_indices.append(str(q['iIndex']))
             data_points.append((final_input, final_logical_form))
 
     with open(file_name, 'w') as f:
@@ -411,6 +414,9 @@ def create_sentence_split_data(questions, file_name, is_dev):
 
     with open(file_name[:-4] + '.json', 'w') as f:
         f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]) + '\n')
+
+    with open(file_name[:-4] + '.question_numbers', 'w') as f:
+        f.write('\n'.join(question_indices) + '\n')
 
 
 def synthetic_multisentence_data(num_samples, file_name):

@@ -140,7 +140,8 @@ class SimpleSeq2Seq(Model):
 
     def beam_search(self,  # type: ignore
                     source_tokens,
-                    bestk) -> Dict[str, torch.Tensor]:
+                    bestk,
+                    generate_stray_constraints) -> Dict[str, torch.Tensor]:
         # pylint: disable=arguments-differ
         """
         Decoder logic for producing the entire target sequence.
@@ -226,11 +227,15 @@ class SimpleSeq2Seq(Model):
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
         models = [model]
+        if generate_stray_constraints:
+            stopping_point = len(sentence_number_to_text_field) - 1
+        else:
+            stopping_point = len(sentence_number_to_text_field) - 2
         for cur_length in range(self._max_decoding_steps + 2):
             new_models = []
             for model in models:
                 if model['action_list'][-1][-1] == END_SYMBOL:
-                    if model['sentence_number'] < len(sentence_number_to_text_field) - 2:
+                    if model['sentence_number'] < stopping_point:
                         model['sentence_number'] += 1
                         (new_encoder_outputs, start_decoder_hidden, start_decoder_context) = \
                             encode_sentence(model['start_decoder_hidden'],
@@ -245,7 +250,7 @@ class SimpleSeq2Seq(Model):
                         model['function_calls'] = []
                         model['action_list'].append([START_SYMBOL])
                     else:
-                        assert model['sentence_number'] == len(sentence_number_to_text_field) - 2
+                        assert model['sentence_number'] == stopping_point
                         new_models.append(model)
                         continue
 
