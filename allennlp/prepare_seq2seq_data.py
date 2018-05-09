@@ -32,13 +32,16 @@ meaningful_units = {
     # 'Animal'
 }
 
+TIMES_WORDS = {
+    'twice': ['two', 'times'],
+    'thrice': ['three', 'times'],
+    'double': ['two', 'times'],
+    'triple': ['three', 'times'],
+    'quadruple': ['four', 'times'],
+    'quituple': ['five', 'times']
+}
+
 NUMBER_WORDS = {
-    'twice': 2,
-    'thrice': 3,
-    'double': 2,
-    'triple': 3,
-    'quadruple': 4,
-    'quituple': 5,
     'zero': 0,
     'one': 1,
     'two': 2,
@@ -50,20 +53,11 @@ NUMBER_WORDS = {
     'eight': 8,
     'nine': 9,
     'ten': 10,
-    'first': 1,
-    'second': 2,
-    'third': 3,
-    'fourth': 4,
-    'fifth': 5,
-    'sixth': 6,
-    'seventh': 7,
-    'eighth': 8,
-    'ninth': 9,
-    'tenth': 10,
     'hundred': 100,
     'thousand': 1000,
     'million': 1000000
 }
+
 
 
 def is_strict_num(string):
@@ -88,7 +82,10 @@ def is_num(string):
 
 def standardize_question(text, shuffle=True, is_copy=False):
     source = text.replace('-', ' ')
-    source_tokenized = [token.text for token in nlp(source)]
+    temp = [token.text for token in nlp(source)]
+    source_tokenized = []
+    for token in temp:
+        source_tokenized.extend(TIMES_WORDS.get(token.lower(), [token]))
     number_tokens = ['num' + str(i) for i in range(10)]
     if shuffle:
         random.shuffle(number_tokens)
