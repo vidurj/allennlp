@@ -454,7 +454,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
-        action_lists = self._model.beam_search(model_input, bestk=3, generate_stray_constraints=generate_stray_constraints)
+        action_lists = self._model.beam_search(model_input, bestk=1, generate_stray_constraints=generate_stray_constraints)
         cleaned_predictions = []
         for action_list in action_lists:
             new_sentences = []
