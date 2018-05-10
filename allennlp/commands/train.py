@@ -278,7 +278,7 @@ def train_model(args: argparse.Namespace,
             raise ConfigurationError(f"invalid 'dataset_for_vocab_creation' {dataset}")
 
     logger.info("Creating a vocabulary using %s data.", ", ".join(datasets_for_vocab_creation))
-    if args.archive_file is not None:
+    if args.archive_file is not None or args.recover:
         params.pop("vocabulary", {})
         params.pop('model')
         archive = load_archive(args.archive_file,
