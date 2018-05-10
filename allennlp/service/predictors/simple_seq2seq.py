@@ -443,7 +443,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
 
     @overrides
     def predict_json(self, inputs: JsonDict, cuda_device: int = -1) -> JsonDict:
-        generate_stray_constraints = False
+        generate_stray_constraints = True
         instance, return_dict = self._json_to_instance(inputs)
 
         for sentence_number in range(len(instance.fields)):
@@ -454,7 +454,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
         model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
-        action_lists = self._model.beam_search(model_input, bestk=1, generate_stray_constraints=generate_stray_constraints)
+        action_lists = self._model.beam_search(model_input, bestk=3, generate_stray_constraints=generate_stray_constraints)
         cleaned_predictions = []
         for action_list in action_lists:
             new_sentences = []
