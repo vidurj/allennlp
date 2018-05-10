@@ -53,9 +53,6 @@ NUMBER_WORDS = {
     'eight': 8,
     'nine': 9,
     'ten': 10,
-    'hundred': 100,
-    'thousand': 1000,
-    'million': 1000000,
     'half': 0.5
 }
 
@@ -422,15 +419,12 @@ def create_sentence_split_data(questions, file_name, is_dev):
 def synthetic_multisentence_data(num_samples, file_name):
     data_points = []
     start_to_token = {'a': '( Equals var1 num1 )',
-                      'the': '( Equals var1 ( Plus var1 num1 ) )',
-                      'cat': '( Equals var1 ( Minus var1 num1 ) )',
-                      'crow': '( Equals var1 ( Times var1 num1 ) )',
-                      'hat': '( Equals var1 ( Div var1 num1 ) )'}
+                      'the': '( Equals var1 ( Plus var1 num1 ) )'}
     start_to_token = list(start_to_token.items())
     for _ in range(num_samples):
         for (start, token) in start_to_token:
-            sentences = ' <sentence_end> '.join([start, 'it', 'it', 'it'])
-            logical_form = ' <sentence_end> '.join([token, token, token, token])
+            sentences = ' <sentence_end> '.join([start, 'it'])
+            logical_form = ' <sentence_end> '.join([token, token])
             data_points.append((sentences, logical_form))
 
     with open(file_name, 'w') as f:
@@ -438,8 +432,8 @@ def synthetic_multisentence_data(num_samples, file_name):
 
 
 if __name__ == '__main__':
-    # synthetic_multisentence_data(100, 'synthetic_train.txt')
-    # synthetic_multisentence_data(5, 'synthetic_dev.txt')
+    synthetic_multisentence_data(100, 'synthetic_train.txt')
+    synthetic_multisentence_data(5, 'synthetic_dev.txt')
     # prepare_synthetic_data()
     with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
               'r') as f:
@@ -450,9 +444,11 @@ if __name__ == '__main__':
     #
     #
     # # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    create_sentence_split_data(data[:-100], 'train.txt', is_dev=False)
-    create_sentence_split_data(data[-100:], 'dev.txt', is_dev=True)
-    create_sentence_split_data(data[-100:], 'test.txt', is_dev=True)
+
+    # print(standardize_question(' About 4.9 million households had one brand of personal computers in 2001 .', copy_mechanism=False, randomize=False))
+    # create_sentence_split_data(data[:-100], 'train.txt', is_dev=False)
+    # create_sentence_split_data(data[-100:], 'dev.txt', is_dev=True)
+    # create_sentence_split_data(data[-100:], 'test.txt', is_dev=True)
 
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
