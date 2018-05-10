@@ -18,7 +18,7 @@ def valid_next_characters(function_calls, arg_numbers, last_token, valid_numbers
         temp.remove('?')
         return temp
     elif last_token == START_SYMBOL:
-        return {'('}
+        return {'(', END_SYMBOL}
     elif last_token == ')' and len(function_calls) == 0:
         return {END_SYMBOL, '('}
     elif last_token == '(':
