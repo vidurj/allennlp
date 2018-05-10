@@ -430,6 +430,9 @@ def synthetic_multisentence_data(num_samples, file_name):
     with open(file_name, 'w') as f:
         f.write('\n'.join([q + '\t' + lf for q, lf in data_points]) + '\n')
 
+    with open(file_name[:-4] + '.json', 'w') as f:
+        f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]) + '\n')
+
 
 if __name__ == '__main__':
     synthetic_multisentence_data(100, 'synthetic_train.txt')

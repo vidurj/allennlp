@@ -443,7 +443,7 @@ class SimpleSeq2SeqPredictorSentenceLevelBeam(Predictor):
 
     @overrides
     def predict_json(self, inputs: JsonDict, cuda_device: int = -1) -> JsonDict:
-        generate_stray_constraints = True
+        generate_stray_constraints = False
         instance, return_dict = self._json_to_instance(inputs)
 
         for sentence_number in range(len(instance.fields)):
