@@ -1,0 +1,131 @@
+Meter/Metre	Length	m	Metric (SI base unit)	Since 1983 a meter is defined as the distance light travels in a vacuum in 1,299,792,458th of a second. One of 7 SI base units of measurement
+Millimeter	Length	mm	Metric	0.001 m (1/1000th of a meter)
+Centimeter	Length	cm	Metric	0.01 m (1/100th of a meter)
+Decimeter	Length	dm	Metric	0.1 m (1/10th of a meter)
+Kilometer	Length	km	Metric	1000 meters (or 0.62137 mile or 3,280.8 feet)
+Astronomical Unit	Length	AE	Metric	1,49598 x 1011 m
+Light Year	Length	lj	Metric	9,4505 x 1015 m
+Parsec	Length	pc	Metric	3,0857 x 1016 m
+Inch	Length	in or “	Imperial / USCS	1 inch = 2.54 cm or 25.4 mm
+Foot	Length	ft	Imperial / USCS	12 inches (or 30.48 cm or 304.8 mm)
+Yard	Length	yd	Imperial / USCS	3 feet or 36 inches (or 91.44 cm or 914.4 mm). The international yard is defined as exactly 0.9144 metres so it is effectively one of the fundamental Imperial units of measurement.
+Mile	Length	mi	Imperial / USCS	1,760 yards or 5,280 feet (or 1609 m or 1.61 km)
+Nautical Mile	Length	sm	Imperial	exactly 1,852 meters (or about 6,076 feet)
+Square meter	Area	sqm or m2	Metric (derived)	1 square meter = 10,000 cm2 = 1,000,000 mm2
+Acre	Area	acre	Imperial / USCS	1 acre 43560 sq ft = 4046.873 m2 and ≡ 0.405 hectare
+Are	Area	a or ares	Metric (derived)	1 are = 100 m² ≡ 0.0247 acre. 100 ares = 1 hectare, the most common unit of land measurement in the world
+Hectare	Area	ha	Metric	1 ha = 100 ares which is 10,000 m2 and ≡ 2.47 acres
+Square inches	Area	in2	Imperial	1 square inch = 6.4516 cm2
+Square feet	Area	ft2	Imperial	1 square foot = 144 square inches (12″ x 12″) = 0.093 m2
+Square yards	Area	yd2	Imperial	1 square yard = 9 square feet = 0.836 m2
+Square miles	Area	mi2	Imperial	1 square mile = 2.59 km2
+Cubic meter	Volume (V)	m3	Metric	1m x 1m x 1m
+Liter	Volume (V)	l	Metric	(rough guide: 1 liter of water weighs approximately 1kg at 4ºC)
+Milliliter	Volume (V)	ml	Metric	1 cm3 ≡ 0,001 liter
+Centiliter	Volume (V)	cl	Metric	0,01 l ≡ 10 ml
+Deciliter	Volume (V)	dl	Metric	0,1 l ≡ 100 ml
+Hectoliter	Volume (V)	hl	Metric	100 liters
+Cubic Inch	Volume (V)	cu in or in3	USCS	1 Cubic Inch ≈16.387 ml
+Cubic Foot	Volume (V)	cu ft or ft3	USCS	1 Cubic Foot = 1,728 cu in and ≈ 28.317
+Cubic Yard	Volume (V)	cu yd or yd3	USCS	1 Cubic Yard = 27 cu ft and ≈ 764.555 or 0.7645m3
+Acre-Foot	Volume (V)	acre ft	USCS	I Acr -Foot = 43560 cu ft and ≈ 1233.48m3
+Teaspoon	Volume (V)	tsp	Imperial / USCS
+UK: 1 imperial teaspoon ≈ 1.20095 US teaspoon ≈ 5.91939 ml
+US: 1 US teaspoon ≡ 1⁄3 US tablespoon ≡ 1⁄6 US fluid ounce and ≈ 0.83 imperial teaspoon ≈ 4.93 ml
+Tablespoon	Volume (V)	tbsp	Imperial / USCS
+UK: 1 imperial tablespoon ≈ 1.20095 US tablespoon ≈ 17.7582 ml
+US: 1 US tablespoon ≡ 3 US teaspoons ≡ 1⁄2 US fluid ounce and ≈ 0.832674 imperial tablespoon ≈ 14.8 ml
+Australia: 1 Australian tablespoon ≈ 20 ml
+Canada: 1 Canadian tablespoon ≈ 15 ml
+Fluid ounce	Volume (V)	fl oz or oz. fl	Imperial / USCS
+UK: 1 imperial fluid ounce ≡ 1⁄160 imperial gallon 1⁄20 imperial pint ≡ 1⁄5 imperial gill and ≈ 28.41 mm3 ≈ 1.73 cubic inches ≈ 0.96 US fluid ounces
+US: 1 US fluid ounce ≡ 1⁄128 US gallon ≡ 1⁄16 US pint ≡ 1⁄4 US gill ≡ 2 US tablespoons ≡ 6 US teaspoons and ≈ 1.04 imperial fluid ounces ≈ 29.57 ml
+Cup	Volume (V)	cup	Imperial / USCS
+UK 1 cup ≡ 284.13 ml
+USA 1 cup ≡ 236.59 ml
+Australia/Canada ≡ 250 ml
+Gill	Volume (V)	gill	Imperial / USCS
+UK: 1 imperial gill ≡ 1⁄4 imperial pint ≡ 5 imperial fluid ounces and ≈ 1.2 US gills ≈ 142 ml
+US: 1 US liquid gill ≡ 1⁄4 US liquid pint ≡ 4 US fluid ounces ≡ 1⁄32 US gallon and ≈ 5⁄6 imperial gills = 118 ml
+US: 1 US dry gill = 138 ml
+Pint	Volume (V)	pt or p	Imperial / USCS
+UK: 1 imperial pint ≡ 1⁄8 imperial gallon ≡ 4 imperial gills ≡ 20 imperial fluid ounces and ≈ 1.2 US liquid pints ≈ 568 ml
+US: 1 US liquid pint ≡ 1⁄8 US liquid gallon ≡ 16 US fluid ounces and ≈ 0.83 imperial pints ≈ 473 ml
+US: 1 US dry pint ≡ 1⁄8 US dry gallons ≡ 33.6 cubic inches and ≈ 0.97 imperial pints ≈ 551 ml
+Quart	Volume (V)	qt	Imperial / USCS
+UK: 1 imperial quart ≡ 1⁄4 imperial gallon ≡ 40 imperial fluid ounces and ≈ 1.14 litres ≈ 38.43 US fluid ounces
+US: 1 US liquid quart ≡ 1⁄4 US liquid gallon ≡ 32 US fluid ounces and ≈ 33 imperial fluid ounces ≈ 946 ml
+US: 1 US dry quart ≡ 1⁄4 US dry gallon ≡ 67.2 cubic inches and ≈ 38.76 imperial fluid ounces ≈ 1101 ml
+Gallon	Volume (V)	gal	Imperial / USCS
+UK: 1 imperial gallon was defined in 1824 as the volume of 10 pounds of water at 62°F and ≡ 8 imperial pints ≡ 160 imperial fluid ounces ≡ 4.55 liters and ≈ 1.2 US gallons
+US: 1 US liquid gallon ≡ 8 US pints ≡ 16 US fluid ounces ≡ 3.78 liters and ≈ 0.83 imperial gallons
+US: 1 US dry gallon ≡ 268.8 cubic inches ≈ 4.4 liters. Not used in commerce
+Radian	Angle (α)	rad or c	Metric (derived)	1 rad = 57.295° (2Π radians = 360 degrees, which is a circle)
+Degree	Angle (α)	° or deg	Metric	Π/180° = 0.01745329 rad (1 degree = Π/180 radians)
+Steradian	Solid angle (Ω)	sr	Metric (derived)	A steradian is (180/Π)2 square degrees (about 3282.8 square degrees)
+Second	Time (t)	s	Metric (SI base unit)	1 second = 9,192,631,770 cycles of the standard Cs-133 transition (the period required by electrons flitting between 2 energy levels in a Caesium isotope). One of 7 SI base units of measurement
+Minute	Time (t)	min	Metric (derived)	60 seconds
+Hour	Time (t)	h	Metric (derived)	60 min ≡ 3,600 seconds
+Day	Time (t)	d	Metric (derived)	24 hours ≡ 1,440 minutes or 86,400 seconds
+Year	Time (t)	a	Metric (derived)	365.24 days
+Hertz	Frequency (f)	Hz	Metric (derived)	One cycle per second: 1/s or s−1
+Angular Frequency	Frequency (f)	ω	Metric	Radians per secound. 1 x s-1 ≡ 60 x min-1
+Decibel	Sound	dB	Metric	Logarithmic unit to describe a ratio which could be intensity, power, sound pressure, voltage or in common usage loudness
+Kilogram meters per second	Momentum	kg m/s	Metric	Momentum = Mass x Velocity. The derived unit is newton second
+Miles per hour	Speed	mph	Imperial	Distance divided by time
+Meters per second	Speed	m/s or kph	Metric	Distance divided by time
+Gravity Imperial
+Acceleration of Gravity (g)	ft/s2	Imperial	1 g = 32.174 ft/s2 = 386.1 in/s2 = 22 mph/s
+Gravity Metric	Acceleration of Gravity (g)	m/s2	Metric	1 g = 9.81 m/s2 = 35.30394 (km/h)/s
+Feet per second	Mass	ft/s	Imperial
+Grams	Mass	g	Metric (derived)	1000 grams = 1 kg or 1 gram = 0.001 kg
+Kilogram	Mass	kg	Metric (SI base unit)	1 kilogram = 1000g and is the mass of an international kilogram prototype (a cylinder made from a platinum-iridium alloy) ≈ 2.2 pounds. One of 7 SI base units of measurement
+Grain	Mass	gr	Imperial / USCS	1 Grain = 1⁄7000 lb and ≈ 0.0648 g or 64.8 mg
+Dram	Mass	dr	Imperial / USCS	1 Dram = 27 11⁄32 gr and ≈ 1.77 g
+Ounce	Mass	oz	Imperial	1 Ounce = 1/16 pound or 16 dr ≈ 28.35 g
+Pound	Mass	lb	Imperial / USCS	1 Pound = 16 oz ≈ 0.45 kg. The pound is one of the fundamental Imperial units of measurement.
+Hundredweight	Mass	cwt	Imperial / USCS
+stone or 112 lb (50.80234544 kg) long ton (2240 lb, 1016.0469088 kg) 2o hundredweights make a ton
+lb (45.359237 kg) short ton (2000 lb; 907.18474 kg) 2o hundredweights make a ton
+Ton	Mass	ton	Imperial / USCS
+lb ≡ 20 (UK) hundredweight ≈ 1016.047 kg (aka long ton, weight ton, gross ton, ton shortweight)
+Tonne
+Mass	t	Metric	1000 kg ≈ 2204.622 lb (aka a metric ton in the USA)
+Slug	Mass	slug	USCS	1 slug = 1 lbf·s2/ft (A mass that accelerates by 1 ft/s2 when a force of one pound (lbf) is exerted on it)
+Density	Density (ρ)	kg/m3	Metric	Density = mass divided by volume in kilogram per cubic meter (kg/m3)
+Newton	Force, Weight (F)	N	Metric (derived)	Named after Sir Isaac Newton. Kg and m/s2
+Kilopond	Force (F)	kp	Metric	9.80665 Newtons
+Pond	Force (F)	p	Metric	9,80665 x 10-3 Newtons
+Newton meter	Torque (M)		Metric	N x m = kg x m2 x s-2
+Joule	Work, Energy (E)	J	Metric (derived)	N x m = W x s = kg x m2 x s-2
+Watt	Power, Radiant Flux (P)	w	Metric (derived)	J x s-1 = kg x m2 x s-3
+Kilowatt	Power (P)	kw	Metric	1 Kilowatt ≡ 1,000 Watts
+Horsepower	Power (P)	hp	Deprecated	1 horsepower equates to the power required to lift 75 kg 1 meter in 1 second which is 735.5w. Horsepower is officially obsolete but still in common usage
+Pascal	Pressure, Stress	Pa	Metric (derived)	One newton per square metre. Named after Blaise Pascal.
+Bar	Power (P)	bar	Metric	1 bar ≡ 105 Pa
+Pounds per square inch	Pressure	psi or lbf/in2	Imperial	1 psi ≈ 6894.8 Pascal or 0.0689 Bar
+Kelvin	Temperature (T)	K	Metric (SI)	One Kelvin is the 1/273.15 of the thermodynamic temperature of the triple point of water = 0.01°C. One of the 7 Metric SI base units of measurement
+Centigrade	Temperature (T)	°C	Metric (derived)	0°C is the freezing point of water. Absolute zero is -273.15°C or 0 Kelvin.
+Calorie	Amount of Heat (Q)	Cal or kcal / cal	Metric	1 Thermochemical calorie = 4.1868 Joules. There are two common uses:
+calorie (Cal or kcal) is commonly used to indicate calories in food and by nutritionists. It’s roughly the amount of energy needed to increase the temperature of 1 kg of water by 1°C
+gram calorie (cal) is roughly the amount of energy needed to increase the temperature of one gram of water by 1°C
+Fahrenheit	Temperature (T)	°F	Imperial / USCS	Temperature scale on which water freezes at 32°F and boils at 212°F under standard conditions
+Candela	Luminous Intensity (l)	cd	Metric (SI base unit)	One Candela = the light from one candle.
+Candela per square metre	Luminance (L)	cd/m2	Metric (derived)	The intensity of light emitted from a surface per unit area in a given direction
+Lumen	Luminous Flux (Φ)	lm	Metric (derived)	cd x sr. A lumen is the measure of the total amount of visible light emitted from a source, taking into account the beam and angle
+Lux	Illuminance (E)	lx	Metric (derived)	One lumen per square metre. lm x s = cd x sr x m-2
+Lumen Seconds	Light quantity (Q)	ls	Metric	lm x s
+Diopter	Refractive Index (D)	dpt	Metric	1 x m-1
+Ampere	Current (I)	A / Amps	Metric (SI base unit)	Used to express the flow rate of electric charge. 1 ampere equates to a flow of one coulomb per second. One of 7 SI base units of measurement
+Coulomb	Electric Charge (Q)	C	Metric (derived)	Charge carried by a constant current of one ampere in one second
+Volt	Voltage, Electrical (U)	V	Metric (derived)	Potential difference in charge expressed as a ratio between two points in an electrical field. W x A-1 = kg x m2 x (s3 x A)-1
+Ohm	Electrical Resistance, Impedence (R)	Ω	Metric (derived)	W x A-1 = kg x m2 x (s3 x A2)-1
+Farad	Electrical Capacitance (F)	F	Metric (derived)	One farad is the capacitance across which, when charged with one coulomb, has a potential difference of one volt. Named after Michael Faraday
+Siemens	Electrical Conductance (S)	S	Metric (derived)	One Siemens is equal to the reciprocal of one ohm. Named after Ernst Werner von Siemens
+Henry	Electrical Inductance (H)	H	Metric (derived)	The inductance of a closed circuit in which an electromotive force of one volt is produced when the electric current in the circuit varies uniformly at a rate of one ampere per second. Named after Joseph Henry
+Weber	Magnetic Flux (Wb)	Wb	Metric (derived)	A change in flux of one Weber per second induces an electromotive force of one volt. Named after Wilhelm Eduard Weber
+Tesla	Magnetic Flux Density, Magnetic Field (T)	(T)	Metric (derived)	One tesla is equal to one Weber per square metre. Named after Nikola Tesla
+Becquerel	Radioactive Decay	Bq	Metric (derived)	Bq = 1 x s-1
+Mole	Amount of Substance (s)	mol	Metric (SI base unit)	One mole is the number of atoms in 12 thousandths of a kilogram of carbon C-12. It’s called the Avogadro constant and is approximately 6.022169 x 1023. One of 7 SI base units of measurement
+Paper Bale	Paper Quantity	ream	Imperial	1 ream = 500 sheets of paper
+Dozen	Quantities	dz or doz	Imperial	12 items, eggs are commonly sold as half a dozen or a dozen. A bakers dozen is 13 items, 12+1 to be sure they were not underweight

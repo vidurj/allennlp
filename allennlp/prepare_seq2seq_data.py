@@ -4,6 +4,7 @@ import traceback
 from collections import Counter, defaultdict
 import spacy
 import itertools
+import nltk
 
 from allennlp.type_checking import valid_next_characters, update_state, \
     START_SYMBOL, END_SYMBOL
@@ -56,6 +57,9 @@ NUMBER_WORDS = {
     'half': 0.5
 }
 
+UNITS = ['Meter', 'Metre', 'Millimeter', 'Centimeter', 'Decimeter', 'Kilometer', 'Astronomical', 'Light', 'Parsec', 'Inch', 'Foot', 'Yard', 'Mile', 'Nautical', 'Square', 'Acre', 'Are', 'Hectare', 'Square', 'Square', 'Square', 'Square', 'Cubic', 'Liter', 'Milliliter', 'Centiliter', 'Deciliter', 'Hectoliter', 'Cubic', 'Cubic', 'Cubic', 'Acre-Foot', 'Teaspoon', 'UK:', 'US:', 'Tablespoon', 'UK:', 'US:', 'Australia:', 'Canada:', 'Fluid', 'UK:', 'US:', 'Cup', 'UK', 'USA', 'Australia', 'Canada', 'Gill', 'UK:', 'US:', 'US:', 'Pint', 'UK:', 'US:', 'US:', 'Quart', 'UK:', 'US:', 'US:', 'Gallon', 'UK:', 'US:', 'US:', 'Radian', 'Degree', 'Steradian', 'Second', 'Minute', 'Hour', 'Day', 'Year', 'Hertz', 'Angular', 'Decibel', 'Kilogram', 'Miles', 'Meters', 'Gravity', 'Acceleration', 'Gravity', 'Feet', 'Grams', 'Kilogram', 'Grain', 'Dram', 'Ounce', 'Pound', 'Hundredweight', 'stone', 'lb', 'Ton', 'lb', 'Tonne', 'Mass', 'Slug', 'Density', 'Newton', 'Kilopond', 'Pond', 'Newton', 'Joule', 'Watt', 'Kilowatt', 'Horsepower', 'Pascal', 'Bar', 'Pounds', 'Kelvin', 'Centigrade', 'Calorie', 'calorie', 'gram', 'Fahrenheit', 'Candela', 'Candela', 'Lumen', 'Lux', 'Lumen', 'Diopter', 'Ampere', 'Coulomb', 'Volt', 'Ohm', 'Farad', 'Siemens', 'Henry', 'Weber', 'Tesla', 'Becquerel', 'Mole', 'Paper', 'Dozen']
+UNITS = {unit.lower() for unit in UNITS}
+
 
 def is_strict_num(string):
     try:
@@ -86,7 +90,7 @@ def standardize_question(source, copy_mechanism, randomize):
     temp = [token.text for token in nlp(source)]
     _source_tokenized = []
     for token in temp:
-        _source_tokenized.extend(TIMES_WORDS.get(token, [token]))
+        _source_tokenized.extend(TIMES_WORDS.get(token.lower(), [token]))
     number_to_tokens = defaultdict(list)
     source_tokenized = []
     for index, token in enumerate(_source_tokenized):
@@ -434,14 +438,56 @@ def synthetic_multisentence_data(num_samples, file_name):
         f.write('\n'.join([json.dumps({'source': q}) for q, lf in data_points]) + '\n')
 
 
+
+def extract_question(text):
+    question_markers = {'how many', 'how much', 'find', 'what are', 'what is', 'determine', 'solve', 'give'}
+    sentences = nltk.tokenize.sent_tokenize(text)
+    questions = []
+    for sentence in sentences:
+        if sentence.strip().endswith('?'):
+            flag = True
+        else:
+            flag = False
+            for marker in question_markers:
+                flag = flag or marker in sentence.lower()
+        if flag:
+            questions.append(sentence)
+        else:
+            questions = []
+    if len(questions) == 0:
+        print(text)
+        print(sentences[-2:])
+        print('-' * 100)
+    else:
+        question = ' '.join(questions)
+        lemmas = {token.lemma_ for token in nlp(question)}
+        print(UNITS.intersection(lemmas))
+        print(questions)
+
+
+
+def extract_units():
+    with open('allennlp/units.txt', 'r') as f:
+        lines = f.read().splitlines()
+    units = []
+    for line in lines:
+        units.extend(line.split()[0].split('/'))
+    print(units)
+
+
+
 if __name__ == '__main__':
-    synthetic_multisentence_data(100, 'synthetic_train.txt')
-    synthetic_multisentence_data(5, 'synthetic_dev.txt')
+    # synthetic_multisentence_data(100, 'synthetic_train.txt')
+    # synthetic_multisentence_data(5, 'synthetic_dev.txt')
     # prepare_synthetic_data()
+    # extract_units()
     with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
               'r') as f:
         data = json.load(f)
-    #
+
+    for q in data:
+        extract_question(q['sQuestion'])
+
     # with open('allennlp/additional_annotations.json', 'r') as f:
     #     additional_data = json.load(f)
     #
