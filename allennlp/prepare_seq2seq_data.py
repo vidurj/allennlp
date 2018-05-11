@@ -115,17 +115,21 @@ def retrieve_important_numbers(text):
     source_tokenized, pos_tags = zip(*source_tokenized)
     # print(pos_tags)
     important_numbers = []
-    post = {'dollar', 'ticket', 'cent', 'times', 'is'}
-
+    post = {'dollar', 'ticket', 'cent', 'times', 'is', 'more', 'less'}
+    pre = {'is'}
     for index, token in enumerate(source_tokenized):
         number = is_num(token)
-        if number is None:
+        if token.lower() == 'twice':
+            important_numbers.append(2)
+        elif number is None:
             continue
-        elif (source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent'):
+        elif source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent':
             number /= 100
             number = round(number, PRECISION)
             important_numbers.append(number)
         elif source_tokenized[index + 1].lower() in post:
+            important_numbers.append(number)
+        elif source_tokenized[index - 1].lower() in pre:
             important_numbers.append(number)
         elif int(number) != number:
             important_numbers.append(number)
@@ -410,20 +414,29 @@ if __name__ == '__main__':
     with open('allennlp/additional_annotations.json', 'r') as f:
         additional_data = json.load(f)
 
-    # results = []
-    # for question in data[-100:]:
-    #     important_numbers = retrieve_important_numbers(question['sQuestion'])
-    #     if len(important_numbers) == 0:
-    #         results.append('*')
-    #     else:
-    #         results.append(' '.join([str(x) for x in set(important_numbers)]))
+    results = []
 
-    # with open('/Users/vidurj/euclid/data/private/important_numbers.txt', 'w') as f:
-    #     f.write('\n'.join(results))
+    # print(retrieve_important_numbers('The sum of 2 numbers is 15. 3 times one of the numbers is 11 less than 5 times the other. What is the smaller number? What is the larger number?'))
+
+
+    for index, question in enumerate(data[-100:]):
+        print(index)
+        print(question['iIndex'])
+        print(question['sQuestion'])
+        important_numbers = retrieve_important_numbers(question['sQuestion'])
+        print(important_numbers)
+        print('-' * 100)
+        if len(important_numbers) == 0:
+            results.append('*')
+        else:
+            results.append(' '.join([str(x) for x in set(important_numbers)]))
+
+    with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
+        f.write('\n'.join(results))
     # all_train_subsets = create_sentence_aligned_data(data[:-100])
     # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    write_data(data[-100:], 'dev_num.txt', is_dev=True,
-               randomize=False, num_iters=1, silent=True)
+    # write_data(data[-100:], 'dev_num.txt', is_dev=True,
+    #            randomize=False, num_iters=1, silent=True)
     # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
 
     # write_data(data[:3], 'train.txt', randomize=True, num_iters=500)
