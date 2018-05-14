@@ -310,8 +310,8 @@ class SimpleSeq2Seq(Model):
             else:
                 if len(step_probabilities) > 0:
                     class_probabilities_np = step_probabilities[-1].data.cpu().numpy().flatten()
-                    print(class_probabilities_np.shape)
                     class_probabilities_np[corrupted_token_index] = 0
+                    class_probabilities_np /= np.sum(class_probabilities_np)
                     predicted_token_index = np.random.choice(range(len(class_probabilities_np)), p=class_probabilities_np)
                 else:
                     predicted_token_index = self._start_index
