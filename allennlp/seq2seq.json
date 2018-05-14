@@ -53,9 +53,8 @@
     "target_namespace": "target_tokens"
     },
     "iterator": {
-      "type": "bucket",
-      "sorting_keys": [["source_tokens", "num_tokens"], ["target_tokens", "num_tokens"]],
-      "batch_size" : 10
+      "type": "basic",
+      "batch_size" : 1
     },
     "trainer": {
       "num_epochs": 100,
