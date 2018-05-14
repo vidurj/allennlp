@@ -296,6 +296,7 @@ class SimpleSeq2Seq(Model):
         step_probabilities = []
         step_predictions = []
         gold_sequence = []
+        is_corrupted = False
         for timestep in range(num_decoding_steps):
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
