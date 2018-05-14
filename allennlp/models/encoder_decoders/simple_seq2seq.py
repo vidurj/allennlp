@@ -314,10 +314,12 @@ class SimpleSeq2Seq(Model):
                                                                  self._target_namespace)
                     if gold_token == predicted_token:
                         input_choices = targets[:, timestep]
+                        seen.add(gold_token)
                     elif gold_token.startswith('var') and predicted_token.startswith('var'):
                         # Both are variables, and neither has been seen i.e. both are valid
                         if gold_token not in seen and predicted_token not in seen:
                             input_choices = targets[:, timestep]
+                            seen.add(gold_token)
                         else:
                             is_corrupted = True
                     else:
@@ -355,6 +357,7 @@ class SimpleSeq2Seq(Model):
             target_mask = get_text_field_mask(target_tokens)
             targets = Variable(torch.cuda.LongTensor([gold_sequence]))
             print('size', targets.size())
+            print('logits size', logits.size())
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
             print('loss', loss)
