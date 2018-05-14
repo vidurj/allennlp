@@ -297,6 +297,7 @@ class SimpleSeq2Seq(Model):
         step_probabilities = []
         step_predictions = []
         gold_sequence = []
+        inputs = []
         is_corrupted = False
         seen = set()
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
@@ -325,21 +326,27 @@ class SimpleSeq2Seq(Model):
                     if gold_token == predicted_token:
                         input_choices = targets[:, timestep]
                         seen.add(gold_token)
+                        inputs.append(gold_token)
                     elif gold_token.startswith('var') and predicted_token.startswith('var'):
                         # Both are variables, and neither has been seen i.e. both are valid
                         if gold_token not in seen and predicted_token not in seen:
                             input_choices = targets[:, timestep]
                             seen.add(gold_token)
+                            inputs.append(gold_token)
                         else:
                             is_corrupted = True
+                            inputs.append(predicted_token)
                     elif gold_token.startswith('num') and predicted_token.startswith('num'):
                         if gold_token not in seen and predicted_token not in seen:
                             input_choices = targets[:, timestep]
                             seen.add(gold_token)
+                            inputs.append(gold_token)
                         else:
                             is_corrupted = True
+                            inputs.append(predicted_token)
                     else:
                         is_corrupted = True
+                        inputs.append(predicted_token)
 
             if is_corrupted:
                 gold_sequence.append(corrupted_token_index)
@@ -369,8 +376,11 @@ class SimpleSeq2Seq(Model):
                        "class_probabilities": class_probabilities,
                        "predictions": all_predictions}
         if target_tokens:
+            print(' '.join(inputs))
+            print(' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in gold_sequence]))
+            print(' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[0]]))
+            print('-' * 30)
             target_mask = get_text_field_mask(target_tokens)
-            print(gold_sequence)
             targets = Variable(torch.cuda.LongTensor([gold_sequence]))
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
