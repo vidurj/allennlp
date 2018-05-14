@@ -297,12 +297,16 @@ class SimpleSeq2Seq(Model):
         step_predictions = []
         gold_sequence = []
         is_corrupted = False
+        seen = set()
         for timestep in range(num_decoding_steps):
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
+                gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1],
+                                                             self._target_namespace)
+                seen.add(gold_token)
             else:
                 input_choices = last_predictions
-                if targets is not None:
+                if targets is not None and not is_corrupted:
                     predicted_token = self.vocab.get_token_from_index(last_predictions[0],
                                                                       self._target_namespace)
                     gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1],
