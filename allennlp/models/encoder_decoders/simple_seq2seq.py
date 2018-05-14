@@ -293,13 +293,14 @@ class SimpleSeq2Seq(Model):
         decoder_hidden = final_encoder_output
         decoder_context = Variable(encoder_outputs.data.new()
                                    .resize_(batch_size, self._decoder_output_dim).fill_(0))
-        last_predictions = Variable(source_mask.data.new().resize_(batch_size).fill_(self._start_index))
         step_logits = []
         step_probabilities = []
         step_predictions = []
         gold_sequence = []
         is_corrupted = False
         seen = set()
+        corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
+        print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace))
         for timestep in range(num_decoding_steps):
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
@@ -307,9 +308,16 @@ class SimpleSeq2Seq(Model):
                                                              self._target_namespace)
                 seen.add(gold_token)
             else:
-                input_choices = last_predictions
+                if len(step_probabilities) > 0:
+                    class_probabilities_np = step_predictions[-1].data.cpu().numpy()[0, :]
+                    class_probabilities_np[corrupted_token_index] = 0
+                    predicted_token_index = np.random.choice(range(len(class_probabilities_np)), p=class_probabilities_np)
+                else:
+                    predicted_token_index = self._start_index
+                assert predicted_token_index != corrupted_token_index
+                input_choices = Variable(source_mask.data.new().resize_(batch_size).fill_(predicted_token_index))
                 if targets is not None and not is_corrupted:
-                    predicted_token = self.vocab.get_token_from_index(last_predictions.data.cpu()[0],
+                    predicted_token = self.vocab.get_token_from_index(predicted_token_index,
                                                                       self._target_namespace)
                     gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
                                                                  self._target_namespace)
@@ -327,8 +335,7 @@ class SimpleSeq2Seq(Model):
                         is_corrupted = True
 
             if is_corrupted:
-                gold_sequence.append(self.vocab.get_token_index('<corrupted>',
-                                                                self._target_namespace))
+                gold_sequence.append(corrupted_token_index)
             elif targets is not None:
                 gold_sequence.append(targets_cpu[0, timestep + 1])
 
@@ -356,6 +363,7 @@ class SimpleSeq2Seq(Model):
                        "predictions": all_predictions}
         if target_tokens:
             target_mask = get_text_field_mask(target_tokens)
+            print(gold_sequence)
             targets = Variable(torch.cuda.LongTensor([gold_sequence]))
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
