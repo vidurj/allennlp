@@ -335,6 +335,7 @@ class SimpleSeq2Seq(Model):
                             seen.add(gold_token)
                             inputs.append(gold_token)
                         else:
+                            print('A')
                             is_corrupted = True
                             inputs.append(predicted_token)
                     elif gold_token.startswith('num') and predicted_token.startswith('num'):
@@ -343,9 +344,11 @@ class SimpleSeq2Seq(Model):
                             seen.add(gold_token)
                             inputs.append(gold_token)
                         else:
+                            print('B')
                             is_corrupted = True
                             inputs.append(predicted_token)
                     else:
+                        print('C')
                         is_corrupted = True
                         inputs.append(predicted_token)
                 else:
@@ -381,9 +384,11 @@ class SimpleSeq2Seq(Model):
                        "class_probabilities": class_probabilities,
                        "predictions": all_predictions}
         if target_tokens:
-            print(' '.join(inputs))
-            print(' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in gold_sequence]))
-            print(' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[0]]))
+            print('inputs', ' '.join(inputs))
+            print('*')
+            print('new gold', ' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in gold_sequence]))
+            print('*')
+            print('original gold', ' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[0]]))
             print('-' * 30)
             target_mask = get_text_field_mask(target_tokens)
             targets = Variable(torch.cuda.LongTensor([gold_sequence]))
