@@ -281,7 +281,8 @@ class SimpleSeq2Seq(Model):
         encoder_outputs = self._encoder(embedded_input, source_mask)
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
-            targets = target_tokens["tokens"].data.cpu()
+            targets = target_tokens["tokens"]
+            targets_cpu = targets.data.cpu()
             target_sequence_length = targets.size()[1]
             # The last input from the target is either padding or the end symbol. Either way, we
             # don't have to process it.
@@ -301,7 +302,7 @@ class SimpleSeq2Seq(Model):
         for timestep in range(num_decoding_steps):
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
-                gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1],
+                gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
                                                              self._target_namespace)
                 seen.add(gold_token)
             else:
@@ -309,7 +310,7 @@ class SimpleSeq2Seq(Model):
                 if targets is not None and not is_corrupted:
                     predicted_token = self.vocab.get_token_from_index(last_predictions[0],
                                                                       self._target_namespace)
-                    gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1],
+                    gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
                                                                  self._target_namespace)
                     if gold_token == predicted_token:
                         input_choices = targets[:, timestep]
@@ -326,7 +327,7 @@ class SimpleSeq2Seq(Model):
                 gold_sequence.append(self.vocab.get_token_index('<corrupted>',
                                                                 self._target_namespace))
             elif targets is not None:
-                gold_sequence.append(targets[0, timestep + 1])
+                gold_sequence.append(targets_cpu[0, timestep + 1])
 
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                             encoder_outputs, source_mask)
