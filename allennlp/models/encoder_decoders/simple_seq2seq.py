@@ -331,6 +331,12 @@ class SimpleSeq2Seq(Model):
                             seen.add(gold_token)
                         else:
                             is_corrupted = True
+                    elif gold_token.startswith('num') and predicted_token.startswith('num'):
+                        if gold_token not in seen and predicted_token not in seen:
+                            input_choices = targets[:, timestep]
+                            seen.add(gold_token)
+                        else:
+                            is_corrupted = True
                     else:
                         is_corrupted = True
 
