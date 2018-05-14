@@ -21,6 +21,7 @@ from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
 from allennlp.type_checking import valid_next_characters, update_state
 from allennlp.training.metrics.categorical_accuracy import CategoricalAccuracy
+import random
 
 """
 And (bool, ...) : bool
@@ -294,17 +295,33 @@ class SimpleSeq2Seq(Model):
         step_logits = []
         step_probabilities = []
         step_predictions = []
+        gold_sequence = []
         for timestep in range(num_decoding_steps):
-            if self.training or target_tokens:
+            if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
             else:
-                if timestep == 0:
-                    # For the first timestep, when we do not have targets, we input start symbols.
-                    # (batch_size,)
-                    input_choices = Variable(source_mask.data.new()
-                                             .resize_(batch_size).fill_(self._start_index))
-                else:
-                    input_choices = last_predictions
+                input_choices = last_predictions
+                if targets is not None:
+                    predicted_token = self.vocab.get_token_from_index(last_predictions[0],
+                                                                      self._target_namespace)
+                    gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1],
+                                                                 self._target_namespace)
+                    if gold_token == predicted_token:
+                        input_choices = targets[:, timestep]
+                    elif gold_token.startswith('var') and predicted_token.startswith('var'):
+                        # Both are variables, and neither has been seen i.e. both are valid
+                        if gold_token not in seen and predicted_token not in seen:
+                            input_choices = targets[:, timestep]
+                        else:
+                            is_corrupted = True
+                    else:
+                        is_corrupted = True
+
+            if is_corrupted:
+                gold_sequence.append(self.vocab.get_token_index('<corrupted>',
+                                                                self._target_namespace))
+            elif targets is not None:
+                gold_sequence.append(targets[0, timestep + 1])
 
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                             encoder_outputs, source_mask)
@@ -330,7 +347,7 @@ class SimpleSeq2Seq(Model):
                        "predictions": all_predictions}
         if target_tokens:
             target_mask = get_text_field_mask(target_tokens)
-            loss = self._get_loss(logits, targets, target_mask)
+            loss = self._get_loss(logits, torch.LongTensor(gold_sequence), target_mask)
             output_dict["loss"] = loss
             print('loss', loss)
             # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
