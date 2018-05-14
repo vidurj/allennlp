@@ -349,7 +349,7 @@ class SimpleSeq2Seq(Model):
                             newly_corrupted = True
                             inputs.append(predicted_token)
                     else:
-                        print('C')
+                        print('C', gold_token, predicted_token)
                         newly_corrupted = True
                         inputs.append(predicted_token)
                 else:
