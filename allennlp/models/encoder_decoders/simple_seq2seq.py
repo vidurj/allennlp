@@ -306,7 +306,7 @@ class SimpleSeq2Seq(Model):
             newly_corrupted = False
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
-                gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
+                gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
                                                              self._target_namespace)
                 seen.add(gold_token)
                 inputs.append(gold_token)
