@@ -308,7 +308,7 @@ class SimpleSeq2Seq(Model):
             else:
                 input_choices = last_predictions
                 if targets is not None and not is_corrupted:
-                    predicted_token = self.vocab.get_token_from_index(last_predictions[0],
+                    predicted_token = self.vocab.get_token_from_index(last_predictions.data.cpu()[0],
                                                                       self._target_namespace)
                     gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
                                                                  self._target_namespace)
@@ -353,7 +353,9 @@ class SimpleSeq2Seq(Model):
                        "predictions": all_predictions}
         if target_tokens:
             target_mask = get_text_field_mask(target_tokens)
-            loss = self._get_loss(logits, Variable(torch.cuda.LongTensor([gold_sequence])), target_mask)
+            targets = Variable(torch.cuda.LongTensor([gold_sequence]))
+            print('size', targets.size())
+            loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
             print('loss', loss)
             # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
@@ -435,9 +437,9 @@ class SimpleSeq2Seq(Model):
            against                l1  l2  l3  l4  l5  l6
            (where the input was)  <S> w1  w2  w3  <E> <P>
         """
-        relevant_targets = targets[:, 1:].contiguous()  # (batch_size, num_decoding_steps)
+        # relevant_targets = targets[:, 1:].contiguous()  # (batch_size, num_decoding_steps)
         relevant_mask = target_mask[:, 1:].contiguous()  # (batch_size, num_decoding_steps)
-        loss = sequence_cross_entropy_with_logits(logits, relevant_targets, relevant_mask)
+        loss = sequence_cross_entropy_with_logits(logits, targets, relevant_mask)
         return loss
 
     @staticmethod
