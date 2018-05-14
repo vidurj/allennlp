@@ -308,6 +308,7 @@ class SimpleSeq2Seq(Model):
                 gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
                                                              self._target_namespace)
                 seen.add(gold_token)
+                inputs.append(gold_token)
             else:
                 if len(step_probabilities) > 0:
                     class_probabilities_np = step_probabilities[-1].data.cpu().numpy().flatten()
@@ -347,6 +348,10 @@ class SimpleSeq2Seq(Model):
                     else:
                         is_corrupted = True
                         inputs.append(predicted_token)
+                else:
+                    predicted_token = self.vocab.get_token_from_index(predicted_token_index,
+                                                                      self._target_namespace)
+                    inputs.append(predicted_token)
 
             if is_corrupted:
                 gold_sequence.append(corrupted_token_index)
