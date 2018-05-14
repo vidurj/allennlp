@@ -357,11 +357,8 @@ class SimpleSeq2Seq(Model):
         if target_tokens:
             target_mask = get_text_field_mask(target_tokens)
             targets = Variable(torch.cuda.LongTensor([gold_sequence]))
-            print('size', targets.size())
-            print('logits size', logits.size())
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
-            print('loss', loss)
             # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
             # TODO: Define metrics
             # if random.random() < 0.01:
