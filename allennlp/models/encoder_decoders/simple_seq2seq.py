@@ -303,7 +303,6 @@ class SimpleSeq2Seq(Model):
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
         print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
         for timestep in range(num_decoding_steps):
-            newly_corrupted = False
             gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
                                                          self._target_namespace)
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
@@ -335,7 +334,7 @@ class SimpleSeq2Seq(Model):
                             inputs.append(gold_token)
                         else:
                             print('A', gold_token, predicted_token)
-                            newly_corrupted = True
+                            is_corrupted = True
                             inputs.append(predicted_token)
                     elif gold_token.startswith('unit') and predicted_token.startswith('unit'):
                         if gold_token not in seen and predicted_token not in seen:
@@ -344,11 +343,11 @@ class SimpleSeq2Seq(Model):
                             inputs.append(gold_token)
                         else:
                             print('B', gold_token, predicted_token)
-                            newly_corrupted = True
+                            is_corrupted = True
                             inputs.append(predicted_token)
                     else:
                         print('C', gold_token, predicted_token)
-                        newly_corrupted = True
+                        is_corrupted = True
                         inputs.append(predicted_token)
                 else:
                     predicted_token = self.vocab.get_token_from_index(predicted_token_index,
@@ -360,9 +359,6 @@ class SimpleSeq2Seq(Model):
             elif targets is not None:
                 gold_sequence.append(targets_cpu[0, timestep + 1])
 
-            if newly_corrupted:
-                print('just got corrupted')
-            is_corrupted = is_corrupted or newly_corrupted
 
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                             encoder_outputs, source_mask)
