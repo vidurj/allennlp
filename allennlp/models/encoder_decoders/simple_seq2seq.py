@@ -309,7 +309,7 @@ class SimpleSeq2Seq(Model):
                 seen.add(gold_token)
             else:
                 if len(step_probabilities) > 0:
-                    class_probabilities_np = step_predictions[-1].data.cpu().numpy()
+                    class_probabilities_np = step_predictions[-1].data.cpu().numpy().flatten()
                     print(class_probabilities_np.shape)
                     class_probabilities_np[0, corrupted_token_index] = 0
                     predicted_token_index = np.random.choice(range(len(class_probabilities_np)), p=class_probabilities_np)
