@@ -281,7 +281,7 @@ class SimpleSeq2Seq(Model):
         encoder_outputs = self._encoder(embedded_input, source_mask)
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
-            targets = target_tokens["tokens"]
+            targets = target_tokens["tokens"].data.cpu()
             target_sequence_length = targets.size()[1]
             # The last input from the target is either padding or the end symbol. Either way, we
             # don't have to process it.
