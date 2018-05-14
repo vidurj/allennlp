@@ -353,7 +353,7 @@ class SimpleSeq2Seq(Model):
                        "predictions": all_predictions}
         if target_tokens:
             target_mask = get_text_field_mask(target_tokens)
-            loss = self._get_loss(logits, Variable(torch.LongTensor([gold_sequence])), target_mask)
+            loss = self._get_loss(logits, Variable(torch.cuda.LongTensor([gold_sequence])), target_mask)
             output_dict["loss"] = loss
             print('loss', loss)
             # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
