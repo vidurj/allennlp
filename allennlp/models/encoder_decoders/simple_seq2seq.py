@@ -300,7 +300,7 @@ class SimpleSeq2Seq(Model):
         is_corrupted = False
         seen = set()
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
-        print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace))
+        print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace, self._start_index, self._end_index))
         for timestep in range(num_decoding_steps):
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
