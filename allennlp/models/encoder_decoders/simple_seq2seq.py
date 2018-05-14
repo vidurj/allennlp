@@ -304,10 +304,10 @@ class SimpleSeq2Seq(Model):
         print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
         for timestep in range(num_decoding_steps):
             newly_corrupted = False
+            gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
+                                                         self._target_namespace)
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
-                gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
-                                                             self._target_namespace)
                 seen.add(gold_token)
                 inputs.append(gold_token)
             else:
@@ -323,8 +323,6 @@ class SimpleSeq2Seq(Model):
                 if targets is not None and not is_corrupted:
                     predicted_token = self.vocab.get_token_from_index(predicted_token_index,
                                                                       self._target_namespace)
-                    gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep + 1],
-                                                                 self._target_namespace)
                     if gold_token == predicted_token:
                         input_choices = targets[:, timestep]
                         seen.add(gold_token)
@@ -336,7 +334,7 @@ class SimpleSeq2Seq(Model):
                             seen.add(gold_token)
                             inputs.append(gold_token)
                         else:
-                            print('A')
+                            print('A', gold_token, predicted_token)
                             newly_corrupted = True
                             inputs.append(predicted_token)
                     elif gold_token.startswith('unit') and predicted_token.startswith('unit'):
@@ -345,7 +343,7 @@ class SimpleSeq2Seq(Model):
                             seen.add(gold_token)
                             inputs.append(gold_token)
                         else:
-                            print('B')
+                            print('B', gold_token, predicted_token)
                             newly_corrupted = True
                             inputs.append(predicted_token)
                     else:
