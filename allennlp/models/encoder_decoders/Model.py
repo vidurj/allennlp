@@ -133,6 +133,7 @@ class SimpleCopy(Model):
         # self._stem_embedding = torch.nn.Parameter(torch.randn(251, self._random_embedding_size))
         # self._permutable_indices = list(range(3, 251))
 
+
     def beam_search(self,  # type: ignore
                     source_tokens: Dict[str, torch.LongTensor],
                     stem_tokens: Dict[str, torch.LongTensor] = None,
@@ -222,8 +223,7 @@ class SimpleCopy(Model):
                 seen_actions = set(action_list)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     if action_index < target_vocab_size:
-                        action = self.vocab.get_token_from_index(action_index,
-                                                                 self._target_namespace)
+                        action = self.vocab.get_token_from_index(action_index, self._target_namespace)
                     else:
                         action = 'index' + str(action_index - target_vocab_size)
                     if action not in valid_actions:
@@ -258,14 +258,13 @@ class SimpleCopy(Model):
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
-        complete_models = models  # [model for model in models if model['action_list'][-1] == END_SYMBOL]
+        complete_models = models#[model for model in models if model['action_list'][-1] == END_SYMBOL]
         complete_models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
-        output = '\n'.join(
-            [str(model['cur_log_probability']) + ' ' + ' '.join(model['action_list'][1:-1]) for
-             model in complete_models])
+        output = '\n'.join([str(model['cur_log_probability']) + ' ' + ' '.join(model['action_list'][1:-1]) for model in complete_models])
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
+
 
     def _generate_random_embeddings(self, batch_size, num_timesteps, stem_tokens):
         random_vocab = torch.randn(num_timesteps, self._random_embedding_size)
@@ -279,6 +278,7 @@ class SimpleCopy(Model):
                                                     num_timesteps,
                                                     self._random_embedding_size))
         return random_embeddings
+
 
     def _prepare_decoder_start_state(self, source_tokens, stem_tokens):
         embedded_input = self._source_embedder(source_tokens)
@@ -342,27 +342,19 @@ class SimpleCopy(Model):
         total_log_probs = 0
         is_corrupted = False
         gold_sequence = []
-        seen = {}
+        variable_map = {}
+        used_variables = {}
         for timestep in range(num_decoding_steps):
             if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
                 input_choices = targets[:, timestep]
             else:
                 input_choices = last_predictions
                 if targets is not None:
-                    predicted_token = self.vocab.get_token_from_index(last_predictions[0],
-                                                                      self._target_namespace)
-                    gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1],
-                                                                 self._target_namespace)
-                    if gold_token == predicted_token:
-                        input_choices = targets[:, timestep]
-                    elif gold_token.startswith('var') and predicted_token.startswith('var'):
-                        # Both are variables, and neither has been seen i.e. both are valid
-                        if gold_token not in seen and predicted_token not in seen:
-                            input_choices = targets[:, timestep]
-                        else:
-                            is_corrupted = True
-                    else:
-                        is_corrupted = True
+                    predicted_token = self.vocab.get_token_from_index(last_predictions[0], self._target_namespace)
+                    gold_token = self.vocab.get_token_from_index(targets[0, timestep + 1], self._target_namespace)
+                    if gold_token.startswith('var') and predicted_token.startswith('var'):
+                        if variable_map.get(var)
+                    is_corrupted = True
 
             if is_corrupted:
                 gold_sequence.append(self.vocab.get_token_index('<corrupted>',
@@ -400,7 +392,7 @@ class SimpleCopy(Model):
                        "predictions": all_predictions}
         if target_tokens:
             target_mask = get_text_field_mask(target_tokens)
-            loss = self._get_loss(logits, torch.LongTensor(gold_sequence), target_mask)
+            loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
             # print(target_mask * torch.eq(all_predictions, targets))
             # TODO: Define metrics

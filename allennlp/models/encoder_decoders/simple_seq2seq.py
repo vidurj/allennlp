@@ -293,7 +293,7 @@ class SimpleSeq2Seq(Model):
         decoder_hidden = final_encoder_output
         decoder_context = Variable(encoder_outputs.data.new()
                                    .resize_(batch_size, self._decoder_output_dim).fill_(0))
-        last_predictions = None
+        last_predictions = Variable(source_mask.data.new().resize_(batch_size).fill_(self._start_index))
         step_logits = []
         step_probabilities = []
         step_predictions = []
