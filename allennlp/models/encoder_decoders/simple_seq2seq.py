@@ -324,7 +324,7 @@ class SimpleSeq2Seq(Model):
                     relevant_probabilities /= np.sum(relevant_probabilities)
                     pred = np.random.choice(range(len(relevant_probabilities)),
                                             p=relevant_probabilities)
-                    sampled_incorrect_predictions.append(pred)
+                    sampled_incorrect_predictions.append(int(pred))
                 input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
                 targets[:, timestep + 1:] = corrupted_token_index
             else:
