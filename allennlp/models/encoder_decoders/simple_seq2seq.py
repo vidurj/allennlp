@@ -304,7 +304,7 @@ class SimpleSeq2Seq(Model):
         print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
         for timestep in range(num_decoding_steps):
 
-            if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
+            if self._scheduled_sampling_ratio < random.random() and not is_corrupted and target_tokens is not None:
                 gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
                                                              self._target_namespace)
                 input_choices = targets[:, timestep]
@@ -320,7 +320,7 @@ class SimpleSeq2Seq(Model):
                     predicted_token_index = self._start_index
                 assert predicted_token_index != corrupted_token_index
                 input_choices = Variable(source_mask.data.new().resize_(batch_size).fill_(predicted_token_index))
-                if targets is not None and not is_corrupted:
+                if target_tokens is not None and not is_corrupted:
                     gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
                                                                  self._target_namespace)
                     predicted_token = self.vocab.get_token_from_index(predicted_token_index,
