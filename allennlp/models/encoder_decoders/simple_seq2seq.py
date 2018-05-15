@@ -178,9 +178,6 @@ class SimpleSeq2Seq(Model):
             for model in models:
                 last_prediction = model['last_prediction']
                 action_list = model['action_list']
-                if action_list[-1] == END_SYMBOL:
-                    new_models.append(model)
-                    continue
                 assert len(action_list) == cur_length + 1, (len(action_list), cur_length + 1)
                 decoder_hidden = model['decoder_hidden']
                 decoder_context = model['decoder_context']
@@ -217,10 +214,6 @@ class SimpleSeq2Seq(Model):
                     if action not in valid_actions:
                         continue
 
-                    if action == '@@UNKNOWN@@':
-                        print(valid_actions)
-                        print('-' * 30)
-                        continue
                     if action.startswith('var') and action not in seen_actions:
                         if seen_new_var:
                             continue
