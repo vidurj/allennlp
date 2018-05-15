@@ -306,7 +306,7 @@ class SimpleSeq2Seq(Model):
                 input_choices = targets[:, timestep]
             elif timestep == corrupted_index:
                 targets_cpu = targets.data.cpu()
-                probabilities_cpu = step_probabilities[-1].data.cpu()
+                probabilities_cpu = step_probabilities[-1].data.cpu().numpy()
                 sampled_incorrect_predictions = []
                 for batch_index in range(batch_size):
                     gold_token = self.vocab.get_token_from_index(targets_cpu[batch_index, timestep], self._target_namespace)
