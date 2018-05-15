@@ -297,20 +297,38 @@ class SimpleSeq2Seq(Model):
         inputs = []
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
         print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
-        corrupted_index = random.randint(0, num_decoding_steps - 12)
+        corrupted_index = random.randint(1, num_decoding_steps - 12)
         last_predictions = Variable(source_mask.data.new().resize_(batch_size).fill_(self._start_index))
         for timestep in range(num_decoding_steps):
-            if timestep < corrupted_index and target_tokens is not None:
+            if target_tokens is None:
+                input_choices = last_predictions
+            elif timestep < corrupted_index:
                 input_choices = targets[:, timestep]
             elif timestep == corrupted_index:
-                relevant_targets_cpu = targets[:, timestep].data.cpu()
-                seen_sets = []
+                targets_cpu = targets.data.cpu()
+                probabilities_cpu = step_probabilities[-1].data.cpu()
+                sampled_incorrect_predictions = []
                 for batch_index in range(batch_size):
-                    
+                    gold_token = self.vocab.get_token_from_index(targets_cpu[batch_index, timestep], self._target_namespace)
+                    seen = set([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[batch_index, :]])
+                    if (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_token not in seen:
+                       if gold_token.startswith('unit'):
+                           mask = [self.vocab.get_token_index(token, self._target_namespace) for token in seen if token.startswith('unit')]
+                       else:
+                           assert gold_token.startswith('var')
+                           mask = [self.vocab.get_token_index(token, self._target_namespace) for token in seen if token.startswith('var')]
+                    else:
+                        mask = [targets_cpu[batch_index, timestep]]
+                    relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
+                    relevant_probabilities[mask] = 0
+                    relevant_probabilities /= np.sum(relevant_probabilities)
+                    pred = np.random.choice(range(len(relevant_probabilities)),
+                                            p=relevant_probabilities)
+                    sampled_incorrect_predictions.append(pred)
+                input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
+                targets[:, timestep + 1:] = corrupted_token_index
             else:
                 input_choices = last_predictions
-
-
 
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
                                                             encoder_outputs, source_mask)
@@ -321,7 +339,10 @@ class SimpleSeq2Seq(Model):
             # list of (batch_size, 1, num_classes)
             step_logits.append(output_projections.unsqueeze(1))
             class_probabilities = F.softmax(output_projections, dim=-1)
-            _, predicted_classes = torch.max(class_probabilities, 1)
+            corrupted_token_mask = torch.ones_like(class_probabilities)
+            corrupted_token_mask[:, corrupted_token_index] = 0
+            _, predicted_classes = torch.max(corrupted_token_mask * class_probabilities, 1)
+
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
             # (batch_size, 1)
@@ -335,14 +356,13 @@ class SimpleSeq2Seq(Model):
                        "class_probabilities": class_probabilities,
                        "predictions": all_predictions}
         if target_tokens:
-            print('inputs', ' '.join(inputs))
-            print('*')
-            print('new gold', ' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in gold_sequence]))
-            print('*')
-            print('original gold', ' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[0]]))
-            print('-' * 30)
+            # print('inputs', ' '.join(inputs))
+            # print('*')
+            # print('new gold', ' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in gold_sequence]))
+            # print('*')
+            # print('original gold', ' '.join([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[0]]))
+            # print('-' * 30)
             target_mask = get_text_field_mask(target_tokens)
-            targets = Variable(torch.cuda.LongTensor([gold_sequence]))
             loss = self._get_loss(logits, targets, target_mask)
             output_dict["loss"] = loss
             # print(CategoricalAccuracy(all_predictions, targets, target_mask).get_metric())
@@ -424,9 +444,9 @@ class SimpleSeq2Seq(Model):
            against                l1  l2  l3  l4  l5  l6
            (where the input was)  <S> w1  w2  w3  <E> <P>
         """
-        # relevant_targets = targets[:, 1:].contiguous()  # (batch_size, num_decoding_steps)
+        relevant_targets = targets[:, 1:].contiguous()  # (batch_size, num_decoding_steps)
         relevant_mask = target_mask[:, 1:].contiguous()  # (batch_size, num_decoding_steps)
-        loss = sequence_cross_entropy_with_logits(logits, targets, relevant_mask)
+        loss = sequence_cross_entropy_with_logits(logits, relevant_targets, relevant_mask)
         return loss
 
     @staticmethod
