@@ -1,0 +1,186 @@
+
+The maximum load that a horizontal beam can carry is directly proportional to its width. If a beam 1.5 inches wide can support a load of 250 pounds , find the load that a beam of the same type can support if its width is 3.5 inches?
+(And
+(Equals (Times lambda 1.5) 250)
+(Equals (Times lambda 3.5) ?qvar)
+)
+The weight of an object on the moon varies directly to its weight on earth. A person who weights 133 pounds on earth weighs 26.6 pounds on the moon. How many pounds would a 136-pound person weigh on the moon?
+(And
+(Equals (Value earth1 Pound) 133)
+(Equals (Value moon1 Pound) 26.6)
+(Equals (Times lambda (Value earth1 Pound)) (Value moon1 Pound))
+(Equals (Value earth2 Pound) 136)
+(Equals (Value moon2 Pound) ?qvar)
+(Equals (Times lambda (Value earth2 Pound)) (Value moon2 Pound))
+)
+An ice skating rink charges 5 dollars for admission and 2.50 dollars to rent skates. Jill can purchase a new pair of skates for 65 dollars. How many times would she need to go the rink to justify buying the skates rather than renting a pair?
+(And
+(Equals (Rate admission Dollar Admission) 5)
+(Equals (Rate skates Dollar Admission) 2.5)
+(Equals (Value admission Admission) (Value skates Admission))
+(Equals (Value skates_for_ever Dollar) 65)
+(Equals (Value admission Admission) ?qvar)
+(Equals (Value (Join skates admission) Dollar) (Value (Join skates_for_ever admission) Dollar))
+)
+A 5-pound bag of apples costs 3.50 dollars. At the same rate , what would be the cost of 7 pounds of apples in dollars?
+(And
+(Equals (Value bag Pound) 5)
+(Equals (Value bag Dollar) 3.5)
+(Equals (Rate bag Dollar Pound) (Rate bag2 Dollar Pound))
+ (Equals (Value bag2 Pound) 7)
+(Equals (Value bag2 Dollar) ?qvar)
+)
+A painting is 10 inches tall and 15 inches wide. A print of the painting is 25 inches tall , how wide is the print in inches?
+(And
+(Equals (Value painting Tall) 10)
+(Equals (Value painting Wide) 15)
+(Equals (Value print Tall) 25)
+(Equals (Times lambda (Value print Tall)) (Value painting Tall))
+(Equals (Times lambda (Value print Wide)) (Value painting Wide))
+(Equals (Value print Wide) ?qvar)
+)
+The tallest player on the basketball team is 77.75 inches tall. This is 9.5 inches taller than the shortest player. How tall is the shortest player , in inches?
+(And
+ (Equals (Value tallest Inch) 77.75)
+(Equals (Plus (Value shortest Inch) 9.5) (Value tallest Inch))
+(Equals (Value shortest Inch) ?qvar)
+)
+Riza was 25 when her first son was born. Today the sum of their ages is 105. How old is Riza and her son now?
+(And
+(Equals (Value riza_then Year) 25)
+(Equals (Value son_then Year) 0)
+(Equals (Plus x (Value riza_then Year)) (Value riza_now Year))
+(Equals (Plus x (Value son_then Year)) (Value son_now Year))
+(Equals (Plus (Value riza_now Year) (Value son_now Year)) 105)
+(Equals (Value riza_now Year) ?qvar1)
+(Equals (Value son_now Year) ?qvar2)
+)
+Freeport McMoran projects that in 2010 the world grain supply will be 1800000 metric tons and the supply will be only 0.75 of the world grain demand. What will the world grain demand be in 2010?
+(And
+(Equals (Value supply Tons) 1800000)
+(Equals (Value supply Tons) (Times 0.75 (Value demand Tons)))
+(Equals (Value demand Tons) ?qvar)
+)
+A weight of 80 pounds stretches a spring 4.5 inches. How far will a weight of 125 pounds stretch the spring?
+(And
+(Equals (Value case1 Pound) 80)
+( Equals (Value case1 Inch) 4.5)
+(Equals (Rate case1 Inch Pound) (Rate case2 Inch Pound))
+(Equals (Value case2 Pound) 125)
+(Equals (Value case2 Inch) ?qvar)
+)
+There are 7066 known nesting pairs of bald eagles in the lower 48 states today. This is 6649 more pairs than in 1963. How many nesting pairs of bald eagles were there in the lower 48 states in 1963?
+(And
+(Equals (Value pairs_now Unit) 7066)
+(Equals (Plus 6649 (Value pairs_then Unit)) (Value pairs_now Unit))
+(Equals (Value pairs_then Unit) ?qvar)
+)
+A water flow restrictor has reduced the flow of water to 2 gallons per minute. This amount is 1 gallon per minute less than 0.6 the original flow rate. Find the original rate in gallons per minute.
+(And
+(Equals (Rate flow Gallon Minute) 2)
+(Equals (Rate flow Gallon Minute) (Minus (Times 0.6 (Rate flow_original Gallon Minute)) 1))
+(Equals (Rate flow_original Gallon Minute) ?qvar)
+)
+A woman is paid 20 dollars for each day she works and forfeits 5 dollars for each day she is idle. At the end of 25 days she nets 450 dollars. How many days did she work?
+(And
+(Equals (Rate paid Dollar Day) 20)
+(Equals (Rate forfeit Dollar Day) 5)
+(Equals (Value (Join paid forfeit) Day) 25)
+(Equals (Minus (Value paid Dollar) (Value forfeit Dollar)) 450)
+(Equals (Value paid Day) ?qvar)
+)
+You make candles and sell them for 15 dollars each. The material to make up to 20 candles costs 20 dollars. How many candles must you sell to have a profit of 85 dollars?
+(And
+(Equals (Rate sold Dollar Candle) 15)
+(Equals (Value cost Dollar) 20)
+(Equals (Minus (Value sold Dollar) (Value cost Dollar)) 85)
+(Equals (Value sold Candle) ?qvar)
+)
+If your gross pay is 450 dollars , while your net pay is 315 dollars , how much do you pay in taxes? Assume that all tax dollars are not included in net pay.
+(And
+(Equals (Value gross Dollar) 450)
+(Equals (Value net Dollar) 315)
+(Equals (Value gross Dollar) (Plus (Value net Dollar) (Value taxes Dollar)))
+(Equals (Value taxes Dollar) ?qvar)
+)
+Rita received a 70 dollars gift card for a coffee store. She used it in buying some coffee that cost 8.58 dollars per pound. After buying the coffee , she had 35.68 dollars left on her card. How many pounds of coffee did she buy?
+(And
+(Equals (Value card_before Dollar) 70)
+(Equals (Rate coffee Dollar Pound) 8.58)
+(Equals (Value card_after Dollar) 35.68)
+(Equals (Value card_before Dollar) (Value (Join card_after coffee) Dollar))
+(Equals (Value coffee Pound) ?qvar)
+)
+According to Dr. Aaron R. Folsom of the University of Minnesota School of Public Health , your maximum ideal waist size is directly proportional to your hip size. For a woman with 40 inch hips , the maximum ideal waist size is 32 inches. What is the maximum waist size for a woman with 35 inch hips?
+(And
+(Equals (Value waist1 Size) (Times lambda (Value hip1 Size)))
+(Equals (Value waist2 Size) (Times lambda (Value hip2 Size)))
+(Equals (Value hip1 Size) 40)
+(Equals (Value waist1 Size) 32)
+(Equals (Value hip2 Size) 35)
+(Equals (Value waist2 Size) ?qvar)
+)
+A textbook costs a bookstore 44 dollars , and the store sells it for 55 dollars. Find the amount of profit based on the selling price.
+(And
+(Equals (Value book Cost) 44)
+(Equals (Value book Sale) 55)
+(Equals (Minus (Value book Sale) (Value book Cost)) ?qvar)
+)
+Latoya purchased a prepaid phone card for 30 dollars. Long distance calls cost 16 cents a minute using this card. Latoya used her card only once to make a long distance call. If the remaining credit on her card is 26.48 dollars , how many minutes did her call last?
+(And
+(Equals (Value card Dollar) 30)
+(Equals (Rate long_dist Cent Minute) 16)
+(Equals (Rate long_dist Cent Minute) (Times 100 (Rate long_dist Dollar Minute)))
+(Equals (Value card_now Dollar) 26.48)
+(Equals (Value card Dollar) (Value (Join card_now long_dist) Dollar))
+(Equals (Value long_dist Minute) ?qvar)
+)
+If 2.5 costs 20 dollars , how much does 3.5 cost , in dollars?
+(And
+(Equals (Value case1 Unit) 2.5)
+(Equals (Value case1 Dollar) 20)
+(Equals (Rate case1 Dollar Unit) (Rate case2 Dollar Unit))
+(Equals (Value case2 Unit) 3.5)
+(Equals (Value case2 Dollar) ?qvar)
+)
+The difference between 0.75 of a line and 0.4 of the same line is 28 centimeters. Find the length of the line.
+(And
+(Equals (Minus (Times 0.75 (Value line Centimeters)) (Times 0.4 (Value line Centimeters))) 28)
+(Equals (Value line Centimeters) ?qvar)
+)
+The selling price of a pair of pants is 34 dollars. If the store paid 8 dollars less for the pants , find the price that the store paid , in dollars.
+(And
+(Equals (Value sale Dollar) 34)
+(Equals (Value purchase Dollar) (Minus (Value sale Dollar) 8))
+(Equals (Value purchase Dollar) ?qvar)
+)
+The world 's oldest bride was 19 yr older than her groom. Together , their ages totaled 185 years. How old was the bride? How old was the groom?
+(And
+(Equals (Value bride Year) (Plus 19 (Value groom Year)))
+(Equals (Value (Join bride groom) Year) 185)
+(Equals (Value bride Year) ?qvar1)
+(Equals (Value groom Year) ?qvar2)
+)
+A physician 's assistant measures a child and finds that his height is 41.5 inches. At his last visit to the doctor's office , the child was 38.5 inches tall. How much did the child grow , in inches?
+(And
+(Equals (Value child_now Inch) 41.5)
+(Equals (Value child_then Inch) 38.5)
+(Equals (Minus (Value child_now Inch) (Value child_then Inch)) ?qvar)
+)
+If 3.5 pounds of ground beef costs 9.77 dollars , how much does 5.6 pounds of ground beef cost?
+(And
+(Equals (Value case1 Pound) 3.5)
+(Equals (Value case1 Dollar) 9.77)
+(Equals (Rate case1 Dollar Pound) (Rate case2 Dollar Pound))
+(Equals (Value case2 Pound) 5.6)
+(Equals (Value case2 Dollar) ?qvar)
+)
+
+
+The length of a rectangular field is 24 meters. This is 3 meters less than twice the width. Find the width.
+(And
+(Equals (Value field Length) 24)
+(Equals (Value field Length) (Minus (Times 2 (Value field Width)) 3))
+(Equals (Value field Width) ?qvar)
+)
+

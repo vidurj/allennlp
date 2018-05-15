@@ -406,33 +406,55 @@ def create_sentence_aligned_data(alignments):
 
 
 if __name__ == '__main__':
-    # prepare_synthetic_data()
-    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
-              'r') as f:
-        data = json.load(f)
+    with open('annotations.txt', 'r') as f:
+        data = f.read().splitlines()
 
-    with open('allennlp/additional_annotations.json', 'r') as f:
-        additional_data = json.load(f)
-
-    results = []
-
-    # print(retrieve_important_numbers('The sum of 2 numbers is 15. 3 times one of the numbers is 11 less than 5 times the other. What is the smaller number? What is the larger number?'))
-
-
-    for index, question in enumerate(data[-100:]):
-        print(index)
-        print(question['iIndex'])
-        print(question['sQuestion'])
-        important_numbers = retrieve_important_numbers(question['sQuestion'])
-        print(important_numbers)
-        print('-' * 100)
-        if len(important_numbers) == 0:
-            results.append('*')
+    logical_forms = [[]]
+    for line in data:
+        line = line.strip()
+        if line.startswith('(') or line.startswith(')'):
+            logical_forms[-1].append(line)
         else:
-            results.append(' '.join([str(x) for x in set(important_numbers)]))
-
-    with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
-        f.write('\n'.join(results))
+            print(line)
+            print('*')
+            logical_forms.append([])
+    logical_forms = [x for x in logical_forms if len(x) > 0]
+    with open('question_ids.txt', 'r') as f:
+        numbers = f.read().splitlines()
+    assert len(logical_forms) == len(numbers), (len(logical_forms), len(numbers))
+    outputs = []
+    for id, form in zip(numbers, logical_forms):
+        lf = {'iIndex': int(id), 'lSemantics': ' '.join(form)}
+        outputs.append(lf)
+    with open('output.txt', 'w') as f:
+        f.write(json.dumps(outputs))
+    # prepare_synthetic_data()
+    # with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+    #           'r') as f:
+    #     data = json.load(f)
+    #
+    # with open('allennlp/additional_annotations.json', 'r') as f:
+    #     additional_data = json.load(f)
+    #
+    # results = []
+    #
+    # # print(retrieve_important_numbers('The sum of 2 numbers is 15. 3 times one of the numbers is 11 less than 5 times the other. What is the smaller number? What is the larger number?'))
+    #
+    #
+    # for index, question in enumerate(data[-100:]):
+    #     print(index)
+    #     print(question['iIndex'])
+    #     print(question['sQuestion'])
+    #     important_numbers = retrieve_important_numbers(question['sQuestion'])
+    #     print(important_numbers)
+    #     print('-' * 100)
+    #     if len(important_numbers) == 0:
+    #         results.append('*')
+    #     else:
+    #         results.append(' '.join([str(x) for x in set(important_numbers)]))
+    #
+    # with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
+    #     f.write('\n'.join(results))
     # all_train_subsets = create_sentence_aligned_data(data[:-100])
     # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
     # write_data(data[-100:], 'dev_num.txt', is_dev=True,

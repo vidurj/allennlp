@@ -277,13 +277,11 @@ class SimpleSeq2Seq(Model):
         # (batch_size, input_sequence_length, encoder_output_dim)
         embedded_input = self._source_embedder(source_tokens)
         batch_size, _, _ = embedded_input.size()
-        assert batch_size == 1
         source_mask = get_text_field_mask(source_tokens)
         encoder_outputs = self._encoder(embedded_input, source_mask)
         final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
         if target_tokens:
             targets = target_tokens["tokens"]
-            targets_cpu = targets.data.cpu()
             target_sequence_length = targets.size()[1]
             # The last input from the target is either padding or the end symbol. Either way, we
             # don't have to process it.
@@ -296,68 +294,22 @@ class SimpleSeq2Seq(Model):
         step_logits = []
         step_probabilities = []
         step_predictions = []
-        gold_sequence = []
         inputs = []
-        is_corrupted = False
-        seen = set()
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
         print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
+        corrupted_index = random.randint(0, num_decoding_steps - 12)
+        last_predictions = Variable(source_mask.data.new().resize_(batch_size).fill_(self._start_index))
         for timestep in range(num_decoding_steps):
-            gold_token = self.vocab.get_token_from_index(targets_cpu[0, timestep],
-                                                         self._target_namespace)
-            if self._scheduled_sampling_ratio < random.random() and not is_corrupted and targets is not None:
+            if timestep < corrupted_index and target_tokens is not None:
                 input_choices = targets[:, timestep]
-                seen.add(gold_token)
-                inputs.append(gold_token)
+            elif timestep == corrupted_index:
+                relevant_targets_cpu = targets[:, timestep].data.cpu()
+                seen_sets = []
+                for batch_index in range(batch_size):
+                    
             else:
-                if len(step_probabilities) > 0:
-                    class_probabilities_np = step_probabilities[-1].data.cpu().numpy().flatten()
-                    class_probabilities_np[corrupted_token_index] = 0
-                    class_probabilities_np /= np.sum(class_probabilities_np)
-                    predicted_token_index = int(np.random.choice(range(len(class_probabilities_np)), p=class_probabilities_np))
-                else:
-                    predicted_token_index = self._start_index
-                assert predicted_token_index != corrupted_token_index
-                input_choices = Variable(source_mask.data.new().resize_(batch_size).fill_(predicted_token_index))
-                if targets is not None and not is_corrupted:
-                    predicted_token = self.vocab.get_token_from_index(predicted_token_index,
-                                                                      self._target_namespace)
-                    if gold_token == predicted_token:
-                        input_choices = targets[:, timestep]
-                        seen.add(gold_token)
-                        inputs.append(gold_token)
-                    elif gold_token.startswith('var') and predicted_token.startswith('var'):
-                        # Both are variables, and neither has been seen i.e. both are valid
-                        if gold_token not in seen and predicted_token not in seen:
-                            input_choices = targets[:, timestep]
-                            seen.add(gold_token)
-                            inputs.append(gold_token)
-                        else:
-                            print('A', gold_token, predicted_token)
-                            is_corrupted = True
-                            inputs.append(predicted_token)
-                    elif gold_token.startswith('unit') and predicted_token.startswith('unit'):
-                        if gold_token not in seen and predicted_token not in seen:
-                            input_choices = targets[:, timestep]
-                            seen.add(gold_token)
-                            inputs.append(gold_token)
-                        else:
-                            print('B', gold_token, predicted_token)
-                            is_corrupted = True
-                            inputs.append(predicted_token)
-                    else:
-                        print('C', gold_token, predicted_token)
-                        is_corrupted = True
-                        inputs.append(predicted_token)
-                else:
-                    predicted_token = self.vocab.get_token_from_index(predicted_token_index,
-                                                                      self._target_namespace)
-                    inputs.append(predicted_token)
+                input_choices = last_predictions
 
-            if is_corrupted:
-                gold_sequence.append(corrupted_token_index)
-            elif targets is not None:
-                gold_sequence.append(targets_cpu[0, timestep + 1])
 
 
             decoder_input = self._prepare_decode_step_input(input_choices, decoder_hidden,
