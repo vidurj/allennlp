@@ -359,7 +359,7 @@ class SimpleSeq2Seq(Model):
 
             if is_corrupted:
                 gold_sequence.append(corrupted_token_index)
-            elif targets is not None:
+            elif target_tokens is not None:
                 gold_sequence.append(targets_cpu[0, timestep + 1])
 
 
