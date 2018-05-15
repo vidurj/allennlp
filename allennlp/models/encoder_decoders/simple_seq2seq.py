@@ -210,6 +210,7 @@ class SimpleSeq2Seq(Model):
                 seen_new_var = False
                 seen_new_unit = False
                 seen_actions = set(action_list)
+                print('here! ' * 20)
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
