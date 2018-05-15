@@ -251,7 +251,7 @@ class SimpleSeq2Seq(Model):
         # complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         models.sort(key=lambda x: - x['cur_log_probability'])
         # print('total models', len(models), 'len complete models', len(complete_models))
-        output = '\n'.join([' '.join(model['action_list'][1:-1]) for model in models])
+        output = '\n'.join([' '.join([x for x in model['action_list'] if x != START_SYMBOL and x != END_SYMBOL]) for model in models])
         # print(' '.join(complete_models[0]['action_list'][1:-1]))
         return output
 
