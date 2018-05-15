@@ -169,11 +169,16 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
             assert 'NUMBER' in valid_tokens
             number = is_num(token)
             if number in number_to_tokens:
-                tokens = number_to_tokens[number]
-                token = random.choice(tokens)
+                result = number_to_tokens[number]
+                if isinstance(result, str):
+                    token = result
+                else:
+                    assert isinstance(result, list)
+                    token = random.choice(result)
             else:
                 raise RuntimeError(
                     'Number {} not in number_to_token {}.'.format(number, number_to_tokens))
+            assert token.startswith('num')
         elif token == '?':
             pass
         elif 'TYPE' in valid_tokens:
@@ -187,15 +192,17 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
                 else:
                     type_assignments[token] = remaining_units.pop(0)
             token = type_assignments[token]
+            assert token.startswith('unit')
         elif 'VARIABLE' in valid_tokens:
             if token not in var_assignments:
                 assert token not in type_assignments, '{} token in type assignments too!'.format(
                     token)
                 var_assignments[token] = remaining_variable_names.pop(0)
             token = var_assignments[token]
+            assert token.startswith('var')
 
         assert token.startswith('var') or token.startswith('unit') or token.startswith(
-            'num') or token in valid_tokens, (token, valid_tokens, text)
+            'num') or token in valid_tokens, (token, valid_tokens, text, target_tokens)
         standardized_tokens.append(token)
         function_calls, arg_numbers = update_state(function_calls, arg_numbers, token)
         last_token = token
@@ -406,35 +413,35 @@ def create_sentence_aligned_data(alignments):
 
 
 if __name__ == '__main__':
-    with open('annotations.txt', 'r') as f:
-        data = f.read().splitlines()
-
-    logical_forms = [[]]
-    for line in data:
-        line = line.strip()
-        if line.startswith('(') or line.startswith(')'):
-            logical_forms[-1].append(line)
-        else:
-            print(line)
-            print('*')
-            logical_forms.append([])
-    logical_forms = [x for x in logical_forms if len(x) > 0]
-    with open('question_ids.txt', 'r') as f:
-        numbers = f.read().splitlines()
-    assert len(logical_forms) == len(numbers), (len(logical_forms), len(numbers))
-    outputs = []
-    for id, form in zip(numbers, logical_forms):
-        lf = {'iIndex': int(id), 'lSemantics': ' '.join(form)}
-        outputs.append(lf)
-    with open('output.txt', 'w') as f:
-        f.write(json.dumps(outputs))
-    # prepare_synthetic_data()
-    # with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
-    #           'r') as f:
-    #     data = json.load(f)
+    # with open('annotations.txt', 'r') as f:
+    #     data = f.read().splitlines()
     #
-    # with open('allennlp/additional_annotations.json', 'r') as f:
-    #     additional_data = json.load(f)
+    # logical_forms = [[]]
+    # for line in data:
+    #     line = line.strip()
+    #     if line.startswith('(') or line.startswith(')'):
+    #         logical_forms[-1].append(line)
+    #     else:
+    #         print(line)
+    #         print('*')
+    #         logical_forms.append([])
+    # logical_forms = [x for x in logical_forms if len(x) > 0]
+    # with open('question_ids.txt', 'r') as f:
+    #     numbers = f.read().splitlines()
+    # assert len(logical_forms) == len(numbers), (len(logical_forms), len(numbers))
+    # outputs = []
+    # for id, form in zip(numbers, logical_forms):
+    #     lf = {'iIndex': int(id), 'lSemantics': ' '.join(form)}
+    #     outputs.append(lf)
+    # with open('output.txt', 'w') as f:
+    #     f.write(json.dumps(outputs))
+    # prepare_synthetic_data()
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/alg514_alignments.json',
+              'r') as f:
+        data = json.load(f)
+
+    with open('allennlp/additional_annotations.json', 'r') as f:
+        additional_data = json.load(f)
     #
     # results = []
     #
@@ -455,11 +462,11 @@ if __name__ == '__main__':
     #
     # with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
     #     f.write('\n'.join(results))
-    # all_train_subsets = create_sentence_aligned_data(data[:-100])
-    # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    # write_data(data[-100:], 'dev_num.txt', is_dev=True,
-    #            randomize=False, num_iters=1, silent=True)
-    # write_data(data[-100:], 'test.txt', randomize=True, num_iters=1)
+    all_train_subsets = create_sentence_aligned_data(data[:-100])
+    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    write_data(data[-100:], 'dev_num.txt', is_dev=False,
+               randomize=False, num_iters=1, silent=False)
+    write_data(data[-100:], 'test.txt', randomize=False, num_iters=1, is_dev=True)
 
     # write_data(data[:3], 'train.txt', randomize=True, num_iters=500)
     # write_data(data[:3], 'dev.txt', randomize=True, num_iters=5)

@@ -166,7 +166,8 @@ class SimpleSeq2Seq(Model):
         valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
-        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
+        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in
+                         source_indices[0]}
         valid_numbers = {x for x in valid_numbers if x.startswith('num')}
         # print(valid_numbers)
         valid_numbers.add('(')
@@ -196,17 +197,17 @@ class SimpleSeq2Seq(Model):
                                                                       decoder_context))
                 output_projections = 0.7 * self._output_projection_layer(decoder_hidden)
                 class_log_probabilities = \
-                F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
+                    F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
                 assert self.vocab.get_vocab_size(self._target_namespace) == len(
                     class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
                                                class_log_probabilities.shape[0])
 
                 valid_actions = valid_next_characters(model['function_calls'],
-                                      model['arg_numbers'],
-                                      action_list[-1],
-                                      valid_numbers,
-                                      valid_variables,
-                                      valid_units)
+                                                      model['arg_numbers'],
+                                                      action_list[-1],
+                                                      valid_numbers,
+                                                      valid_variables,
+                                                      valid_units)
                 seen_new_var = False
                 seen_new_unit = False
                 seen_actions = set(action_list)
@@ -234,7 +235,8 @@ class SimpleSeq2Seq(Model):
                     if action_list[-1] == '?' and action in seen_actions:
                         continue
 
-                    function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
+                    function_calls, arg_numbers = update_state(model['function_calls'],
+                                                               model['arg_numbers'], action)
                     new_model = {
                         'action_list': action_list + [action],
                         'last_prediction': action_index,
@@ -248,7 +250,6 @@ class SimpleSeq2Seq(Model):
             assert len(new_models) > 0
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
-
 
         # complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
         models.sort(key=lambda x: - x['cur_log_probability'])
@@ -294,11 +295,13 @@ class SimpleSeq2Seq(Model):
         step_logits = []
         step_probabilities = []
         step_predictions = []
-        inputs = []
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
-        print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
-        corrupted_index = random.randint(1, num_decoding_steps - 12)
-        last_predictions = Variable(source_mask.data.new().resize_(batch_size).fill_(self._start_index))
+        if self.training:
+            corrupted_index = random.randint(1, num_decoding_steps - 12)
+        else:
+            corrupted_token_index = num_decoding_steps + 100000
+        last_predictions = Variable(
+            source_mask.data.new().resize_(batch_size).fill_(self._start_index))
         for timestep in range(num_decoding_steps):
             if target_tokens is None:
                 input_choices = last_predictions
@@ -309,14 +312,20 @@ class SimpleSeq2Seq(Model):
                 probabilities_cpu = step_probabilities[-1].data.cpu().numpy()
                 sampled_incorrect_predictions = []
                 for batch_index in range(batch_size):
-                    gold_token = self.vocab.get_token_from_index(targets_cpu[batch_index, timestep], self._target_namespace)
-                    seen = set([self.vocab.get_token_from_index(index, self._target_namespace) for index in targets_cpu[batch_index, :]])
-                    if (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_token not in seen:
-                       if gold_token.startswith('unit'):
-                           mask = [self.vocab.get_token_index(token, self._target_namespace) for token in seen if token.startswith('unit')]
-                       else:
-                           assert gold_token.startswith('var')
-                           mask = [self.vocab.get_token_index(token, self._target_namespace) for token in seen if token.startswith('var')]
+                    gold_token = self.vocab.get_token_from_index(
+                        targets_cpu[batch_index, timestep], self._target_namespace)
+                    seen = set(
+                        [self.vocab.get_token_from_index(index, self._target_namespace) for index
+                         in targets_cpu[batch_index, :]])
+                    if (gold_token.startswith('unit') or gold_token.startswith(
+                            'var')) and gold_token not in seen:
+                        if gold_token.startswith('unit'):
+                            mask = [self.vocab.get_token_index(token, self._target_namespace) for
+                                    token in seen if token.startswith('unit')]
+                        else:
+                            assert gold_token.startswith('var')
+                            mask = [self.vocab.get_token_index(token, self._target_namespace) for
+                                    token in seen if token.startswith('var')]
                     else:
                         mask = [targets_cpu[batch_index, timestep]]
                     relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
