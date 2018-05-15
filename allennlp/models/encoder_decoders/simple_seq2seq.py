@@ -301,6 +301,9 @@ class SimpleSeq2Seq(Model):
         is_corrupted = False
         seen = set()
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
+        masking_out_corrupted_token = torch.ones((batch_size, self.vocab.get_vocab_size(self._target_namespace)), device='0')
+        masking_out_corrupted_token[:, corrupted_token_index] = 0
+
         print('corrupted token index', corrupted_token_index, self.vocab.get_token_index('fooo', self._target_namespace), self._start_index, self._end_index)
         for timestep in range(num_decoding_steps):
 
@@ -372,7 +375,7 @@ class SimpleSeq2Seq(Model):
             # list of (batch_size, 1, num_classes)
             step_logits.append(output_projections.unsqueeze(1))
             class_probabilities = F.softmax(output_projections, dim=-1)
-            _, predicted_classes = torch.max(class_probabilities, 1)
+            _, predicted_classes = torch.max(masking_out_corrupted_token * class_probabilities, 1)
             step_probabilities.append(class_probabilities.unsqueeze(1))
             last_predictions = predicted_classes
             # (batch_size, 1)
@@ -385,6 +388,7 @@ class SimpleSeq2Seq(Model):
         output_dict = {"logits": logits,
                        "class_probabilities": class_probabilities,
                        "predictions": all_predictions}
+
         if target_tokens:
             print('inputs', ' '.join(inputs))
             print('*')
