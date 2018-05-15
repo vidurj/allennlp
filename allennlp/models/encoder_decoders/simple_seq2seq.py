@@ -216,6 +216,10 @@ class SimpleSeq2Seq(Model):
                     if action not in valid_actions:
                         continue
 
+                    if action == '@@UNKNOWN@@':
+                        print(valid_actions)
+                        print('-' * 30)
+                        continue
                     if action.startswith('var') and action not in seen_actions:
                         if seen_new_var:
                             continue
