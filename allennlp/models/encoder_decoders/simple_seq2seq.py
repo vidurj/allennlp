@@ -299,7 +299,7 @@ class SimpleSeq2Seq(Model):
         if self.training:
             corrupted_index = random.randint(1, num_decoding_steps - 12)
         else:
-            corrupted_token_index = num_decoding_steps + 100000
+            corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
             source_mask.data.new().resize_(batch_size).fill_(self._start_index))
         for timestep in range(num_decoding_steps):
