@@ -320,18 +320,18 @@ class SimpleSeq2Seq(Model):
                 probabilities_cpu = step_probabilities[-1].data.cpu().numpy()
                 sampled_incorrect_predictions = []
                 for batch_index in range(batch_size):
-                    gold_token = self.vocab.get_token_from_index(
-                        targets_cpu[batch_index, timestep], self._target_namespace)
+                    gold_index = targets_cpu[batch_index, timestep]
+                    gold_token = self.vocab.get_token_from_index(gold_index, self._target_namespace)
                     if gold_token == '@@PADDING@@':
                         sampled_incorrect_predictions.append(targets_cpu[batch_index, timestep])
                     else:
-                        seen = set(targets_cpu[batch_index, :])
-                        if (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_token not in seen:
+                        seen_indices = set(targets_cpu[batch_index, :])
+                        if (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_index not in seen_indices:
                             if gold_token.startswith('unit'):
-                                mask = [index for index in unit_indices if index not in seen]
+                                mask = [index for index in unit_indices if index not in seen_indices]
                             else:
                                 assert gold_token.startswith('var')
-                                mask = [index for index in var_indices if index not in seen]
+                                mask = [index for index in var_indices if index not in seen_indices]
                         else:
                             mask = [targets_cpu[batch_index, timestep]]
                         mask.extend([corrupted_token_index, padding_token_index])
@@ -341,7 +341,7 @@ class SimpleSeq2Seq(Model):
                         pred = np.random.choice(range(len(relevant_probabilities)),
                                                 p=relevant_probabilities)
                         print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
-                        assert targets_cpu[batch_index, timestep] != int(pred), (targets_cpu[batch_index, timestep], int(pred))
+                        assert gold_index != int(pred), (gold_index, int(pred))
                         sampled_incorrect_predictions.append(int(pred))
                 input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
                 targets[:, timestep + 1:] = corrupted_token_index
