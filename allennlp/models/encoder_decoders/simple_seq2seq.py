@@ -298,7 +298,7 @@ class SimpleSeq2Seq(Model):
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
         padding_token_index = self.vocab.get_token_index('@@PADDING@@', self._target_namespace)
         if self.training and random.random() > 0.5:
-            corrupted_index = random.randint(2, num_decoding_steps)
+            corrupted_index = random.randint(2, num_decoding_steps - 10)
         else:
             corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
@@ -338,11 +338,10 @@ class SimpleSeq2Seq(Model):
                         relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
                         relevant_probabilities[mask] = 0
                         relevant_probabilities /= np.sum(relevant_probabilities)
-                        pred = np.random.choice(range(len(relevant_probabilities)),
-                                                p=relevant_probabilities)
-                        print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
-                        assert gold_index != int(pred), (gold_index, int(pred))
-                        sampled_incorrect_predictions.append(int(pred))
+                        pred = int(np.random.choice(range(len(relevant_probabilities)),
+                                                p=relevant_probabilities))
+                        assert gold_index != pred, (gold_index, int(pred))
+                        sampled_incorrect_predictions.append(pred)
                 input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
                 targets[:, timestep + 1:] = corrupted_token_index
             else:
