@@ -321,8 +321,8 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
     # for k, v in counts:
     #     print(k, v)
     print('num data points', len(lines))
-    if is_dev:
-        assert len(lines) == 100
+    # if is_dev:
+    #     assert len(lines) == 100
     print('-' * 70)
     with open(file_name, 'w') as f:
         f.write('\n'.join(lines))
@@ -462,11 +462,13 @@ if __name__ == '__main__':
     #
     # with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
     #     f.write('\n'.join(results))
-    all_train_subsets = create_sentence_aligned_data(data[:-100])
-    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
-    write_data(data[-100:], 'dev_num.txt', is_dev=False,
-               randomize=False, num_iters=1, silent=False)
-    write_data(data[-100:], 'test.txt', randomize=False, num_iters=1, is_dev=True)
+    # all_train_subsets = create_sentence_aligned_data(data[:-100])
+    # write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    # write_data(data[-100:], 'dev_num.txt', is_dev=False,
+    #            randomize=False, num_iters=1, silent=False)
+    # write_data(data[-100:], 'test_num.txt', randomize=False, num_iters=1, is_dev=True)
+
+    write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
 
     # write_data(data[:3], 'train.txt', randomize=True, num_iters=500)
     # write_data(data[:3], 'dev.txt', randomize=True, num_iters=5)
