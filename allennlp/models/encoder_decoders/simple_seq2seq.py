@@ -296,8 +296,7 @@ class SimpleSeq2Seq(Model):
         step_probabilities = []
         step_predictions = []
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
-        # TODO undo debug change
-        if False and self.training and random.random() > 0.5:
+        if self.training and random.random() > 0.5:
             corrupted_index = random.randint(2, num_decoding_steps)
         else:
             corrupted_index = num_decoding_steps + 100000
