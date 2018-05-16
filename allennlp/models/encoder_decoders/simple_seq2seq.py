@@ -340,7 +340,7 @@ class SimpleSeq2Seq(Model):
                         relevant_probabilities /= np.sum(relevant_probabilities)
                         pred = int(np.random.choice(range(len(relevant_probabilities)),
                                                 p=relevant_probabilities))
-                        if batch_index == 0:
+                        if batch_index == batch_size - 1:
                             print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
                         assert gold_index != pred, (gold_index, int(pred))
                         sampled_incorrect_predictions.append(pred)
