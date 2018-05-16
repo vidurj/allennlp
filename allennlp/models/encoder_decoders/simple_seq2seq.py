@@ -296,6 +296,7 @@ class SimpleSeq2Seq(Model):
         step_probabilities = []
         step_predictions = []
         corrupted_token_index = self.vocab.get_token_index('<corrupted>', self._target_namespace)
+        padding_token_index = self.vocab.get_token_index('@@PADDING@@', self._target_namespace)
         if self.training and random.random() > 0.5:
             corrupted_index = random.randint(2, num_decoding_steps)
         else:
@@ -331,7 +332,7 @@ class SimpleSeq2Seq(Model):
                             mask = [index for index in var_indices if index not in seen]
                     else:
                         mask = [targets_cpu[batch_index, timestep]]
-                    mask.append(corrupted_token_index)
+                    mask.extend([corrupted_token_index, padding_token_index])
                     relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
                     relevant_probabilities[mask] = 0
                     relevant_probabilities /= np.sum(relevant_probabilities)
