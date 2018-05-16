@@ -166,7 +166,7 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
             number = is_num(token)
             if number in number_to_tokens:
                 tokens = number_to_tokens[number]
-                token = random.choice(tokens)
+                token = tokens
             else:
                 raise RuntimeError(
                     'Number {} not in number_to_token {}.'.format(number, number_to_tokens))
@@ -377,7 +377,7 @@ def create_sentence_aligned_data(alignments):
     for q_index, semantics in question_to_sentence_semantics.items():
         valid = [(i, l) for i, l in enumerate(semantics) if len(l) > 0]
         # TODO picking single sentence or all sentences
-        for size in range(len(valid)):
+        for size in [1]:#range(len(valid)):
             for sequence in itertools.combinations(valid, size):
                 sequence = list(sequence)
                 sequence.sort(key=lambda x: x[0])
@@ -420,10 +420,14 @@ if __name__ == '__main__':
 
     # with open('/Users/vidurj/euclid/data/private/important_numbers.txt', 'w') as f:
     #     f.write('\n'.join(results))
-    # all_train_subsets = create_sentence_aligned_data(data[:-100])
-    # write_data(data[:-100], 'train.txt', randomize=True, num_iters=1)
-    # write_data(data[-100:], 'dev_num.txt', is_dev=True,
-    #            randomize=False, num_iters=1, silent=True)
-    write_data(data[-100:], 'test_num.txt', randomize=True, num_iters=1)
-    write_data(data[:100], 'train_num.txt', randomize=True, num_iters=10)
-    write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=5)
+    all_train_subsets = create_sentence_aligned_data(data[:-100])
+    # write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    # write_data(data[-100:], 'dev_num.txt', is_dev=False,
+    #            randomize=False, num_iters=1, silent=False)
+    # write_data(data[-100:], 'test_num.txt', randomize=False, num_iters=1, is_dev=True)
+
+    # write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
+
+    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=1)
+    write_data(data[-100:], 'test_num.txt', randomize=True, num_iters=1, is_dev=True)
