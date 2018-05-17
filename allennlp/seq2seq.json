@@ -45,7 +45,7 @@
     "encoder": {
       "type": "lstm",
       "input_size": 1124,
-      "hidden_size": 250,
+      "hidden_size": 512,
       "num_layers": 2,
       "bidirectional": true,
       "dropout": 0.2
