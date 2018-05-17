@@ -310,6 +310,9 @@ class SimpleSeq2Seq(Model):
         var_indices = [index for index in range(vocab_size) if
                         self.vocab.get_token_from_index(index, self._target_namespace).startswith(
                             'var')]
+        operations = {'Plus', 'Times', 'Minus', 'Div', 'Rate', 'Join', 'And', 'Value', 'Equals'}
+        operation_indices = {self.vocab.get_token_index(token, self._target_namespace) for token in
+                             operations}
         for timestep in range(num_decoding_steps):
             if target_tokens is None:
                 input_choices = last_predictions
@@ -322,16 +325,19 @@ class SimpleSeq2Seq(Model):
                 for batch_index in range(batch_size):
                     gold_index = targets_cpu[batch_index, timestep]
                     gold_token = self.vocab.get_token_from_index(gold_index, self._target_namespace)
-                    if gold_token == '@@PADDING@@':
+                    if gold_token == '@@PADDING@@' or gold_token == END_SYMBOL or gold_token == START_SYMBOL:
                         sampled_incorrect_predictions.append(targets_cpu[batch_index, timestep])
                     else:
                         seen_indices = set(targets_cpu[batch_index, :])
-                        if (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_index not in seen_indices:
+                        if gold_token in operations:
+                            mask = [index for index in range(vocab_size) if index not in operation_indices]
+                        elif (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_index not in seen_indices:
+                            mask = list(operation_indices)
                             if gold_token.startswith('unit'):
-                                mask = [index for index in unit_indices if index not in seen_indices]
+                                mask.extend([index for index in unit_indices if index not in seen_indices])
                             else:
                                 assert gold_token.startswith('var')
-                                mask = [index for index in var_indices if index not in seen_indices]
+                                mask.extend([index for index in var_indices if index not in seen_indices])
                         else:
                             mask = [targets_cpu[batch_index, timestep]]
                         mask.extend([corrupted_token_index, padding_token_index])
