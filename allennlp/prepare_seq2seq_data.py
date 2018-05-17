@@ -293,7 +293,6 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
         for question_number, question in enumerate(data):
             if not is_dev and question['lSemantics'] == '':
                 continue
-            print(question['iIndex'])
             # if question['iIndex'] != '6226':
             #     continue
             source, number_to_token = standardize_question(question['sQuestion'], shuffle=not is_dev)
@@ -388,7 +387,7 @@ def create_sentence_aligned_data(alignments):
     for q_index, semantics in question_to_sentence_semantics.items():
         valid = [(i, l) for i, l in enumerate(semantics) if len(l) > 0]
         # TODO picking single sentence or all sentences
-        for size in [1]:
+        for size in range(len(valid)):
             for sequence in itertools.combinations(valid, size):
                 sequence = list(sequence)
                 sequence.sort(key=lambda x: x[0])
@@ -462,13 +461,14 @@ if __name__ == '__main__':
     #
     # with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
     #     f.write('\n'.join(results))
-    # all_train_subsets = create_sentence_aligned_data(data[:-100])
+
     # write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
     # write_data(data[-100:], 'dev_num.txt', is_dev=False,
     #            randomize=False, num_iters=1, silent=False)
     # write_data(data[-100:], 'test_num.txt', randomize=False, num_iters=1, is_dev=True)
 
-    write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
-
-    # write_data(data[:3], 'train.txt', randomize=True, num_iters=500)
-    # write_data(data[:3], 'dev.txt', randomize=True, num_iters=5)
+    # write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
+    all_train_subsets = create_sentence_aligned_data(data[:-100])
+    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=1)
+    write_data(data[-100:], 'test_num.txt', randomize=True, num_iters=1, is_dev=True)
