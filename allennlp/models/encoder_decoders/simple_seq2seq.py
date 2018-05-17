@@ -331,6 +331,7 @@ class SimpleSeq2Seq(Model):
                         seen_indices = set(targets_cpu[batch_index, :])
                         if gold_token in operations:
                             mask = [index for index in range(vocab_size) if index not in operation_indices]
+                            mask.append(gold_index)
                         elif (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_index not in seen_indices:
                             mask = list(operation_indices)
                             if gold_token.startswith('unit'):
