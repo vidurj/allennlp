@@ -342,7 +342,7 @@ class SimpleSeq2Seq(Model):
                                 mask.extend([index for index in var_indices if index not in seen_indices])
                         else:
                             mask = [targets_cpu[batch_index, timestep]] + list(operation_indices)
-                        mask.extend([corrupted_token_index, padding_token_index, close_paren_index])
+                        mask.extend([corrupted_token_index, padding_token_index])
                         relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
                         relevant_probabilities[mask] = 0
                         relevant_probabilities /= np.sum(relevant_probabilities)
