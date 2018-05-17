@@ -387,7 +387,7 @@ def create_sentence_aligned_data(alignments):
     for q_index, semantics in question_to_sentence_semantics.items():
         valid = [(i, l) for i, l in enumerate(semantics) if len(l) > 0]
         # TODO picking single sentence or all sentences
-        for size in range(len(valid)):
+        for size in [1]:
             for sequence in itertools.combinations(valid, size):
                 sequence = list(sequence)
                 sequence.sort(key=lambda x: x[0])
