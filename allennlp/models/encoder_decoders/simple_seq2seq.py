@@ -299,7 +299,7 @@ class SimpleSeq2Seq(Model):
         padding_token_index = self.vocab.get_token_index('@@PADDING@@', self._target_namespace)
         close_paren_index = self.vocab.get_token_index(')', self._target_namespace)
         if self.training and random.random() > 0.5:
-            corrupted_index = random.randint(0, num_decoding_steps - 10)
+            corrupted_index = random.randint(2, num_decoding_steps - 10)
         else:
             corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
