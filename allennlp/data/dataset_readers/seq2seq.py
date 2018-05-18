@@ -100,8 +100,8 @@ class Seq2SeqDatasetReader(DatasetReader):
         if target_string is not None:
             tokenized_target = self._target_tokenizer.tokenize(target_string)
             tokenized_target.insert(0, Token(START_SYMBOL))
-            for _ in range(10):
-                tokenized_target.append(Token(END_SYMBOL))
+            # for _ in range(10):
+            tokenized_target.append(Token(END_SYMBOL))
             target_field = TextField(tokenized_target, self._target_token_indexers)
             tag_to_field["target_tokens"] = target_field
 
