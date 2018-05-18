@@ -300,10 +300,14 @@ class SimpleSeq2Seq(Model):
         close_paren_index = self.vocab.get_token_index(')', self._target_namespace)
         if self.training and random.random() > 0.5:
             targets_cpu = targets.data.cpu()
-            for min_length in range(len(targets_cpu[0, :])):
-                if targets_cpu[0, min_length] == padding_token_index:
-                    break
-            corrupted_index = random.randint(2, min_length - 1)
+            min_lengths = []
+            for batch_index in range(len(targets_cpu)):
+                for min_length in range(num_decoding_steps + 1):
+                    if targets_cpu[batch_index, min_length] == padding_token_index:
+                        min_lengths.append(min_length)
+                        print(min_length)
+                        break
+            corrupted_index = random.randint(2, min(min_length) - 1)
         else:
             corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
