@@ -326,7 +326,7 @@ class SimpleSeq2Seq(Model):
                 for batch_index in range(batch_size):
                     gold_index = targets_numpy[batch_index, timestep]
                     gold_token = self.vocab.get_token_from_index(gold_index, self._target_namespace)
-                    if gold_token == '@@PADDING@@' or gold_token == ')' or gold_token == END_SYMBOL or gold_token == START_SYMBOL:
+                    if gold_token == '@@PADDING@@':
                         sampled_incorrect_predictions.append(int(targets_numpy[batch_index, timestep]))
                     else:
                         seen_indices = set(targets_numpy[batch_index, :])
@@ -342,7 +342,7 @@ class SimpleSeq2Seq(Model):
                                 mask.extend([index for index in var_indices if index not in seen_indices])
                         else:
                             mask = [targets_numpy[batch_index, timestep]] + list(operation_indices)
-                        mask.extend([corrupted_token_index, padding_token_index])
+                        mask.extend([corrupted_token_index, padding_token_index, close_paren_index])
                         relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
                         relevant_probabilities[mask] = 0
                         relevant_probabilities /= np.sum(relevant_probabilities)
