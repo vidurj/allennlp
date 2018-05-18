@@ -31,7 +31,8 @@
         "type": "embedding",
         "pretrained_file": "https://s3-us-west-2.amazonaws.com/allennlp/datasets/glove/glove.6B.100d.txt.gz",
         "embedding_dim": 100,
-        "trainable": true
+        "trainable": true,
+        "dropout": 0.5
       },
       "source_elmo":{
        "type": "elmo_token_embedder",
@@ -45,7 +46,7 @@
     "encoder": {
       "type": "lstm",
       "input_size": 1124,
-      "hidden_size": 512,
+      "hidden_size": 1024,
       "num_layers": 2,
       "bidirectional": true,
       "dropout": 0.2
