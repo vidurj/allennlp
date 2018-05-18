@@ -303,7 +303,7 @@ class SimpleSeq2Seq(Model):
             for min_length in range(len(targets_cpu[0, :])):
                 if targets_cpu[0, min_length] == padding_token_index:
                     break
-            corrupted_index = random.randint(2, min_length)
+            corrupted_index = random.randint(2, min_length - 1)
         else:
             corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
