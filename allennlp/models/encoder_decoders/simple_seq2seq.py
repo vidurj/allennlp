@@ -307,7 +307,7 @@ class SimpleSeq2Seq(Model):
                         min_lengths.append(min_length)
                         print(min_length)
                         break
-            corrupted_index = random.randint(2, min(min_length) - 1)
+            corrupted_index = random.randint(2, min(min_lengths) - 1)
         else:
             corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
