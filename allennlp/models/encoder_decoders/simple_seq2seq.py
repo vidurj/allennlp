@@ -352,8 +352,9 @@ class SimpleSeq2Seq(Model):
                             print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
                         assert gold_index != pred, (gold_index, int(pred))
                         sampled_incorrect_predictions.append(pred)
+                        targets[timestep, timestep + 1:] = corrupted_token_index
                 input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
-                targets[:, timestep + 1:] = corrupted_token_index
+
             else:
                 input_choices = last_predictions
 
