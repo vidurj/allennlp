@@ -299,7 +299,11 @@ class SimpleSeq2Seq(Model):
         padding_token_index = self.vocab.get_token_index('@@PADDING@@', self._target_namespace)
         close_paren_index = self.vocab.get_token_index(')', self._target_namespace)
         if self.training and random.random() > 0.5:
-            corrupted_index = random.randint(2, num_decoding_steps - 10)
+            targets_cpu = targets.data.cpu()
+            for min_length in range(len(targets_cpu[0, :])):
+                if targets_cpu[0, min_length] == padding_token_index:
+                    break
+            corrupted_index = random.randint(2, min_length)
         else:
             corrupted_index = num_decoding_steps + 100000
         last_predictions = Variable(
@@ -320,39 +324,37 @@ class SimpleSeq2Seq(Model):
             elif timestep < corrupted_index:
                 input_choices = targets[:, timestep]
             elif timestep == corrupted_index:
-                targets_cpu = targets.data.cpu()
                 probabilities_cpu = step_probabilities[-1].data.cpu().numpy()
                 sampled_incorrect_predictions = []
                 for batch_index in range(batch_size):
                     gold_index = targets_cpu[batch_index, timestep]
                     gold_token = self.vocab.get_token_from_index(gold_index, self._target_namespace)
-                    if gold_token == '@@PADDING@@' or gold_token == END_SYMBOL or gold_token == START_SYMBOL or gold_token == ')':
-                        sampled_incorrect_predictions.append(targets_cpu[batch_index, timestep])
-                    else:
-                        seen_indices = set(targets_cpu[batch_index, :])
-                        if gold_token in operations:
-                            mask = [index for index in range(vocab_size) if index not in operation_indices]
-                            mask.append(gold_index)
-                        elif (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_index not in seen_indices:
-                            mask = list(operation_indices)
-                            if gold_token.startswith('unit'):
-                                mask.extend([index for index in unit_indices if index not in seen_indices])
-                            else:
-                                assert gold_token.startswith('var')
-                                mask.extend([index for index in var_indices if index not in seen_indices])
+                    assert gold_token != '@@PADDING@@'
+                    seen_indices = set(targets_cpu[batch_index, :])
+                    if gold_token in operations:
+                        mask = [index for index in range(vocab_size) if index not in operation_indices]
+                        mask.append(gold_index)
+                    elif (gold_token.startswith('unit') or gold_token.startswith('var')) and gold_index not in seen_indices:
+                        mask = list(operation_indices)
+                        if gold_token.startswith('unit'):
+                            mask.extend([index for index in unit_indices if index not in seen_indices])
                         else:
-                            mask = [targets_cpu[batch_index, timestep]] + list(operation_indices)
-                        mask.extend([corrupted_token_index, padding_token_index])
-                        relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
-                        relevant_probabilities[mask] = 0
-                        relevant_probabilities /= np.sum(relevant_probabilities)
-                        pred = int(np.random.choice(range(len(relevant_probabilities)),
-                                                p=relevant_probabilities))
-                        if batch_index == batch_size - 1:
-                            print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
-                        assert gold_index != pred, (gold_index, int(pred))
-                        sampled_incorrect_predictions.append(pred)
-                        targets[batch_index, timestep + 1:] = corrupted_token_index
+                            assert gold_token.startswith('var')
+                            mask.extend([index for index in var_indices if index not in seen_indices])
+                    else:
+                        mask = [targets_cpu[batch_index, timestep]] + list(operation_indices)
+                    mask.extend([corrupted_token_index, padding_token_index])
+                    relevant_probabilities = probabilities_cpu[batch_index, :].flatten()
+                    relevant_probabilities[mask] = 0
+                    relevant_probabilities /= np.sum(relevant_probabilities)
+                    pred = int(np.random.choice(range(len(relevant_probabilities)),
+                                            p=relevant_probabilities))
+                    if batch_index == batch_size - 1:
+                        print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
+                    assert gold_index != pred, (gold_index, int(pred))
+                    sampled_incorrect_predictions.append(pred)
+
+                targets[:, timestep + 1:] = corrupted_token_index
                 input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
 
             else:
