@@ -326,7 +326,7 @@ class SimpleSeq2Seq(Model):
                 for batch_index in range(batch_size):
                     gold_index = targets_cpu[batch_index, timestep]
                     gold_token = self.vocab.get_token_from_index(gold_index, self._target_namespace)
-                    if gold_token == '@@PADDING@@':
+                    if gold_token == '@@PADDING@@' or gold_token == END_SYMBOL or gold_token == START_SYMBOL or gold_token == ')':
                         sampled_incorrect_predictions.append(targets_cpu[batch_index, timestep])
                     else:
                         seen_indices = set(targets_cpu[batch_index, :])
@@ -352,8 +352,9 @@ class SimpleSeq2Seq(Model):
                             print(gold_token, self.vocab.get_token_from_index(pred, self._target_namespace))
                         assert gold_index != pred, (gold_index, int(pred))
                         sampled_incorrect_predictions.append(pred)
+                        targets[batch_index, timestep + 1:] = corrupted_token_index
                 input_choices = Variable(torch.cuda.LongTensor(sampled_incorrect_predictions))
-                targets[:, timestep + 1:] = corrupted_token_index
+
             else:
                 input_choices = last_predictions
 
