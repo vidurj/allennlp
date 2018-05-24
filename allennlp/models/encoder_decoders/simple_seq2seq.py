@@ -143,7 +143,7 @@ class SimpleSeq2Seq(Model):
         step_probabilities = []
         step_predictions = []
         for timestep in range(num_decoding_steps):
-            if self.training and all(torch.rand(1) >= self._scheduled_sampling_ratio):
+            if self.training or target_tokens is not None:
                 input_choices = targets[:, timestep]
             else:
                 if timestep == 0:
@@ -290,6 +290,7 @@ class SimpleSeq2Seq(Model):
         encoder = Seq2SeqEncoder.from_params(params.pop("encoder"))
         max_decoding_steps = params.pop("max_decoding_steps")
         target_namespace = params.pop("target_namespace", "tokens")
+        target_embedding_dim = params.pop("target_embedding_dim")
         # If no attention function is specified, we should not use attention, not attention with
         # default similarity function.
         attention_function_type = params.pop("attention_function", None)
@@ -302,6 +303,7 @@ class SimpleSeq2Seq(Model):
         return cls(vocab,
                    source_embedder=source_embedder,
                    encoder=encoder,
+                   target_embedding_dim=target_embedding_dim,
                    max_decoding_steps=max_decoding_steps,
                    target_namespace=target_namespace,
                    attention_function=attention_function,
