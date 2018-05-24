@@ -81,17 +81,31 @@ def is_num(string):
         return None
 
 
-def process_equation(equation, number_to_tokens):
-    number_to_tokens[0.01].append('0.01')
+def process_equation(equation, number_to_tokens, token_to_var, remaining_vars):
+    exceptions = [0.01, 2, 4, 0.05, 0.1]
+    recognized_non_nums = {'(', ')', '*', '+', '-', '/', '='}
+    for exception in exceptions:
+        if exception not in number_to_tokens:
+            number_to_tokens[exception] = str(exception)
     processed_tokens = []
-    equation = equation.replace('(', ' ( ').replace(')', ' ) ').replace('*', ' * ').replace('=', ' = ').replace('-', ' - ').replace('+', ' + ').split()
+    for token in recognized_non_nums:
+        equation = equation.replace(token, ' ' + token + ' ')
+    equation = equation.split()
     for token in equation:
         num = is_num(token)
         if num is not None:
             # print(num, number_to_tokens.keys())
-            token = number_to_tokens[num][0]
+            token = number_to_tokens[num]
+            assert isinstance(token, str), token
+        elif token not in recognized_non_nums:
+            if token not in token_to_var:
+                token_to_var[token] = remaining_vars.pop()
+                if not token.replace('_', '').isalpha():
+                    print(token)
+            token = token_to_var[token]
+
         processed_tokens.append(token)
-    return ' '.join(processed_tokens)
+    return ' '.join(processed_tokens), token_to_var
 
 
 def prepare_baseline_data(data, file_name, num_iters, is_test):
@@ -102,19 +116,20 @@ def prepare_baseline_data(data, file_name, num_iters, is_test):
     for _ in range(num_iters):
         for question in data:
             tokenized, number_to_token = standardize_question(question['sQuestion'], shuffle=not is_test)
+            # print(list(number_to_token.values())[0])
             partial_outputs = []
-            try:
-                if not is_test:
-                    for equation in question['lEquations']:
-                        partial_outputs.append(process_equation(equation, number_to_token))
-                else:
-                    partial_outputs.append('IS TEST N/A')
-                lines.append(tokenized + '\t' + ' '.join(partial_outputs))
-                question_numbers.append(question['iIndex'])
-                number_to_tokens.append(number_to_token)
-            except IndexError:
-                print(question['sQuestion'], question['lEquations'])
-                traceback.print_exc()
+            token_to_var = {}
+            remaining_vars = ['var' + str(i) for i in range(1, 3)]
+            if not is_test:
+                # random.shuffle(remaining_vars)
+                for equation in question['lEquations']:
+                    output, token_to_var = process_equation(equation, number_to_token, token_to_var, remaining_vars)
+                    partial_outputs.append(output)
+            else:
+                partial_outputs.append('IS TEST N/A')
+            lines.append(tokenized + '\t' + ' '.join(partial_outputs))
+            question_numbers.append(question['iIndex'])
+            number_to_tokens.append(number_to_token)
 
     print('-' * 70)
     with open(file_name, 'w') as f:
@@ -132,7 +147,7 @@ def prepare_baseline_data(data, file_name, num_iters, is_test):
     result_str = ''
     for number_to_token in number_to_tokens:
         for number, tokens in number_to_token.items():
-            result_str += tokens[0] + ' ' + str(number) + '\n'
+            result_str += tokens + ' ' + str(number) + '\n'
         result_str += '***\n'
 
     with open(file_name[:-4] + '.mapping', 'w') as f:
@@ -151,7 +166,7 @@ def standardize_question(text, shuffle=True, is_copy=False):
     number_tokens = ['num' + str(i) for i in range(10)]
     if shuffle:
         random.shuffle(number_tokens)
-    number_to_tokens = defaultdict(list)
+    number_to_tokens = dict()
     for index, token in enumerate(source_tokenized):
         number = is_num(token)
         # if number is not None and (
@@ -161,7 +176,7 @@ def standardize_question(text, shuffle=True, is_copy=False):
         #     number = round(number, PRECISION)
         if number is not None:
             if is_copy:
-                number_to_tokens[number].append('num' + str(index))
+                number_to_tokens[number] = 'num' + str(index)
             else:
                 if number not in number_to_tokens:
                     number_to_tokens[number] = number_tokens.pop()
