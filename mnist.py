@@ -89,45 +89,34 @@ def get_eval_preds(xes, yes, model, legal_indices, batch_size=1024):
 def main():
     mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
     xes = mnist.train.images
-    yes = mnist.train.labels
-    remaining_indices = set(list(range(len(xes))))
+    zero_label = np.array([ 1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.])
+    yes = [y if random.random() < 0.9 else zero_label for y in mnist.train.labels]
+    print(yes[:100])
     print(len(mnist.train.images), len(mnist.validation.images), len(mnist.test.images))
     print('-' * 100)
     model = Model()
     all_train_indices = []
     batch_size = 100
+
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         for epoch in range(100):
-            batch_indices = get_eval_preds(xes, yes, model, remaining_indices)
-            all_train_indices.extend(batch_indices)
-
-            for _ in range(20000):
-                total_loss = 0
-                random.shuffle(all_train_indices)
-                cur_index = 0
-                while cur_index < len(all_train_indices):
-                    batch_indices = all_train_indices[cur_index: cur_index + batch_size]
-                    cur_index += batch_size
-                    _, loss = sess.run([model.train_step, model.cross_entropy],
-                                       feed_dict={
-                                           model.x: [xes[i] for i in batch_indices],
-                                           model.y_: [yes[i] for i in batch_indices],
-                                           model.keep_prob: 0.5
-                                       })
-                    total_loss += loss
-                if total_loss < 0.00001:
-                    print('total loss', total_loss)
-                    break
+            cur_index = 0
+            while cur_index + batch_size < len(xes):
+                sess.run(model.train_step,
+                                   feed_dict={
+                                       model.x: xes[cur_index: cur_index + batch_size],
+                                       model.y_: yes[cur_index: cur_index + batch_size],
+                                       model.keep_prob: 0.5
+                                   })
+                cur_index += batch_size
             print(len(all_train_indices))
             print('test accuracy %g' % model.accuracy.eval(
                 feed_dict={
                     model.x: mnist.test.images,
                     model.y_: mnist.test.labels,
                     model.keep_prob: 1.0
-                }
-            ))
-
+                }))
 
 if __name__ == '__main__':
     main()

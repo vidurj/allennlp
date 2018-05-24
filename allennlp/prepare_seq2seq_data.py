@@ -42,6 +42,7 @@ TIMES_WORDS = {
 }
 
 NUMBER_WORDS = {
+    'half': 0.5,
     'zero': 0,
     'one': 1,
     'two': 2,
@@ -81,7 +82,7 @@ def is_num(string):
 
 
 def standardize_question(text, shuffle=True, is_copy=False):
-    source = text.replace('-', ' ')
+    source = text.replace('-', ' - ')
     temp = [token.text for token in nlp(source)]
     source_tokenized = []
     for token in temp:
@@ -97,6 +98,9 @@ def standardize_question(text, shuffle=True, is_copy=False):
                         index + 1] == 'percent'):
             number /= 100
             number = round(number, PRECISION)
+        if number is not None and source_tokenized[index - 1] == '-':
+            print('here!')
+            number = - number
         if number is not None:
             if is_copy:
                 number_to_tokens[number].append('num' + str(index))
@@ -136,7 +140,11 @@ def retrieve_important_numbers(text):
 
 def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
     remaining_variable_names = ['var' + str(i) for i in range(10)]
-    remaining_units = ['unit' + str(i) for i in range(2)]
+    remaining_units = ['unit' + str(i) for i in range(3)]
+    exceptions = [0.01, 2, 4, 0.05, 0.1, 0]
+    for token in exceptions:
+        if token not in number_to_tokens:
+            number_to_tokens[token] = 'num_special_' + str(token)
     if randomize:
         random.shuffle(remaining_variable_names)
         random.shuffle(remaining_units)
@@ -286,23 +294,23 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
             # if question['iIndex'] != '6226':
             #     continue
             source, number_to_token = standardize_question(question['sQuestion'], shuffle=not is_dev)
-            try:
-                if not is_dev:
-                    target, (_, type_assignments) = standardize_logical_form_with_validation(
-                        question['lSemantics'],
-                        number_to_token,
-                        randomize=randomize)
-                    original_units.extend(type_assignments.keys())
-                else:
-                    target = 'NONE Is Dev'
-                lines.append(source + '\t' + target)
-                number_to_tokens.append(number_to_token)
-                question_numbers.append(str(question_number))
-            except:
-                if is_dev or not silent:
-                    print(question)
-                    traceback.print_exc()
-                    assert not is_dev
+            # try:
+            if not is_dev:
+                target, (_, type_assignments) = standardize_logical_form_with_validation(
+                    question['lSemantics'],
+                    number_to_token,
+                    randomize=randomize)
+                original_units.extend(type_assignments.keys())
+            else:
+                target = 'NONE Is Dev'
+            lines.append(source + '\t' + target)
+            number_to_tokens.append(number_to_token)
+            question_numbers.append(str(question_number))
+            # except:
+            #     if is_dev or not silent:
+            #         print(question)
+            #         traceback.print_exc()
+            #         assert not is_dev
 
     assert len(number_to_tokens) == len(lines), (len(number_to_tokens), len(lines))
     # counts = list(Counter(original_units).items())
@@ -420,7 +428,7 @@ if __name__ == '__main__':
 
     # with open('/Users/vidurj/euclid/data/private/important_numbers.txt', 'w') as f:
     #     f.write('\n'.join(results))
-    all_train_subsets = create_sentence_aligned_data(data[:-100])
+    # all_train_subsets = create_sentence_aligned_data(data[:-100])
     # write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
     # write_data(data[-100:], 'dev_num.txt', is_dev=False,
     #            randomize=False, num_iters=1, silent=False)
@@ -428,6 +436,6 @@ if __name__ == '__main__':
 
     # write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
 
-    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    write_data(data[:-100], 'train_num.txt', randomize=True, num_iters=10)
     write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=1)
     write_data(data[-100:], 'test_num.txt', randomize=True, num_iters=1, is_dev=True)
