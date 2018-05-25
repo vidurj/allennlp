@@ -106,6 +106,104 @@ class SimpleSeq2Seq(Model):
         self._decoder_cell = LSTMCell(self._decoder_input_dim, self._decoder_output_dim)
         self._output_projection_layer = Linear(self._decoder_output_dim, num_classes)
 
+    def beam_search(self,  # type: ignore
+                    source_tokens: Dict[str, torch.LongTensor],
+                    bestk: int) -> Dict[str, torch.Tensor]:
+        # pylint: disable=arguments-differ
+        """
+        Decoder logic for producing the entire target sequence.
+        Parameters
+        ----------
+        source_tokens : Dict[str, torch.LongTensor]
+           The output of ``TextField.as_array()`` applied on the source ``TextField``. This will be
+           passed through a ``TextFieldEmbedder`` and then through an encoder.
+        target_tokens : Dict[str, torch.LongTensor], optional (default = None)
+           Output of ``Textfield.as_array()`` applied on target ``TextField``. We assume that the
+           target tokens are also represented as a ``TextField``.
+        """
+        # (batch_size, input_sequence_length, encoder_output_dim)
+        source_indices = source_tokens['tokens'].data.cpu().numpy()
+        embedded_input = self._source_embedder(source_tokens)
+        batch_size, _, _ = embedded_input.size()
+        assert batch_size == 1, batch_size
+        source_mask = get_text_field_mask(source_tokens)
+        encoder_outputs = self._encoder(embedded_input, source_mask)
+        final_encoder_output = encoder_outputs[:, -1]  # (batch_size, encoder_output_dim)
+        decoder_hidden = final_encoder_output
+        decoder_context = Variable(encoder_outputs.data.new()
+                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
+        # For each action I should keep around a score, a context and a hidden state, and input choices
+        state = source_mask.data.new().resize_(batch_size)
+        model = {
+            'last_prediction': self._start_index,
+            'decoder_hidden': decoder_hidden,
+            'decoder_context': decoder_context,
+            'cur_log_probability': 0,
+            'action_list': [START_SYMBOL]
+        }
+        valid_variables = {'var' + str(i) for i in range(10)}
+        valid_variables.add('(')
+        valid_variables.add('?')
+        valid_units = {'unit' + str(i) for i in range(20)}
+        valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in
+                         source_indices[0]}
+        valid_numbers = {x for x in valid_numbers if x.startswith('num')}
+        # print(valid_numbers)
+        valid_numbers.add('(')
+        valid_numbers.add('?')
+        models = [model]
+        complete_models = []
+        for cur_length in range(self._max_decoding_steps + 2):
+            new_models = []
+            for model in models:
+                last_prediction = model['last_prediction']
+                action_list = model['action_list']
+                if action_list[-1] == END_SYMBOL:
+                    new_models.append(model)
+                    continue
+                assert len(action_list) == cur_length + 1, (len(action_list), cur_length + 1)
+                decoder_hidden = model['decoder_hidden']
+                decoder_context = model['decoder_context']
+                cur_log_probability = model['cur_log_probability']
+                decoder_input = self._prepare_decode_step_input(
+                    Variable(state.fill_(last_prediction)),
+                    decoder_hidden,
+                    encoder_outputs,
+                    source_mask
+                )
+                decoder_hidden, decoder_context = self._decoder_cell(decoder_input,
+                                                                     (decoder_hidden,
+                                                                      decoder_context))
+                output_projections = self._output_projection_layer(decoder_hidden)
+                class_log_probabilities = \
+                    F.log_softmax(output_projections, dim=-1).data.cpu().numpy()[0]
+                assert self.vocab.get_vocab_size(self._target_namespace) == len(
+                    class_log_probabilities), (self.vocab.get_vocab_size(self._target_namespace),
+                                               class_log_probabilities.shape[0])
+                for action_index, action_log_probability in enumerate(class_log_probabilities):
+                    penalty = 0
+                    action = self.vocab.get_token_from_index(action_index, self._target_namespace)
+                    if action.startswith('num') and action not in valid_numbers:
+                        continue
+                    new_model = {
+                        'action_list': action_list + [action],
+                        'last_prediction': action_index,
+                        'decoder_hidden': decoder_hidden,
+                        'decoder_context': decoder_context,
+                        'cur_log_probability': action_log_probability + cur_log_probability - penalty
+                    }
+                    new_models.append(new_model)
+            assert len(new_models) > 0
+            new_models.sort(key=lambda x: - x['cur_log_probability'])
+            models = new_models[:bestk]
+
+        # complete_models = [model for model in models if model['action_list'][-1] == END_SYMBOL]
+        models.sort(key=lambda x: - x['cur_log_probability'])
+        # print('total models', len(models), 'len complete models', len(complete_models))
+        output = '\n'.join([' '.join(model['action_list'][1:-1]) for model in models])
+        # print(' '.join(complete_models[0]['action_list'][1:-1]))
+        return output
+
     @overrides
     def forward(self,  # type: ignore
                 source_tokens: Dict[str, torch.LongTensor],

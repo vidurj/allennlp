@@ -13,10 +13,16 @@ with open(sys.argv[2], 'r') as f:
         if line.strip() == '***':
             maps.append(dict())
         else:
-            key, value = line.split()
+            tokens = line.split()
+            assert len(tokens) == 2, tokens
+            key, value = tokens
             maps[-1][key] = value
     maps = maps[:-1]
-    assert len(lines) == len(maps), (len(lines), len(maps))
+    if len(maps) > len(lines):
+        print('WARNING ' * 100)
+        print('more maps than predictions. Ignoring extra maps.')
+    else:
+        assert len(lines) == len(maps), (len(lines), len(maps))
 
 
 preds = []
