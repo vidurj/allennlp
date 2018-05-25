@@ -86,6 +86,8 @@ class SimpleSeq2Seq(Model):
         # end symbol as a way to indicate the end of the decoded sequence.
         self._start_index = self.vocab.get_token_index(START_SYMBOL, self._target_namespace)
         self._end_index = self.vocab.get_token_index(END_SYMBOL, self._target_namespace)
+        unk_index = self.vocab.get_token_index('foobarbaz', self._target_namespace)
+        assert self._start_index != self._end_index and self._start_index != unk_index and self._end_index != unk_index
         num_classes = self.vocab.get_vocab_size(self._target_namespace)
         # Decoder output dim needs to be the same as the encoder output dim since we initialize the
         # hidden state of the decoder with that of the final hidden states of the encoder. Also, if
