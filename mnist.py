@@ -3,7 +3,7 @@ import tensorflow as tf
 import numpy as np
 import heapq
 import random
-
+import sys
 
 def weight_variable(shape):
     initial = tf.truncated_normal(shape, stddev=0.1)
@@ -25,9 +25,16 @@ def max_pool_2x2(x):
 
 
 class Model:
-    def __init__(self):
-        self.x = tf.placeholder(tf.float32, shape=[None, 784])
-        self.y_ = tf.placeholder(tf.float32, shape=[None, 10])
+    def __init__(self, training_size):
+        batch_size = None
+        self.x = tf.placeholder(tf.float32, shape=[batch_size, 784])
+        self.y_ = tf.placeholder(tf.float32, shape=[batch_size, 10])
+        self.indices = tf.placeholder(tf.int32, shape=[batch_size])
+        self.lmbd = tf.placeholder(tf.float32, shape=[1])
+        weights = tf.Variable(tf.constant(0.99, shape=[training_size, 1]))
+        global_weights = tf.nn.sigmoid(weights)
+
+        print('shape 0', global_weights)
 
         W_conv1 = weight_variable([5, 5, 1, 32])
         b_conv1 = bias_variable([32])
@@ -56,11 +63,21 @@ class Model:
         b_fc2 = bias_variable([10])
 
         y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
-
-        self.cross_entropy = tf.reduce_mean(
-            tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=y_conv))
+        self.relevant_weights = tf.squeeze(tf.nn.embedding_lookup(global_weights, self.indices))
+        print('shape 1', self.relevant_weights)
+        self.relevant_weights_total = tf.reduce_mean(self.relevant_weights)
+        # tf.reduce_mean(
+        print(self.y_, y_conv)
+        temp = self.relevant_weights * tf.nn.softmax_cross_entropy_with_logits(labels=self.y_, logits=y_conv)
+        print('shape 2', temp)
+        self.cross_entropy = tf.reduce_sum(temp) / tf.reduce_sum(self.relevant_weights)
         self.logits = tf.nn.softmax(y_conv)
+        self.total_weight = tf.reduce_sum(global_weights)
+        self.regularization = tf.abs(self.lmbd - self.total_weight) / 1000.0
+        loss = self.cross_entropy + self.regularization
         self.train_step = tf.train.AdamOptimizer(1e-4).minimize(self.cross_entropy)
+        self.train_step_regularized = tf.train.AdamOptimizer(1e-4).minimize(loss)
+        self.only_train_weights = tf.train.AdamOptimizer(0.01).minimize(loss, var_list=[weights])
         correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(self.y_, 1))
         self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -86,37 +103,90 @@ def get_eval_preds(xes, yes, model, legal_indices, batch_size=1024):
     return chosen_indices
 
 
+def noise_data(mnist_data):
+    xes = mnist_data.images
+    zero_label = np.array([1., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+    noised_indices = {i for i in range(len(mnist_data.labels)) if random.random() < 0.2}
+    yes = [y if i not in noised_indices else zero_label for i, y in enumerate(mnist_data.labels)]
+    return xes, yes, noised_indices
+
+
 def main():
+    random.seed(a=0)
     mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
-    xes = mnist.train.images
-    zero_label = np.array([ 1.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.])
-    yes = [y if random.random() < 0.9 else zero_label for y in mnist.train.labels]
-    print(yes[:100])
+
     print(len(mnist.train.images), len(mnist.validation.images), len(mnist.test.images))
     print('-' * 100)
-    model = Model()
-    all_train_indices = []
-    batch_size = 100
+    train_xes, train_yes, train_noised_indices = noise_data(mnist.train)
 
+    # print(train_noised_indices)
+    train_data = list(enumerate(zip(train_xes, train_yes)))
+    corrupted_data = [(i, point) for i, point in train_data if i in train_noised_indices]
+    correct_data = [(i, point) for i, point in train_data if i not in train_noised_indices]
+    if sys.argv[1] == 'skip_noised':
+        train_data = [(i, (x, y)) for (i, (x, y)) in train_data if i not in train_noised_indices]
+    else:
+        assert sys.argv[1] == 'keep_noised'
+
+    model = Model(len(mnist.train.images))
+    all_train_indices = []
+    batch_size = 1024
+
+    test_xes, test_yes, test_noised_indices = noise_data(mnist.validation)
+    lmbd = len(train_data)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        for epoch in range(100):
+        for epoch in range(10000):
             cur_index = 0
-            while cur_index + batch_size < len(xes):
-                sess.run(model.train_step,
-                                   feed_dict={
-                                       model.x: xes[cur_index: cur_index + batch_size],
-                                       model.y_: yes[cur_index: cur_index + batch_size],
-                                       model.keep_prob: 0.5
-                                   })
+            if epoch > 30:
+                lmbd = len(correct_data)
+            random.shuffle(train_data)
+            while cur_index + batch_size < len(train_data):
+                _, _, total_weight, reg_loss = sess.run([model.train_step, model.only_train_weights, model.total_weight, model.regularization],
+                         feed_dict={
+                             model.x: [x for (i, (x, y)) in
+                                       train_data[cur_index: cur_index + batch_size]],
+                             model.y_: [y for (i, (x, y)) in
+                                        train_data[cur_index: cur_index + batch_size]],
+                             model.keep_prob: 0.5,
+                             model.lmbd: [lmbd],
+                             model.indices: [i for (i, (x, y)) in
+                                        train_data[cur_index: cur_index + batch_size]]
+                         })
                 cur_index += batch_size
-            print(len(all_train_indices))
+            print('epoch', epoch, 'lmd', lmbd, 'total weight', total_weight, 'regularization', reg_loss)
+
+            test_size = 1024
+            loss_on_correct, weight_on_correct = sess.run([model.cross_entropy, model.relevant_weights_total],
+                feed_dict={
+                    model.x: [x for (i, (x, y)) in correct_data[0: test_size]],
+                    model.y_: [y for (i, (x, y)) in correct_data[0: test_size]],
+                    model.keep_prob: 0.5,
+                    model.lmbd: [lmbd],
+                    model.indices: [i for (i, (x, y)) in correct_data[0: test_size]]
+                })
+
+            loss_on_corrupted, weight_on_corrupted = sess.run([model.cross_entropy, model.relevant_weights_total],
+                feed_dict={
+                    model.x: [x for (i, (x, y)) in corrupted_data[0: test_size]],
+                    model.y_: [y for (i, (x, y)) in corrupted_data[0: test_size]],
+                    model.keep_prob: 0.5,
+                    model.lmbd: [lmbd],
+                    model.indices: [i for (i, (x, y)) in corrupted_data[0: test_size]]
+                })
+
+            print('Loss on correct {} loss on corrupted {}'.format(loss_on_correct,
+                                                                   loss_on_corrupted))
+            print('Weight on correct {} weight on corrupted {}'.format(weight_on_correct,
+                                                                   weight_on_corrupted))
+
             print('test accuracy %g' % model.accuracy.eval(
                 feed_dict={
-                    model.x: mnist.test.images,
-                    model.y_: mnist.test.labels,
+                    model.x: test_xes,
+                    model.y_: test_yes,
                     model.keep_prob: 1.0
                 }))
+
 
 if __name__ == '__main__':
     main()
