@@ -154,6 +154,38 @@ def prepare_baseline_data(data, file_name, num_iters, is_test):
         f.write(result_str)
 
 
+def retrieve_important_numbers(text, for_linear_equations):
+    source = text.replace('-', ' ')
+    source_tokenized = [(token.text, token.tag_) for token in nlp(source)]
+    # pos_tags = [token.tag_ for token in nlp(source)]
+    print(source_tokenized)
+    source_tokenized, pos_tags = zip(*source_tokenized)
+    # print(pos_tags)
+    important_numbers = []
+    post = {'dollar', 'ticket', 'cent', 'times', 'is', 'more', 'less'}
+    pre = {'is'}
+    for index, token in enumerate(source_tokenized):
+        number = is_num(token)
+        if token.lower() == 'twice':
+            important_numbers.append(2)
+        elif number is None:
+            continue
+        elif source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent':
+            if for_linear_equations:
+                important_numbers.extend([number, 0.01])
+            else:
+                number /= 100
+                number = round(number, PRECISION)
+                important_numbers.append(number)
+        elif source_tokenized[index + 1].lower() in post:
+            important_numbers.append(number)
+        elif source_tokenized[index - 1].lower() in pre:
+            important_numbers.append(number)
+        elif int(number) != number:
+            important_numbers.append(number)
+        elif number != 1 and number != 2 and pos_tags[index + 1] == 'NNS':
+            important_numbers.append(number)
+    return important_numbers
 
 
 
@@ -182,37 +214,6 @@ def standardize_question(text, shuffle=True, is_copy=False):
                     number_to_tokens[number] = number_tokens.pop()
                 source_tokenized[index] = number_to_tokens[number]
     return ' '.join(source_tokenized), number_to_tokens
-
-
-def retrieve_important_numbers(text):
-    source = text.replace('-', ' ')
-    source_tokenized = [(token.text, token.tag_) for token in nlp(source)]
-    # pos_tags = [token.tag_ for token in nlp(source)]
-    print(source_tokenized)
-    source_tokenized, pos_tags = zip(*source_tokenized)
-    # print(pos_tags)
-    important_numbers = []
-    post = {'dollar', 'ticket', 'cent', 'times', 'is', 'more', 'less'}
-    pre = {'is'}
-    for index, token in enumerate(source_tokenized):
-        number = is_num(token)
-        if token.lower() == 'twice':
-            important_numbers.append(2)
-        elif number is None:
-            continue
-        elif source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent':
-            number /= 100
-            number = round(number, PRECISION)
-            important_numbers.append(number)
-        elif source_tokenized[index + 1].lower() in post:
-            important_numbers.append(number)
-        elif source_tokenized[index - 1].lower() in pre:
-            important_numbers.append(number)
-        elif int(number) != number:
-            important_numbers.append(number)
-        elif number != 1 and number != 2 and pos_tags[index + 1] == 'NNS':
-            important_numbers.append(number)
-    return important_numbers
 
 
 def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
@@ -519,29 +520,29 @@ if __name__ == '__main__':
     # with open('allennlp/additional_annotations.json', 'r') as f:
     #     additional_data = json.load(f)
     #
-    # results = []
-    #
-    # # print(retrieve_important_numbers('The sum of 2 numbers is 15. 3 times one of the numbers is 11 less than 5 times the other. What is the smaller number? What is the larger number?'))
-    #
-    #
-    # for index, question in enumerate(data[-100:]):
-    #     print(index)
-    #     print(question['iIndex'])
-    #     print(question['sQuestion'])
-    #     important_numbers = retrieve_important_numbers(question['sQuestion'])
-    #     print(important_numbers)
-    #     print('-' * 100)
-    #     if len(important_numbers) == 0:
-    #         results.append('*')
-    #     else:
-    #         results.append(' '.join([str(x) for x in set(important_numbers)]))
-    #
-    # with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
-    #     f.write('\n'.join(results))
+    results = []
 
-    prepare_baseline_data(data[:-100], 'train_baseline.txt', num_iters=10, is_test=False)
-    prepare_baseline_data(data[-100:], 'dev_baseline.txt', is_test=False, num_iters=1)
-    prepare_baseline_data(data[-100:], 'test_baseline.txt', num_iters=1, is_test=True)
+    # print(retrieve_important_numbers('The sum of 2 numbers is 15. 3 times one of the numbers is 11 less than 5 times the other. What is the smaller number? What is the larger number?'))
+
+
+    for index, question in enumerate(data[-100:]):
+        print(index)
+        print(question['iIndex'])
+        print(question['sQuestion'])
+        important_numbers = retrieve_important_numbers(question['sQuestion'], for_linear_equations=True)
+        print(important_numbers)
+        print('-' * 100)
+        if len(important_numbers) == 0:
+            results.append('*')
+        else:
+            results.append(' '.join([str(x) for x in set(important_numbers)]))
+
+    with open('/Users/vidurj/euclid/data/private/dev_important_numbers.txt', 'w') as f:
+        f.write('\n'.join(results))
+
+    # prepare_baseline_data(data[:-100], 'train_baseline.txt', num_iters=10, is_test=False)
+    # prepare_baseline_data(data[-100:], 'dev_baseline.txt', is_test=False, num_iters=1)
+    # prepare_baseline_data(data[-100:], 'test_baseline.txt', num_iters=1, is_test=True)
 
     # write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
 
