@@ -296,11 +296,7 @@ class SimpleSeq2Seq(Model):
         step_probabilities = []
         step_predictions = []
         for timestep in range(num_decoding_steps):
-<<<<<<< HEAD
             if self.training or target_tokens:
-=======
-            if self.training and torch.rand(1).item() >= self._scheduled_sampling_ratio:
->>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
                 input_choices = targets[:, timestep]
             else:
                 if timestep == 0:
