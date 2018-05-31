@@ -3,13 +3,10 @@ from typing import Dict
 import numpy
 import numpy as np
 import torch
-<<<<<<< HEAD
 import torch.nn.functional as F
 from overrides import overrides
 from torch.autograd import Variable
-=======
 from torch.nn.modules.rnn import LSTMCell
->>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
 from torch.nn.modules.linear import Linear
 from torch.nn.modules.rnn import LSTMCell
 
