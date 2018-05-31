@@ -37,13 +37,10 @@ import json
 import logging
 import os
 from copy import deepcopy
-<<<<<<< HEAD
 from allennlp.models.archival import load_archive
-=======
 
 import torch
 
->>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
 from allennlp.commands.evaluate import evaluate
 from allennlp.commands.subcommand import Subcommand
 from allennlp.common.checks import ConfigurationError, check_for_gpu
