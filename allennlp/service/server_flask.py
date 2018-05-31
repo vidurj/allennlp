@@ -16,7 +16,7 @@ from functools import lru_cache
 
 from flask import Flask, request, Response, jsonify, send_file, send_from_directory
 from flask_cors import CORS
-from gevent.wsgi import WSGIServer
+from gevent.pywsgi import WSGIServer
 
 import psycopg2
 
@@ -25,7 +25,7 @@ import pytz
 from allennlp.common.util import JsonDict, peak_memory_mb
 from allennlp.service.db import DemoDatabase, PostgresDemoDatabase
 from allennlp.service.permalinks import int_to_slug, slug_to_int
-from allennlp.service.predictors import Predictor, DemoModel
+from allennlp.predictors import Predictor, DemoModel
 
 # Can override cache size with an environment variable. If it's 0 then disable caching altogether.
 CACHE_SIZE = os.environ.get("FLASK_CACHE_SIZE") or 128
@@ -173,16 +173,13 @@ def make_app(build_dir: str = None, demo_db: Optional[DemoDatabase] = None) -> F
         # In theory this could result in false positives.
         pre_hits = _caching_prediction.cache_info().hits  # pylint: disable=no-value-for-parameter
 
-        try:
-            if use_cache and cache_size > 0:
-                # lru_cache insists that all function arguments be hashable,
-                # so unfortunately we have to stringify the data.
-                prediction = _caching_prediction(model, json.dumps(data))
-            else:
-                # if cache_size is 0, skip caching altogether
-                prediction = model.predict_json(data)
-        except KeyError as err:
-            raise ServerError("Required JSON field not found: " + err.args[0], status_code=400)
+        if use_cache and cache_size > 0:
+            # lru_cache insists that all function arguments be hashable,
+            # so unfortunately we have to stringify the data.
+            prediction = _caching_prediction(model, json.dumps(data))
+        else:
+            # if cache_size is 0, skip caching altogether
+            prediction = model.predict_json(data)
 
         post_hits = _caching_prediction.cache_info().hits  # pylint: disable=no-value-for-parameter
 

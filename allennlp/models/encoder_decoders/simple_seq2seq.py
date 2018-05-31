@@ -3,9 +3,13 @@ from typing import Dict
 import numpy
 import numpy as np
 import torch
+<<<<<<< HEAD
 import torch.nn.functional as F
 from overrides import overrides
 from torch.autograd import Variable
+=======
+from torch.nn.modules.rnn import LSTMCell
+>>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
 from torch.nn.modules.linear import Linear
 from torch.nn.modules.rnn import LSTMCell
 
@@ -15,7 +19,8 @@ from allennlp.data.vocabulary import Vocabulary
 from allennlp.models.model import Model
 from allennlp.common.util import START_SYMBOL, END_SYMBOL
 from allennlp.data.vocabulary import Vocabulary
-from allennlp.modules import Attention, TextFieldEmbedder, Seq2SeqEncoder
+from allennlp.modules import TextFieldEmbedder, Seq2SeqEncoder
+from allennlp.modules.attention import LegacyAttention
 from allennlp.modules.similarity_functions import SimilarityFunction
 from allennlp.modules.token_embedders import Embedding
 from allennlp.nn.util import get_text_field_mask, sequence_cross_entropy_with_logits, weighted_sum
@@ -113,7 +118,7 @@ class SimpleSeq2Seq(Model):
         target_embedding_dim = target_embedding_dim or self._source_embedder.get_output_dim()
         self._target_embedder = Embedding(num_classes, target_embedding_dim)
         if self._attention_function:
-            self._decoder_attention = Attention(self._attention_function)
+            self._decoder_attention = LegacyAttention(self._attention_function)
             # The output of attention, a weighted average over encoder outputs, will be
             # concatenated to the input vector of the decoder at each time step.
             self._decoder_input_dim = self._encoder.get_output_dim() + target_embedding_dim
@@ -288,21 +293,23 @@ class SimpleSeq2Seq(Model):
         else:
             num_decoding_steps = self._max_decoding_steps
         decoder_hidden = final_encoder_output
-        decoder_context = Variable(encoder_outputs.data.new()
-                                   .resize_(batch_size, self._decoder_output_dim).fill_(0))
+        decoder_context = encoder_outputs.new_zeros(batch_size, self._decoder_output_dim)
         last_predictions = None
         step_logits = []
         step_probabilities = []
         step_predictions = []
         for timestep in range(num_decoding_steps):
+<<<<<<< HEAD
             if self.training or target_tokens:
+=======
+            if self.training and torch.rand(1).item() >= self._scheduled_sampling_ratio:
+>>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
                 input_choices = targets[:, timestep]
             else:
                 if timestep == 0:
                     # For the first timestep, when we do not have targets, we input start symbols.
                     # (batch_size,)
-                    input_choices = Variable(source_mask.data.new()
-                                             .resize_(batch_size).fill_(self._start_index))
+                    input_choices = source_mask.new_full((batch_size,), fill_value=self._start_index)
                 else:
                     input_choices = last_predictions
 
@@ -441,7 +448,7 @@ class SimpleSeq2Seq(Model):
         """
         predicted_indices = output_dict["predictions"]
         if not isinstance(predicted_indices, numpy.ndarray):
-            predicted_indices = predicted_indices.data.cpu().numpy()
+            predicted_indices = predicted_indices.detach().cpu().numpy()
         all_predicted_tokens = []
         for indices in predicted_indices:
             indices = list(indices)

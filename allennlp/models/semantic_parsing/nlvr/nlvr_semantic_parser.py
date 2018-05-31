@@ -39,6 +39,8 @@ class NlvrSemanticParser(Model):
         Dimension to use for action embeddings.
     encoder : ``Seq2SeqEncoder``
         The encoder to use for the input question.
+    dropout : ``float``, optional (default=0.0)
+        Dropout on the encoder outputs.
     rule_namespace : ``str``, optional (default=rule_labels)
         The vocabulary namespace to use for production rules.  The default corresponds to the
         default used in the dataset reader, so you likely don't need to modify this.
@@ -48,6 +50,7 @@ class NlvrSemanticParser(Model):
                  sentence_embedder: TextFieldEmbedder,
                  action_embedding_dim: int,
                  encoder: Seq2SeqEncoder,
+                 dropout: float = 0.0,
                  rule_namespace: str = 'rule_labels') -> None:
         super(NlvrSemanticParser, self).__init__(vocab=vocab)
 
@@ -55,6 +58,10 @@ class NlvrSemanticParser(Model):
         self._denotation_accuracy = Average()
         self._consistency = Average()
         self._encoder = encoder
+        if dropout > 0:
+            self._dropout = torch.nn.Dropout(p=dropout)
+        else:
+            self._dropout = lambda x: x
         self._rule_namespace = rule_namespace
 
         self._action_embedder = Embedding(num_embeddings=vocab.get_vocab_size(self._rule_namespace),
@@ -63,7 +70,7 @@ class NlvrSemanticParser(Model):
         # This is what we pass as input in the first step of decoding, when we don't have a
         # previous action.
         self._first_action_embedding = torch.nn.Parameter(torch.FloatTensor(action_embedding_dim))
-        torch.nn.init.normal(self._first_action_embedding)
+        torch.nn.init.normal_(self._first_action_embedding)
 
     @overrides
     def forward(self):  # type: ignore
@@ -79,14 +86,12 @@ class NlvrSemanticParser(Model):
         batch_size = embedded_input.size(0)
 
         # (batch_size, sentence_length, encoder_output_dim)
-        encoder_outputs = self._encoder(embedded_input, sentence_mask)
+        encoder_outputs = self._dropout(self._encoder(embedded_input, sentence_mask))
 
         final_encoder_output = util.get_final_encoder_states(encoder_outputs,
                                                              sentence_mask,
                                                              self._encoder.is_bidirectional())
-        memory_cell = util.new_variable_with_size(encoder_outputs,
-                                                  (batch_size, self._encoder.get_output_dim()),
-                                                  0)
+        memory_cell = encoder_outputs.new_zeros(batch_size, self._encoder.get_output_dim())
         attended_sentence = self._decoder_step.attend_on_sentence(final_encoder_output,
                                                                   encoder_outputs, sentence_mask)
         encoder_outputs_list = [encoder_outputs[i] for i in range(batch_size)]
@@ -103,7 +108,7 @@ class NlvrSemanticParser(Model):
 
     def _get_label_strings(self, labels):
         # TODO (pradeep): Use an unindexed field for labels?
-        labels_data = labels.data.cpu()
+        labels_data = labels.detach().cpu()
         label_strings: List[List[str]] = []
         for instance_labels_data in labels_data:
             label_strings.append([])
@@ -118,35 +123,41 @@ class NlvrSemanticParser(Model):
     @classmethod
     def _get_action_strings(cls,
                             possible_actions: List[List[ProductionRuleArray]],
-                            action_indices: Dict[int, List[int]]) -> List[List[str]]:
+                            action_indices: Dict[int, List[List[int]]]) -> List[List[List[str]]]:
         """
         Takes a list of possible actions and indices of decoded actions into those possible actions
-        for a batch and returns sequences of action strings.
+        for a batch and returns sequences of action strings. We assume ``action_indices`` is a dict
+        mapping batch indices to k-best decoded sequence lists.
         """
-        all_action_strings: List[List[str]] = []
+        all_action_strings: List[List[List[str]]] = []
         batch_size = len(possible_actions)
         for i in range(batch_size):
             batch_actions = possible_actions[i]
             batch_best_sequences = action_indices[i] if i in action_indices else []
             # This will append an empty list to ``all_action_strings`` if ``batch_best_sequences``
             # is empty.
-            action_strings = [batch_actions[rule_id][0] for rule_id in batch_best_sequences]
+            action_strings = [[batch_actions[rule_id][0] for rule_id in sequence]
+                              for sequence in batch_best_sequences]
             all_action_strings.append(action_strings)
         return all_action_strings
 
     @staticmethod
-    def _get_denotations(action_strings: List[List[str]],
-                         worlds: List[List[NlvrWorld]]) -> List[List[str]]:
-        all_denotations: List[List[str]] = []
-        for instance_worlds, instance_action_strings in zip(worlds, action_strings):
-            denotations: List[str] = []
-            if instance_action_strings:
+    def _get_denotations(action_strings: List[List[List[str]]],
+                         worlds: List[List[NlvrWorld]]) -> List[List[List[str]]]:
+        all_denotations: List[List[List[str]]] = []
+        for instance_worlds, instance_action_sequences in zip(worlds, action_strings):
+            denotations: List[List[str]] = []
+            for instance_action_strings in instance_action_sequences:
+                if not instance_action_strings:
+                    continue
                 logical_form = instance_worlds[0].get_logical_form(instance_action_strings)
+                instance_denotations: List[str] = []
                 for world in instance_worlds:
                     # Some of the worlds can be None for instances that come with less than 4 worlds
                     # because of padding.
                     if world is not None:
-                        denotations.append(str(world.execute(logical_form)))
+                        instance_denotations.append(str(world.execute(logical_form)))
+                denotations.append(instance_denotations)
             all_denotations.append(denotations)
         return all_denotations
 
@@ -223,21 +234,21 @@ class NlvrSemanticParser(Model):
     def decode(self, output_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """
         This method overrides ``Model.decode``, which gets called after ``Model.forward``, at test
-        time, to finalize predictions.  This is (confusingly) a separate notion from the "decoder"
-        in "encoder/decoder", where that decoder logic lives in ``WikiTablesDecoderStep``.
-
-        This method trims the output predictions to the first end symbol, replaces indices with
-        corresponding tokens, and adds a field called ``predicted_tokens`` to the ``output_dict``.
+        time, to finalize predictions. We only transform the action string sequences into logical
+        forms here.
         """
         best_action_strings = output_dict["best_action_strings"]
         # Instantiating an empty world for getting logical forms.
         world = NlvrWorld([])
         logical_forms = []
-        for action_strings in best_action_strings:
-            if action_strings:
-                logical_forms.append(world.get_logical_form(action_strings))
-            else:
-                logical_forms.append('')
+        for instance_action_sequences in best_action_strings:
+            instance_logical_forms = []
+            for action_strings in instance_action_sequences:
+                if action_strings:
+                    instance_logical_forms.append(world.get_logical_form(action_strings))
+                else:
+                    instance_logical_forms.append('')
+            logical_forms.append(instance_logical_forms)
         output_dict["logical_form"] = logical_forms
         return output_dict
 

@@ -20,7 +20,7 @@ import argparse
 
 from allennlp.commands.subcommand import Subcommand
 from allennlp.service import server_flask as server
-from allennlp.service.predictors import DemoModel
+from allennlp.predictors import DemoModel
 
 # This maps from the name of the task
 # to the ``DemoModel`` indicating the location of the trained model
@@ -46,7 +46,7 @@ DEFAULT_MODELS = {
                 'coreference-resolution'
         ),
         'named-entity-recognition': DemoModel(
-                'https://s3-us-west-2.amazonaws.com/allennlp/models/ner-model-2018.02.12.tar.gz',  # pylint: disable=line-too-long
+                'https://s3-us-west-2.amazonaws.com/allennlp/models/ner-model-2018.04.30.tar.gz',  # pylint: disable=line-too-long
                 'sentence-tagger'
         ),
         'constituency-parsing': DemoModel(

@@ -1,5 +1,7 @@
-from typing import Tuple, List
+# pylint: disable=unused-import
+import warnings
 
+<<<<<<< HEAD
 from overrides import overrides
 from nltk import Tree
 from spacy.lang.en.tag_map import TAG_MAP
@@ -153,3 +155,8 @@ class ConstituencyParserPredictor(Predictor):
                     "root": hierplane_node
             }
         return hierplane_node
+=======
+from allennlp.predictors.constituency_parser import ConstituencyParserPredictor
+warnings.warn("allennlp.service.predictors.* has been deprecated. "
+              "Please use allennlp.predictors.*", FutureWarning)
+>>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
