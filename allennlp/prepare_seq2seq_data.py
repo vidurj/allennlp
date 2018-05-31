@@ -83,7 +83,8 @@ def is_num(string):
 
 def standardize_question(text, shuffle=True, is_copy=False):
     source = text.replace('-', ' - ')
-    temp = [token.text for token in nlp(source)]
+    tokens = nlp(source)
+    temp = [token.text for token in tokens]
     source_tokenized = []
     for token in temp:
         source_tokenized.extend(TIMES_WORDS.get(token.lower(), [token]))
@@ -91,17 +92,19 @@ def standardize_question(text, shuffle=True, is_copy=False):
     if shuffle:
         random.shuffle(number_tokens)
     number_to_tokens = defaultdict(list)
+    lemmas = set([token.lemma_ for token in tokens])
+    references_dollars = 'dollar' in lemmas
     for index, token in enumerate(source_tokenized):
         number = is_num(token)
-        if number is not None and (
-                        source_tokenized[index + 1] == '%' or source_tokenized[
-                        index + 1] == 'percent'):
-            number /= 100
-            number = round(number, PRECISION)
-        if number is not None and source_tokenized[index - 1] == '-':
-            print('here!')
-            number = - number
         if number is not None:
+            is_percent = source_tokenized[index + 1] == '%' or source_tokenized[index + 1] == 'percent'
+            is_cents = source_tokenized[index + 1] == 'cents' or source_tokenized[index + 1] == 'cent'
+            if is_percent or (is_cents and references_dollars):
+                number /= 100
+                number = round(number, PRECISION)
+            if source_tokenized[index - 1] == '-':
+                number = - number
+
             if is_copy:
                 number_to_tokens[number].append('num' + str(index))
             else:
@@ -175,6 +178,13 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
             if number in number_to_tokens:
                 tokens = number_to_tokens[number]
                 token = tokens
+            elif -number in number_to_tokens:
+                token = number_to_tokens[- number]
+                token = '( Times {} -1 )'.format(token)
+                print('WARNING: -1 hack {} {}'.format(token, number))
+            elif number * 100 in number_to_tokens:
+                token = number_to_tokens[number * 100]
+                print('WARNING: ignoring 100 hack {} {}'.format(token, number))
             else:
                 raise RuntimeError(
                     'Number {} not in number_to_token {}.'.format(number, number_to_tokens))
@@ -198,8 +208,7 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
                 var_assignments[token] = remaining_variable_names.pop(0)
             token = var_assignments[token]
 
-        assert token.startswith('var') or token.startswith('unit') or token.startswith(
-            'num') or token in valid_tokens, (token, valid_tokens, text)
+        assert token.startswith('var') or token.startswith('unit') or token.startswith('num') or token.startswith('( Times ') or token in valid_tokens, (token, valid_tokens, text)
         standardized_tokens.append(token)
         function_calls, arg_numbers = update_state(function_calls, arg_numbers, token)
         last_token = token
@@ -428,7 +437,7 @@ if __name__ == '__main__':
 
     # with open('/Users/vidurj/euclid/data/private/important_numbers.txt', 'w') as f:
     #     f.write('\n'.join(results))
-    # all_train_subsets = create_sentence_aligned_data(data[:-100])
+    all_train_subsets = create_sentence_aligned_data(data[:-100])
     # write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
     # write_data(data[-100:], 'dev_num.txt', is_dev=False,
     #            randomize=False, num_iters=1, silent=False)
@@ -436,6 +445,6 @@ if __name__ == '__main__':
 
     # write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
 
-    write_data(data[:-100], 'train_num.txt', randomize=True, num_iters=10)
+    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
     write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=1)
     write_data(data[-100:], 'test_num.txt', randomize=True, num_iters=1, is_dev=True)
