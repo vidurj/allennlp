@@ -18,7 +18,10 @@ for paragraph in lines:
 
 with open(sys.argv[1], 'r') as f:
     lines = f.read().splitlines()
-assert len(lines) == len(maps), (len(lines), len(maps))
+if len(lines) != len(maps):
+    print('Warning: size do not match')
+    print(len(lines), len(maps))
+    assert len(lines) <= len(maps)
 preds = []
 for _line, map in zip(lines, maps):
     programs = _line.strip().replace('"', '').replace("\\n", '\n').replace('\n***\n', '').split('\n')
