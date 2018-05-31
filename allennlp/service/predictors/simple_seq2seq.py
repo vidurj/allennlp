@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from overrides import overrides
 import spacy
 from allennlp.data import Instance
@@ -387,11 +386,4 @@ class SimpleSeq2SeqPredictor(Predictor):
         source = json_dict["source"]
         print(source)
         return self._dataset_reader.text_to_instance(source), {}
-=======
-# pylint: disable=unused-import
-import warnings
 
-from allennlp.predictors.simple_seq2seq import SimpleSeq2SeqPredictor
-warnings.warn("allennlp.service.predictors.* has been deprecated. "
-              " Please use allennlp.predictors.*", FutureWarning)
->>>>>>> e37a68edc1c9187c9d2ea2657a63f8d9e7644d3a
