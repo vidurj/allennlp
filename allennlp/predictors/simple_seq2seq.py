@@ -125,7 +125,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
         return self._dataset_reader.text_to_instance(source), {}
 
     @overrides
-    def predict_json(self, inputs: JsonDict, cuda_device: int = -1) -> JsonDict:
+    def predict_json(self, inputs: JsonDict, cuda_device: int = 0) -> JsonDict:
         instance, return_dict = self._json_to_instance(inputs)
 
         dataset = Batch([instance])
