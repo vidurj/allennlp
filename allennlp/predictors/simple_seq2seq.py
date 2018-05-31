@@ -35,13 +35,12 @@ from allennlp.prepare_seq2seq_data import standardize_logical_form_with_validati
 from allennlp.data.dataset_readers.seq2seq import START_SYMBOL, END_SYMBOL
 
 
-def instances_to_batch(instances, model, for_training, cuda_device=0):
+def instances_to_batch(instances, model, cuda_device=0):
     batch = Batch(instances)
     batch.index_instances(model.vocab)
     padding_lengths = batch.get_padding_lengths()
     return batch.as_tensor_dict(padding_lengths,
-                                cuda_device=cuda_device,
-                                for_training=for_training)
+                                cuda_device=cuda_device)
 
 
 class SimpleTrainer:
@@ -69,7 +68,6 @@ class SimpleTrainer:
         instances.append(new_instance)
         return instances_to_batch(instances,
                                   self._model,
-                                  for_training=True,
                                   cuda_device=self.cuda_device)
 
     def train(self, new_instance, new_instances):
@@ -132,7 +130,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
 
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
-        model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
+        model_input = dataset.as_tensor_dict(cuda_device=cuda_device)
         output = self._model.beam_search(model_input['source_tokens'], bestk=10)
         return output
 
@@ -163,7 +161,7 @@ class SimpleSeq2SeqPredictorBeamCopy(Predictor):
 
         dataset = Batch([instance])
         dataset.index_instances(self._model.vocab)
-        model_input = dataset.as_tensor_dict(cuda_device=cuda_device, for_training=False)
+        model_input = dataset.as_tensor_dict(cuda_device=cuda_device)
         if 'stem_tokens' in model_input:
             output = self._model.beam_search(model_input['source_tokens'],
                                              stem_tokens=model_input['stem_tokens'],
@@ -252,7 +250,7 @@ class Interpreter(cmd.Cmd):
         self._model.eval()
         source, number_to_token = standardize_question(text)
         instance = self._dataset_reader.text_to_instance(source)
-        batch = instances_to_batch([instance], self._model, for_training=False)
+        batch = instances_to_batch([instance], self._model)
         predictions = self._model.beam_search(batch['source_tokens'], bestk=1)
         target = predictions.split('\n')[0]
         self.last_labeled_instance = self._dataset_reader.text_to_instance(source, target)
