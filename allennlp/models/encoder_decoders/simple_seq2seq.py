@@ -169,6 +169,8 @@ class SimpleSeq2Seq(Model):
         valid_units = {'unit' + str(i) for i in range(20)}
         valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
         valid_numbers = {x for x in valid_numbers if x.startswith('num')}
+        valid_numbers.update({'num_special_2', 'num_special_4', 'num_special_0.05',
+                              'num_special_0.1', '-1', 'num_special_0'})
         # print(valid_numbers)
         valid_numbers.add('(')
         valid_numbers.add('?')
@@ -229,7 +231,7 @@ class SimpleSeq2Seq(Model):
                         else:
                             seen_new_unit = True
 
-                    if action.startswith('num') and action in seen_actions:
+                    if action.startswith('num') and not action.startswith('num_special') and action in seen_actions:
                         penalty += 10
 
                     if action_list[-1] == '?' and action in seen_actions:

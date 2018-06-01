@@ -58,6 +58,8 @@
       "batch_size" : 128
     },
     "trainer": {
+      "num_serialized_models_to_keep": 2,
+        "keep_serialized_model_every_num_seconds": 900,
       "num_epochs": 100,
       "grad_norm": 5.0,
       "patience": 100,
