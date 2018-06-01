@@ -8,8 +8,8 @@ print(lines)
 
 maps = []
 for paragraph in lines:
-    map = {'num_special_2': 2, 'num_special_4': 4, 'num_special_0.05': 0.05,
-           'num_special_0.1': 0.1, 'num_special_0': 0}
+    map = {'num_special_2': '2', 'num_special_4': '4', 'num_special_0.05': '0.05',
+           'num_special_0.1': '0.1', 'num_special_0': '0'}
     for line in paragraph.strip().split('\n'):
         parts = line.strip().split()
         if len(parts) > 0:
