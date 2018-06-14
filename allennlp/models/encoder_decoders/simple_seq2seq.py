@@ -37,7 +37,7 @@ Plus   (num, num) : num
 """
 
 
-@Model.register("simple_seq2seq")
+@Model.register("open_algebra_seq2seq")
 class SimpleSeq2Seq(Model):
     """
     This ``SimpleSeq2Seq`` class is a :class:`Model` which takes a sequence, encodes it, and then

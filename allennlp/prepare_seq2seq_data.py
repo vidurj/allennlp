@@ -81,14 +81,14 @@ def is_num(string):
         return None
 
 
-def standardize_question(text, shuffle=True, is_copy=False):
+def standardize_question(text, is_list, shuffle=True, is_copy=False):
     source = text.replace('-', ' - ')
     tokens = nlp(source)
     temp = [token.text for token in tokens]
     source_tokenized = []
     for token in temp:
         source_tokenized.extend(TIMES_WORDS.get(token.lower(), [token]))
-    number_tokens = ['num' + str(i) for i in range(10)]
+    number_tokens = ['num' + str(i) for i in range(15)]
     if shuffle:
         random.shuffle(number_tokens)
     number_to_tokens = defaultdict(list)
@@ -106,11 +106,18 @@ def standardize_question(text, shuffle=True, is_copy=False):
                 number = - number
 
             if is_copy:
-                number_to_tokens[number].append('num' + str(index))
+                token = 'num' + str(index)
+            elif is_list or number not in number_to_tokens:
+                token = number_tokens.pop()
             else:
-                if number not in number_to_tokens:
-                    number_to_tokens[number] = number_tokens.pop()
-                source_tokenized[index] = number_to_tokens[number]
+                token = number_to_tokens[number]
+            if is_list:
+                number_to_tokens[number].append(token)
+            else:
+                number_to_tokens[number] = token
+            assert isinstance(token, str), token
+            source_tokenized[index] = token
+
     return ' '.join(source_tokenized), number_to_tokens
 
 
@@ -145,9 +152,31 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
     remaining_variable_names = ['var' + str(i) for i in range(10)]
     remaining_units = ['unit' + str(i) for i in range(3)]
     exceptions = [0.01, 2, 4, 0.05, 0.1, 0]
+    elem = list(number_to_tokens.values())[0]
+    if isinstance(elem, list):
+        is_list = True
+    else:
+        assert isinstance(elem, str)
+        is_list = False
+
     for token in exceptions:
         if token not in number_to_tokens:
-            number_to_tokens[token] = 'num_special_' + str(token)
+            if is_list:
+                number_to_tokens[token] = ['num_special_' + str(token)]
+            else:
+                number_to_tokens[token] = 'num_special_' + str(token)
+
+    def retrieve_num(number):
+        if is_list:
+            tokens = number_to_tokens[number]
+            if len(tokens) > 1:
+                print(number, text)
+            result = random.choice(tokens)
+        else:
+            result = number_to_tokens[number]
+        assert isinstance(result, str)
+        return result
+
     if randomize:
         random.shuffle(remaining_variable_names)
         random.shuffle(remaining_units)
@@ -176,15 +205,15 @@ def standardize_logical_form_with_validation(text, number_to_tokens, randomize):
             assert 'NUMBER' in valid_tokens
             number = is_num(token)
             if number in number_to_tokens:
-                tokens = number_to_tokens[number]
+                tokens = retrieve_num(number)
                 token = tokens
             elif -number in number_to_tokens:
-                token = number_to_tokens[- number]
+                token = retrieve_num(- number)
                 token = '( Times {} -1 )'.format(token)
                 print('WARNING: -1 hack {} {}'.format(token, number))
             elif number * 100 in number_to_tokens:
-                token = number_to_tokens[number * 100]
-                print('WARNING: ignoring 100 hack {} {}'.format(token, number))
+                token = retrieve_num(number * 100)
+                print('WARNING: ignoring 100 hack {} {}. This should only happen on subsets of an actual question.'.format(token, number))
             else:
                 raise RuntimeError(
                     'Number {} not in number_to_token {}.'.format(number, number_to_tokens))
@@ -295,14 +324,15 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
     number_to_tokens = []
     question_numbers = []
     original_units = []
-    for _ in range(num_iters):
+    for iter_n in range(num_iters):
+        print('iteration number', iter_n)
         for question_number, question in enumerate(data):
             if not is_dev and question['lSemantics'] == '':
                 continue
             print(question['iIndex'])
             # if question['iIndex'] != '6226':
             #     continue
-            source, number_to_token = standardize_question(question['sQuestion'], shuffle=not is_dev)
+            source, number_to_token = standardize_question(question['sQuestion'], is_list=False, shuffle=not is_dev)
             # try:
             if not is_dev:
                 target, (_, type_assignments) = standardize_logical_form_with_validation(
@@ -345,6 +375,7 @@ def write_data(data, file_name, num_iters, randomize, is_dev=False, silent=True)
     result_str = ''
     for number_to_token in number_to_tokens:
         for number, token in number_to_token.items():
+            assert isinstance(token, str), token
             result_str += token + ' ' + str(number) + '\n'
         result_str += '***\n'
 
@@ -394,7 +425,7 @@ def create_sentence_aligned_data(alignments):
     for q_index, semantics in question_to_sentence_semantics.items():
         valid = [(i, l) for i, l in enumerate(semantics) if len(l) > 0]
         # TODO picking single sentence or all sentences
-        for size in [1]:#range(len(valid)):
+        for size in range(len(valid)):
             for sequence in itertools.combinations(valid, size):
                 sequence = list(sequence)
                 sequence.sort(key=lambda x: x[0])
@@ -427,6 +458,11 @@ if __name__ == '__main__':
     with open('allennlp/additional_annotations.json', 'r') as f:
         additional_data = json.load(f)
 
+
+    with open('/Users/vidurj/euclid/data/private/third_party/alg514/kushman_annotated.json',
+              'r') as f:
+        kushman_annotated = json.load(f)
+
     # results = []
     # for question in data[-100:]:
     #     important_numbers = retrieve_important_numbers(question['sQuestion'])
@@ -445,6 +481,6 @@ if __name__ == '__main__':
 
     # write_data(data, 'all_num.txt', randomize=False, num_iters=1, is_dev=True)
 
-    write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
-    write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=1)
-    write_data(data[-100:], 'test_num.txt', randomize=True, num_iters=1, is_dev=True)
+    # write_data(data[:-100] + all_train_subsets, 'train_num.txt', randomize=True, num_iters=10)
+    # write_data(data[-100:], 'dev_num.txt', randomize=True, num_iters=1)
+    write_data(data[-100:], 'test_num.txt', randomize=False, num_iters=1, is_dev=True)

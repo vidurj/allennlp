@@ -4,7 +4,7 @@ from overrides import overrides
 import torch
 from torch.nn.modules.linear import Linear
 from nltk import Tree
-
+from torch.nn import Conv1d, Linear
 from allennlp.common import Params
 from allennlp.common.checks import check_dimensions_match
 from allennlp.data import Vocabulary
@@ -20,6 +20,7 @@ from allennlp.training.metrics import EvalbBracketingScorer, DEFAULT_EVALB_DIR
 from allennlp.common.checks import ConfigurationError
 import numpy as np
 from sortedcontainers import SortedList
+from allennlp.nn import Activation
 
 class SpanInformation(NamedTuple):
     """
@@ -128,6 +129,42 @@ class SpanConstituencyParser(Model):
             self._evalb_score = None
         initializer(self)
 
+        self._ngram_filter_sizes = [3, 3, 3, 3, 3, 3]
+        self._num_filters = [500 for _ in self._ngram_filter_sizes]
+        self._num_filters[0] = 1074
+        self._embedding_dim = 1074
+        self._convolution_layers = [Conv1d(in_channels=self._embedding_dim,
+                                           out_channels=num_filters,
+                                           kernel_size=ngram_size,
+                                           padding=ngram_size - 1)
+                                    for ngram_size, num_filters in zip(self._ngram_filter_sizes, self._num_filters)]
+        self._activation = Activation.by_name('relu')()
+
+
+    def embed(self, tokens: torch.Tensor, mask: torch.Tensor):
+        if mask is not None:
+            tokens = tokens * mask.unsqueeze(-1).float()
+
+        # Our input is expected to have shape `(batch_size, num_tokens, embedding_dim)`.  The
+        # convolution layers expect input of shape `(batch_size, in_channels, sequence_length)`,
+        # where the conv layer `in_channels` is our `embedding_dim`.  We thus need to transpose the
+        # tensor first.
+        tokens = torch.transpose(tokens, 1, 2)
+        # Each convolution layer returns output of size `(batch_size, num_filters, pool_length)`,
+        # where `pool_length = num_tokens - ngram_size + 1`.  We then do an activation function,
+        # then do max pooling over each filter for the whole input sequence.  Because our max
+        # pooling is simple, we just use `torch.max`.  The resultant tensor of has shape
+        # `(batch_size, num_conv_layers * num_filters)`, which then gets projected using the
+        # projection layer, if requested.
+
+        inputs = tokens
+        print(inputs.size())
+        for i in range(len(self._convolution_layers)):
+            convolution_layer = getattr(self, 'conv_layer_{}'.format(i))
+            inputs = self._activation(convolution_layer(tokens))
+            print(inputs.size())
+        return inputs
+
     @overrides
     def forward(self,  # type: ignore
                 tokens: Dict[str, torch.LongTensor],
@@ -205,7 +242,7 @@ class SpanConstituencyParser(Model):
 
         num_spans = get_lengths_from_binary_sequence_mask(span_mask)
 
-        encoded_text = self.encoder(embedded_text_input, mask)
+        encoded_text = self.embed(embedded_text_input, mask)
         span_representations = self.span_extractor(encoded_text, spans, mask, span_mask)
         if self.feedforward_layer is not None:
             span_representations = self.feedforward_layer(span_representations)
@@ -228,8 +265,7 @@ class SpanConstituencyParser(Model):
         # it for the validation and test sets.
         batch_gold_trees = [meta.get("gold_tree") for meta in metadata]
         if all(batch_gold_trees) and self._evalb_score is not None and not self.training:
-            gold_pos_tags: List[List[str]] = [list(zip(*tree.pos()))[1]
-                                              for tree in batch_gold_trees]
+            gold_pos_tags = [list(zip(*tree.pos()))[1] for tree in batch_gold_trees]
             predicted_trees = self.construct_trees(class_probabilities.cpu().data,
                                                    spans.cpu().data,
                                                    num_spans.data,
@@ -652,7 +688,8 @@ class SpanConstituencyParser(Model):
         embedder_params = params.pop("text_field_embedder")
         text_field_embedder = TextFieldEmbedder.from_params(vocab, embedder_params)
         span_extractor = SpanExtractor.from_params(params.pop("span_extractor"))
-        encoder = Seq2SeqEncoder.from_params(params.pop("encoder"))
+        encoder_params = params.pop("encoder")
+
 
         feed_forward_params = params.pop("feedforward", None)
         if feed_forward_params is not None:
