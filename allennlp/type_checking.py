@@ -6,7 +6,6 @@ END_SYMBOL = "@end@"
 def valid_next_characters(function_calls, arg_numbers, last_token, valid_numbers, valid_variables,
                           valid_types):
     valid_variables.add('?')
-    valid_variables.add('(')
     valid_numbers.add('?')
     valid_numbers.add('(')
 
@@ -23,14 +22,11 @@ def valid_next_characters(function_calls, arg_numbers, last_token, valid_numbers
         return {END_SYMBOL}
     elif last_token == '(':
         if len(function_calls) == 0:
-            return {'Equals', 'And'}
+            return {'Equals', 'And', 'IsPart'}
         elif function_calls[-1] == 'And':
-            return {'Equals'}
+            return {'Equals', 'IsPart'}
         elif function_calls[-1] == 'Equals':
             return {'Value', 'Rate', 'Times', 'Plus', 'Minus', 'Div'}
-        elif function_calls[-1] == 'Join' or function_calls[-1] == 'Value' or \
-                        function_calls[-1] == 'Rate':
-            return {'Join'}
         elif function_calls[-1] == 'Minus' or function_calls[-1] == 'Plus' or function_calls[-1] == 'Times' or function_calls[-1] == 'Div':
             return {'Minus', 'Plus', 'Rate', 'Value', 'Times', 'Div'}
         else:
@@ -42,7 +38,7 @@ def valid_next_characters(function_calls, arg_numbers, last_token, valid_numbers
             return {'('}
         elif function_calls[-1] == 'Equals' and num_args < 2:
             return valid_numbers.union(valid_variables)
-        elif function_calls[-1] == 'Join' and num_args < 2:
+        elif function_calls[-1] == 'IsPart' and num_args < 2:
             return valid_variables
         elif function_calls[-1] == 'Value' and num_args == 0:
             return valid_variables
@@ -59,7 +55,7 @@ def valid_next_characters(function_calls, arg_numbers, last_token, valid_numbers
 
 
 def update_state(function_calls, arg_numbers, last_token):
-    operators = {'Equals', 'And', 'Value', 'Rate', 'Join', 'Plus', 'Minus', 'Times', 'Div'}
+    operators = {'Equals', 'IsPart', 'And', 'Value', 'Rate', 'Plus', 'Minus', 'Times', 'Div'}
     if last_token == START_SYMBOL or last_token == END_SYMBOL:
         pass
     elif last_token == '?':
