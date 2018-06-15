@@ -215,22 +215,22 @@ class SimpleSeq2Seq(Model):
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
-                    print('*', action, '*')
+                    # print('*', action, '*')
                     if action not in valid_actions:
-                        print('invalid')
+                        # print('invalid')
                         continue
 
                     if action.startswith('var') and action not in seen_actions:
                         if seen_new_var:
-                            print('seen new var')
+                            # print('seen new var')
                             continue
                         else:
-                            print('just saw a new variable!')
+                            # print('just saw a new variable!')
                             seen_new_var = True
 
                     if action.startswith('unit') and action not in seen_actions:
                         if seen_new_unit:
-                            print('seen')
+                            # print('seen')
                             continue
                         else:
                             seen_new_unit = True

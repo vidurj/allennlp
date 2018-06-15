@@ -128,6 +128,7 @@ class SimpleSeq2SeqPredictorBeam(Predictor):
 
     @overrides
     def predict_json(self, inputs: JsonDict, cuda_device: int = -1) -> JsonDict:
+        print('here! ' * 20)
         instance, return_dict = self._json_to_instance(inputs)
 
         dataset = Batch([instance])
