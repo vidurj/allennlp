@@ -164,7 +164,6 @@ class SimpleSeq2Seq(Model):
             'function_calls': []
         }
         valid_variables = {'var' + str(i) for i in range(10)}
-        valid_variables.add('(')
         valid_variables.add('?')
         valid_units = {'unit' + str(i) for i in range(20)}
         valid_numbers = {self.vocab.get_token_from_index(index, 'source_tokens') for index in source_indices[0]}
@@ -248,7 +247,7 @@ class SimpleSeq2Seq(Model):
                         'arg_numbers': arg_numbers
                     }
                     new_models.append(new_model)
-            assert len(new_models) > 0, valid_actions
+            assert len(new_models) > 0, (valid_actions, seen_actions)
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
