@@ -225,6 +225,7 @@ class SimpleSeq2Seq(Model):
                             print('seen')
                             continue
                         else:
+                            print('just saw a new variable!')
                             seen_new_var = True
 
                     if action.startswith('unit') and action not in seen_actions:
