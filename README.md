@@ -57,7 +57,7 @@ isolation and consistency, and also makes it easy to distribute your
 environment to a compute cluster.
 
 Once you have [installed Docker](https://docs.docker.com/engine/installation/)
-just run `docker run -it -p 8000:8000 --rm allennlp/allennlp:v0.4.3` to get an environment that will run on either the cpu or gpu.
+just run `docker run -it -p 8000:8000 --rm allennlp/allennlp:v0.5.1` to get an environment that will run on either the cpu or gpu.
 
 You can now test your installation with `./scripts/verify.py`.
 
@@ -103,7 +103,6 @@ Commands:
     train       Train a model
     evaluate    Evaluate the specified model + dataset
     predict     Use a trained model to make predictions.
-    serve       Run the web service and demo.
     make-vocab  Create a vocabulary
     elmo        Use a trained model to make predictions.
     fine-tune   Continue training a model on a new dataset
