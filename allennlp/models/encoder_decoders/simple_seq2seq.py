@@ -222,7 +222,7 @@ class SimpleSeq2Seq(Model):
 
                     if action.startswith('var') and action not in seen_actions:
                         if seen_new_var:
-                            print('seen')
+                            print('seen new var')
                             continue
                         else:
                             print('just saw a new variable!')
