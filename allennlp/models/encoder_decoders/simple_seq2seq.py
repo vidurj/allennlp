@@ -238,9 +238,9 @@ class SimpleSeq2Seq(Model):
                     if action.startswith('num') and not action.startswith('num_special') and action in seen_actions:
                         penalty += 10
 
-                    if action_list[-1] == '?' and action in seen_actions:
-                        print('seen this query var')
-                        continue
+                    # if action_list[-1] == '?' and action in seen_actions:
+                    #     print('seen this query var')
+                    #     continue
 
                     function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
                     new_model = {
