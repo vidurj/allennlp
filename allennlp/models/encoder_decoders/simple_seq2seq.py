@@ -215,17 +215,21 @@ class SimpleSeq2Seq(Model):
                 for action_index, action_log_probability in enumerate(class_log_probabilities):
                     penalty = 0
                     action = self.vocab.get_token_from_index(action_index, self._target_namespace)
+                    print('*', action, '*')
                     if action not in valid_actions:
+                        print('invalid')
                         continue
 
                     if action.startswith('var') and action not in seen_actions:
                         if seen_new_var:
+                            print('seen')
                             continue
                         else:
                             seen_new_var = True
 
                     if action.startswith('unit') and action not in seen_actions:
                         if seen_new_unit:
+                            print('seen')
                             continue
                         else:
                             seen_new_unit = True
@@ -234,6 +238,7 @@ class SimpleSeq2Seq(Model):
                         penalty += 10
 
                     if action_list[-1] == '?' and action in seen_actions:
+                        print('seen this query var')
                         continue
 
                     function_calls, arg_numbers = update_state(model['function_calls'], model['arg_numbers'], action)
