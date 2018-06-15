@@ -253,7 +253,7 @@ class SimpleSeq2Seq(Model):
                         'arg_numbers': arg_numbers
                     }
                     new_models.append(new_model)
-            assert len(new_models) > 0, (valid_actions, seen_actions)
+            assert len(new_models) > 0, (valid_actions, seen_actions, action_list)
             new_models.sort(key=lambda x: - x['cur_log_probability'])
             models = new_models[:bestk]
 
