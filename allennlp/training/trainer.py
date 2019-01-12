@@ -625,8 +625,8 @@ class Trainer(Registrable):
 
                 # skip empty gradients
                 if torch.prod(torch.tensor(grad_data.shape)).item() > 0: # pylint: disable=not-callable
-                    self._tensorboard.add_train_scalar("gradient_mean/" + name,
-                                                       grad_data.mean(),
+                    self._tensorboard.add_train_scalar("gradient_norm/" + name,
+                                                       torch.norm(grad_data),
                                                        epoch)
                     self._tensorboard.add_train_scalar("gradient_std/" + name,
                                                        grad_data.std(),
