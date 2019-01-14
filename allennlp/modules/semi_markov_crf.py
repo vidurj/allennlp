@@ -223,9 +223,9 @@ class SemiMarkovConditionalRandomField(torch.nn.Module):
         if average_batches:
             batch_loss = batch_loss / batch_size
 
-        if batch_loss.data[0] > 0.0:
+        if batch_loss.item() > 0.0:
             max_log_loss, _ = torch.max(log_loss, -1)
-            logger.info("WARNING: invalid log loss = %f", max_log_loss.data[0])
+            logger.info("WARNING: invalid log loss = %f", max_log_loss.item())
         # assert batch_loss.data[0] <= 0.0
         return batch_loss, log_numerator
 

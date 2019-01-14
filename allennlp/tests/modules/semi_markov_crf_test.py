@@ -63,7 +63,7 @@ class TestSemiMarkovConditionalRandomField(AllenNlpTestCase):
         tag_reshaped = tags.view(-1)
         mask = tag_reshaped != self.default_tag
         for i, t in enumerate(tag_reshaped):
-            if mask[i].data[0]:
+            if mask[i].item():
                 total += logit_reshaped[i][t]
         return total
 
@@ -109,7 +109,7 @@ class TestSemiMarkovConditionalRandomField(AllenNlpTestCase):
         # Computing the log likelihood by enumerating all possible sequences.
         for logit, tag, sentence_length, spurious_score in zip(self.logits, self.tags_tensor, sentence_lengths, spurious_scores):
             numerator = self.score(logit, tag)
-            numerators.append(numerator.data[0])
+            numerators.append(numerator.item())
 
             all_tags = [(seq, self.create_tags_tensor_from_sequence(seq))
                         for seq in itertools.product(range(self.num_tags - 1), repeat=sentence_length)]
@@ -120,7 +120,7 @@ class TestSemiMarkovConditionalRandomField(AllenNlpTestCase):
                 sum([math.exp(score[1]) for score in spurious_score + all_scores]))
             manual_log_likelihood += numerator - denominator
 
-        return numerators, manual_log_likelihood.data[0]
+        return numerators, manual_log_likelihood.item()
 
     def test_forward(self):
         """
@@ -136,7 +136,7 @@ class TestSemiMarkovConditionalRandomField(AllenNlpTestCase):
               "\nExpected log likelihood =", expected_ll)
         print("Actual numerator =", numerator.data.tolist(),
               "\nExpected numerator =", expected_numerator)
-        self.assertAlmostEqual(expected_ll.item(), ll.item())
+        self.assertAlmostEqual(expected_ll, ll.item())
         assert expected_numerator == numerator.data.tolist()
 
     def test_viterbi_tags(self):
