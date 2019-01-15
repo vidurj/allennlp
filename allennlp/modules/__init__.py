@@ -23,3 +23,4 @@ from allennlp.modules.matrix_attention import MatrixAttention
 from allennlp.modules.attention import Attention
 from allennlp.modules.input_variational_dropout import InputVariationalDropout
 from allennlp.modules.bimpm_matching import BiMpmMatching
+from allennlp.modules.semi_markov_crf import SemiMarkovConditionalRandomField
